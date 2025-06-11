@@ -1,0 +1,6 @@
+@Dynamiq.API_HostAddress = http://localhost:5083
+
+GET {{Dynamiq.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

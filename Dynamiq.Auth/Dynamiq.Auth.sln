@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.Auth", "Dynamiq.Auth\Dynamiq.Auth.csproj", "{07857051-B21B-4102-A439-5034CD180023}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.Auth.DAL", "Dynamiq.Auth.DAL\Dynamiq.Auth.DAL.csproj", "{F897102A-5411-46DE-A66A-7966E33B33E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07857051-B21B-4102-A439-5034CD180023}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07857051-B21B-4102-A439-5034CD180023}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07857051-B21B-4102-A439-5034CD180023}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07857051-B21B-4102-A439-5034CD180023}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F897102A-5411-46DE-A66A-7966E33B33E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F897102A-5411-46DE-A66A-7966E33B33E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F897102A-5411-46DE-A66A-7966E33B33E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F897102A-5411-46DE-A66A-7966E33B33E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3362B363-B9F2-41ED-BE4A-04C83CBACC2F}
+	EndGlobalSection
+EndGlobal

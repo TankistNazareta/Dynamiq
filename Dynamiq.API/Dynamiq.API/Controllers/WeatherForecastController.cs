@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Dynamiq.API.Auth.Controllers
+namespace Dynamiq.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
