@@ -1,6 +1,8 @@
 ﻿using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Dynamiq.Auth.Controllers
 {
@@ -85,7 +87,8 @@ namespace Dynamiq.Auth.Controllers
         {
             try
             {
-                return Ok(await _repo.Delete(id));
+                await _repo.Delete(id);
+                return Ok("User was removed");
             }
             catch (Exception ex)
             {
@@ -93,12 +96,13 @@ namespace Dynamiq.Auth.Controllers
             }
         }
 
-        [HttpGet("CheckPassword")]
+        [HttpPost("CheckPassword")]
         public async Task<IActionResult> CheckPassword(UserDto user)
         {
             try
             {
-                return Ok(await _repo.CheckPassword(user));
+                await _repo.CheckPassword(user);
+                return Ok("Password is correct");
             }
             catch (Exception ex)
             {

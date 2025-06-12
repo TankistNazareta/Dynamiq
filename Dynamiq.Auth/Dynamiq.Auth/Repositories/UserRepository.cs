@@ -3,7 +3,9 @@ using Dynamiq.Auth.DAL.Context;
 using Dynamiq.Auth.DAL.Models;
 using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Dynamiq.Auth.Repositories
 {
@@ -18,27 +20,29 @@ namespace Dynamiq.Auth.Repositories
             _db = db;
         }
 
-        public async Task<bool> CheckPassword(UserDto user)
+        public async Task CheckPassword(UserDto user)
         {
             var model = await _db.Users.FirstOrDefaultAsync(x => x.Email == user.Email);
 
-            if(model.PasswordHash == HashPassword(user.Password))
-                return true;
-            return false;
+            if (model == null)
+                throw new ArgumentException("Your email isn't correct");
+
+            if (!CheckPassword(user.Password, model.PasswordHash))
+                throw new ArgumentException("Your password is incorrect");
+
+            //Sign in method 
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             var model = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                return false;
+                throw new ArgumentException($"{nameof(id)} does not exist");
 
             _db.Users.Remove(model);
 
             await _db.SaveChangesAsync();
-
-            return true;
         }
 
         public async Task<List<UserDto>> GetAll()
@@ -52,12 +56,18 @@ namespace Dynamiq.Auth.Repositories
         {
             var model = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
 
+            if (model == null)
+                throw new ArgumentException($"user with the email: {nameof(email)} does not exist");
+
             return _mapper.Map<UserDto>(model);
         }
 
         public async Task<UserDto> GetById(Guid id)
         {
             var model = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (model == null)
+                throw new ArgumentException($"user with the id: {nameof(id)} does not exist");
 
             return _mapper.Map<UserDto>(model);
         }
@@ -85,30 +95,25 @@ namespace Dynamiq.Auth.Repositories
 
         public async Task<UserDto> Update(UserDto user)
         {
-            var oldUser = await _db.Users.FirstOrDefaultAsync(x => x.Email == user.Email);
+            var newDataUser = await _db.Users.FindAsync(user.Id);
+            if (newDataUser == null)
+                throw new ArgumentException("User was not found");
 
-            if (oldUser == null)
-                throw new ArgumentException(nameof(user));
+            newDataUser.Email = user.Email;
+            newDataUser.Role = user.Role;
+            newDataUser.ConfirmedEmail = user.ConfirmedEmail;
+            newDataUser.PasswordHash = HashPassword(user.Password);
+            newDataUser.Role = user.Role;
 
-            var updatedUser = new User()
-            {
-                Email = oldUser.Email,
-                Id = oldUser.Id,
-                PasswordHash = HashPassword(user.Password),
-                Role = user.Role,
-                ConfirmedEmail = user.ConfirmedEmail,
-            };
-
-            _db.Users.Update(updatedUser);
+            _db.Users.Update(newDataUser);
 
             await _db.SaveChangesAsync();
 
-            return _mapper.Map<UserDto>(updatedUser);
+            return _mapper.Map<UserDto>(newDataUser);
         }
 
-        private string HashPassword(string password)
-        {
-            return password.GetHashCode().ToString();
-        }
+        private string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
+        private bool CheckPassword(string password, string HashedPassword) 
+            => BCrypt.Net.BCrypt.Verify(password, HashedPassword);
     }
 }
