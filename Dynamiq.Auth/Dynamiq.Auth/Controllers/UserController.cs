@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,7 @@ namespace Dynamiq.Auth.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("email")]
         public async Task<IActionResult> GetByEmail(string email)
         {
