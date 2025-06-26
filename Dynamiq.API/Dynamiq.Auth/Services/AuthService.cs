@@ -64,6 +64,7 @@ namespace Dynamiq.Auth.Services
             var responseToken = await _apiClient.GetFromJsonAsync<RefreshTokenDto>($"/refresh/{token}")
                 ?? throw new Exception("Failed to refresh token: token not found");
 
+            //Check token
             if (!responseToken.IsRevoked)
                 throw new ArgumentException("Your token is revoked");
 
@@ -80,7 +81,7 @@ namespace Dynamiq.Auth.Services
                 Id = responseToken.User.Id,
                 Email = responseToken.User.Email,
                 Role = responseToken.User.Role,
-            });
+            }, responseToken.ExpiresAt);
 
             return authResponseDto;
         }
@@ -92,10 +93,10 @@ namespace Dynamiq.Auth.Services
                 throw new Exception("Failed to revoke new refresh token");
         }
 
-        private async Task<AuthResponseDto> PostAndCreateAuthResponseDto(UserDto user)
+        private async Task<AuthResponseDto> PostAndCreateAuthResponseDto(UserDto user, DateTime? expiresAt = null)
         {
             var accessToken = GenerateJwtToken(user.Email, user.Role);
-            var refreshToken = GenerateRefreshToken(user.Id);
+            var refreshToken = GenerateRefreshToken(user.Id, expiresAt);
 
             var refreshTokenJson = new StringContent(
                 JsonSerializer.Serialize(refreshToken),
@@ -140,7 +141,7 @@ namespace Dynamiq.Auth.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private RefreshTokenDto GenerateRefreshToken(Guid userId)
+        private RefreshTokenDto GenerateRefreshToken(Guid userId, DateTime? expiresAt)
         {
             var bytes = new byte[32];
             using var rng = RandomNumberGenerator.Create();
@@ -152,7 +153,7 @@ namespace Dynamiq.Auth.Services
             {
                 Token = refreshTokenString,
                 UserId = userId,
-                ExpiresAt = DateTime.UtcNow.AddDays(7)
+                ExpiresAt = expiresAt ?? DateTime.UtcNow.AddDays(7)
             };
         }
     }
