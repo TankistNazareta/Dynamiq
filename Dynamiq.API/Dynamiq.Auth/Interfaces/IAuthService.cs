@@ -4,7 +4,9 @@ namespace Dynamiq.Auth.Interfaces
 {
     public interface IAuthService
     {
-        Task<string> Login(AuthUserDto authUser);
-        Task<string> Signup(AuthUserDto authUser);
+        Task<AuthResponseDto> LogIn(AuthUserDto authUser);
+        Task<AuthResponseDto> SignUp(AuthUserDto authUser);
+        Task<AuthResponseDto> Refresh(string token);
+        Task Revoke(string token);
     }
 }

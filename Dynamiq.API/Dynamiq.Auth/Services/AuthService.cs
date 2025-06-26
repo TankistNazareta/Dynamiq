@@ -4,8 +4,8 @@ using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
@@ -13,7 +13,6 @@ namespace Dynamiq.Auth.Services
 {
     public class AuthService : IAuthService
     {
-
         private readonly IConfiguration _config;
         private readonly HttpClient _apiClient;
 
@@ -21,6 +20,98 @@ namespace Dynamiq.Auth.Services
         {
             _config = config;
             _apiClient = apiClient.CreateClient("ApiClient");
+        }
+
+        public async Task<AuthResponseDto> LogIn(AuthUserDto authUser)
+        {
+            var user = await _apiClient.GetFromJsonAsync<UserDto>($"/users/email?email={authUser.Email}");
+
+            if (user == null)
+                throw new ArgumentException("User not found");
+
+            if (!CheckPassword(authUser.Password, user.PasswordHash))
+                throw new ArgumentException("Incorrect password");
+
+            return await PostAndCreateAuthResponseDto(user);
+        }
+
+        public async Task<AuthResponseDto> SignUp(AuthUserDto authUser)
+        {
+            var user = new UserDto()
+            {
+                Email = authUser.Email,
+                PasswordHash = HashPassword(authUser.Password),
+                Role = RoleEnum.User,
+                ConfirmedEmail = false
+            };
+
+            var content = new StringContent(
+                JsonSerializer.Serialize(user),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _apiClient.PostAsync("/users", content);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Failed to create user: {response.Content}");
+
+            return await PostAndCreateAuthResponseDto(user);
+        }
+
+        public async Task<AuthResponseDto> Refresh(string token)
+        {
+            // Get token
+            var responseToken = await _apiClient.GetFromJsonAsync<RefreshTokenDto>($"/refresh/{token}")
+                ?? throw new Exception("Failed to refresh token: token not found");
+
+            if (!responseToken.IsRevoked)
+                throw new ArgumentException("Your token is revoked");
+
+            if (responseToken.ExpiresAt < DateTime.UtcNow)
+                throw new ArgumentException("Your token has expired");
+
+            // Revoke old token
+            var responsePut = await _apiClient.PutAsync($"/refresh/{token}", null);
+            if (!responsePut.IsSuccessStatusCode)
+                throw new Exception("Failed to revoke token");
+
+            var authResponseDto = await PostAndCreateAuthResponseDto(new()
+            {
+                Id = responseToken.User.Id,
+                Email = responseToken.User.Email,
+                Role = responseToken.User.Role,
+            });
+
+            return authResponseDto;
+        }
+
+        public async Task Revoke(string token)
+        {
+            var response = await _apiClient.PutAsync($"/refresh/{token}", null);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to revoke new refresh token");
+        }
+
+        private async Task<AuthResponseDto> PostAndCreateAuthResponseDto(UserDto user)
+        {
+            var accessToken = GenerateJwtToken(user.Email, user.Role);
+            var refreshToken = GenerateRefreshToken(user.Id);
+
+            var refreshTokenJson = new StringContent(
+                JsonSerializer.Serialize(refreshToken),
+                Encoding.UTF8,
+                "application/json");
+
+            var response = await _apiClient.PostAsync("/refresh", refreshTokenJson);
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception($"Failed to Log in: {response.Content}");
+
+            return new()
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken.Token
+            };
         }
 
         private string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
@@ -49,40 +140,20 @@ namespace Dynamiq.Auth.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<string> Login(AuthUserDto authUser)
+        private RefreshTokenDto GenerateRefreshToken(Guid userId)
         {
-            var user = await _apiClient.GetFromJsonAsync<UserDto>($"/users/email?email={authUser.Email}");
+            var bytes = new byte[32];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(bytes);
 
-            if (user == null)
-                throw new ArgumentException("User not found");
+            var refreshTokenString = Convert.ToBase64String(bytes);
 
-            if (!CheckPassword(authUser.Password, user.PasswordHash))
-                throw new ArgumentException("Incorrect password");
-
-            return GenerateJwtToken(authUser.Email, user.Role);
-        }
-
-        public async Task<string> Signup(AuthUserDto authUser)
-        {
-            var user = new UserDto()
+            return new()
             {
-                Email = authUser.Email,
-                PasswordHash = HashPassword(authUser.Password),
-                Role = RoleEnum.User,
-                ConfirmedEmail = false
+                Token = refreshTokenString,
+                UserId = userId,
+                ExpiresAt = DateTime.UtcNow.AddDays(7)
             };
-
-            var content = new StringContent(
-                JsonSerializer.Serialize(user),
-                Encoding.UTF8,
-                "application/json");
-
-            var response = await _apiClient.PostAsync("/users", content);
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"Failed to create user: {response.Content}");
-
-            return GenerateJwtToken(authUser.Email, user.Role);
         }
     }
 }

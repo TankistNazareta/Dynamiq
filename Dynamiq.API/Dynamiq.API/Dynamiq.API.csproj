@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dynamiq.API.DAL\Dynamiq.API.DAL.csproj" />
+    <ProjectReference Include="..\Dynamiq.API.Extension\Dynamiq.API.Extension.csproj" />
   </ItemGroup>
 
 </Project>

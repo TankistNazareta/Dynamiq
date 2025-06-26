@@ -11,5 +11,6 @@ namespace Dynamiq.API.DAL.Models
         public string PasswordHash { get; set; }
         public RoleEnum Role { get; set; }
         public bool ConfirmedEmail { get; set; }
+        public RefreshToken RefreshToken { get; set; } = null!;
     }
 }

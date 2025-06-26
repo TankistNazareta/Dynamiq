@@ -62,14 +62,7 @@ namespace Dynamiq.API.Repositories
             if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.PasswordHash))
                 throw new ArgumentNullException(nameof(user));
 
-            var model = new User()
-            {
-                Id = Guid.NewGuid(),
-                Email = user.Email,
-                Role = user.Role,
-                ConfirmedEmail = false,
-                PasswordHash = user.PasswordHash
-            };
+            var model = _mapper.Map<User>(user);
 
             _db.Users.Add(model);
 
@@ -80,15 +73,7 @@ namespace Dynamiq.API.Repositories
 
         public async Task<UserDto> Update(UserDto user)
         {
-            var newDataUser = await _db.Users.FindAsync(user.Id);
-            if (newDataUser == null)
-                throw new ArgumentException("User was not found");
-
-            newDataUser.Email = user.Email;
-            newDataUser.Role = user.Role;
-            newDataUser.ConfirmedEmail = user.ConfirmedEmail;
-            newDataUser.PasswordHash = user.PasswordHash;
-            newDataUser.Role = user.Role;
+            var newDataUser = _mapper.Map<User>(user);
 
             _db.Users.Update(newDataUser);
 

@@ -11,7 +11,7 @@ namespace Dynamiq.API
             return new MapperConfiguration(config =>
             {
                 config.CreateMap<User, UserDto>().ReverseMap();
-
+                config.CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
             });
         }
     }
