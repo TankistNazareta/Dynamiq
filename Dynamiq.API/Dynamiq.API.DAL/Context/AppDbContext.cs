@@ -13,13 +13,42 @@ namespace Dynamiq.API.DAL.Context
 
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<PaymentHistory> PaymentHistories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new RefreshTokenConfiguration());
+            modelBuilder.ApplyConfiguration(new PaymentHistoryConfiguration());
 
             base.OnModelCreating(modelBuilder);
+        }
+    }
+
+    public class PaymentHistoryConfiguration : IEntityTypeConfiguration<PaymentHistory>
+    {
+        public void Configure(EntityTypeBuilder<PaymentHistory> builder)
+        {
+            builder.HasKey(p => p.Id);
+
+            builder.Property(p => p.StripePaymentId)
+                   .IsRequired()
+                   .HasMaxLength(100);
+
+            builder.Property(p => p.Amount)
+                   .HasColumnType("decimal(18,2)")
+                   .IsRequired();
+
+            builder.Property(p => p.PaymentType)
+                   .IsRequired();
+
+            builder.Property(p => p.CreatedAt)
+                   .IsRequired();
+
+            builder.HasOne(p => p.User)
+                   .WithMany(u => u.PaymentHistories)
+                   .HasForeignKey(p => p.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

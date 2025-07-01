@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.API", "Dynamiq.API\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.Auth", "Dynamiq.Auth\Dynamiq.Auth.csproj", "{9531C969-7F9D-430C-BAA1-CF1FF4081A33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.API.DAL", "Dynamiq.API.DAL\Dynamiq.API.DAL.csproj", "{5A29F9D8-5700-42BE-99D2-2A1943BBC27F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.API.DAL", "Dynamiq.API.DAL\Dynamiq.API.DAL.csproj", "{5A29F9D8-5700-42BE-99D2-2A1943BBC27F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.API.Extension", "Dynamiq.API.Extension\Dynamiq.API.Extension.csproj", "{B0574843-1A2B-4DB1-8CBC-931134513AE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.API.Extension", "Dynamiq.API.Extension\Dynamiq.API.Extension.csproj", "{B0574843-1A2B-4DB1-8CBC-931134513AE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.API.Payment", "Dynamiq.API.Payment\Dynamiq.API.Payment.csproj", "{AB557F5F-1752-4FA0-A232-F68CCEB772DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{B0574843-1A2B-4DB1-8CBC-931134513AE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0574843-1A2B-4DB1-8CBC-931134513AE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0574843-1A2B-4DB1-8CBC-931134513AE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB557F5F-1752-4FA0-A232-F68CCEB772DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB557F5F-1752-4FA0-A232-F68CCEB772DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB557F5F-1752-4FA0-A232-F68CCEB772DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB557F5F-1752-4FA0-A232-F68CCEB772DB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
