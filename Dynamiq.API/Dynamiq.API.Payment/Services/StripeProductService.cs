@@ -1,4 +1,5 @@
-﻿using Dynamiq.API.Extension.RequestEntity;
+﻿using Dynamiq.API.Extension.Enums;
+using Dynamiq.API.Extension.RequestEntity;
 using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,8 @@ namespace Dynamiq.API.Stripe.Services
             var productService = new ProductService(_client);
             var priceService = new PriceService(_client);
 
+            var recurring = CreatePriceRecurringOptions(product.PaymentType);
+
             var createdProduct = await productService.CreateAsync(new ProductCreateOptions
             {
                 Name = product.Name,
@@ -32,6 +35,7 @@ namespace Dynamiq.API.Stripe.Services
                 UnitAmount = product.Price * 100,
                 Currency = "usd",
                 Product = createdProduct.Id,
+                Recurring = recurring
             });
 
             return new()
@@ -60,11 +64,20 @@ namespace Dynamiq.API.Stripe.Services
                 Active = false
             });
 
+            var recurring = CreatePriceRecurringOptions(product.PaymentType);
+
+            var createdProduct = await productService.CreateAsync(new ProductCreateOptions
+            {
+                Name = product.Name,
+                Description = product.Description,
+            });
+
             var createdPrice = await priceService.CreateAsync(new PriceCreateOptions
             {
-                UnitAmount = product.Price,
+                UnitAmount = product.Price * 100,
                 Currency = "usd",
-                Product = updatedProduct.Id,
+                Product = createdProduct.Id,
+                Recurring = recurring
             });
 
             return new()
@@ -90,6 +103,28 @@ namespace Dynamiq.API.Stripe.Services
             {
                 Active = false
             });
+        }
+
+        private PriceRecurringOptions? CreatePriceRecurringOptions(PaymentTypeEnum paymentTypeEnum)
+        {
+            PriceRecurringOptions recurring = null;
+
+            switch (paymentTypeEnum)
+            {
+                case (PaymentTypeEnum.Mountly):
+                    recurring = new PriceRecurringOptions
+                    {
+                        Interval = "month",
+                        IntervalCount = 1,
+                    };
+                    break;
+                case (PaymentTypeEnum.OneTime):
+                    break;
+                default:
+                    throw new Exception("Unknown paymentTypeEnum: " + paymentTypeEnum.ToString());
+            }
+
+            return recurring;
         }
     }
 }
