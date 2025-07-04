@@ -1,5 +1,5 @@
-﻿using Dynamiq.API.Extension.DTOs;
-using Dynamiq.API.Interfaces;
+﻿using Dynamiq.API.Interfaces;
+using Dynamiq.API.Mapping.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
@@ -7,9 +7,9 @@ namespace Dynamiq.API.Controllers
     [Route("/refresh")]
     public class RefreshTokenController : ControllerBase
     {
-        private readonly IRefreshTokenRepository _repo;
+        private readonly IRefreshTokenRepo _repo;
 
-        public RefreshTokenController(IRefreshTokenRepository repo)
+        public RefreshTokenController(IRefreshTokenRepo repo)
         {
             _repo = repo;
         }
@@ -28,7 +28,7 @@ namespace Dynamiq.API.Controllers
             }
         }
 
-        [HttpGet("token")]
+        [HttpGet("{token}")]
         public async Task<IActionResult> GetByToken([FromQuery] string token)
         {
             try

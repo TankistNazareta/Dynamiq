@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Dynamiq.API.Extension\Dynamiq.API.Extension.csproj" />
+    <ProjectReference Include="..\Dynamiq.API.Mapping\Dynamiq.API.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

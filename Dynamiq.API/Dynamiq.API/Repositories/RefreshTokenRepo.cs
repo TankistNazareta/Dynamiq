@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Dynamiq.API.DAL.Context;
 using Dynamiq.API.DAL.Models;
-using Dynamiq.API.Extension.DTOs;
 using Dynamiq.API.Interfaces;
+using Dynamiq.API.Mapping.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dynamiq.API.Repositories
 {
-    public class RefreshTokenRepository : IRefreshTokenRepository
+    public class RefreshTokenRepo : IRefreshTokenRepo
     {
         private readonly AppDbContext _db;
         private readonly IMapper _mapper;
 
-        public RefreshTokenRepository(AppDbContext db, IMapper mapper)
+        public RefreshTokenRepo(AppDbContext db, IMapper mapper)
         {
             _db = db;
             _mapper = mapper;

@@ -1,8 +1,8 @@
-﻿using Dynamiq.API.Extension.DTOs;
+﻿using Dynamiq.API.Mapping.DTOs;
 
 namespace Dynamiq.API.Interfaces
 {
-    public interface IRefreshTokenRepository
+    public interface IRefreshTokenRepo
     {
         Task Insert(RefreshTokenDto token);
         Task<RefreshTokenDto> GetByToken(string token);

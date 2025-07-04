@@ -1,8 +1,12 @@
 using AutoMapper;
-using Dynamiq.API;
 using Dynamiq.API.DAL.Context;
 using Dynamiq.API.Interfaces;
+using Dynamiq.API.Mapping;
 using Dynamiq.API.Repositories;
+using Dynamiq.API.Repository;
+using Dynamiq.API.Stripe.Interfaces;
+using Dynamiq.API.Stripe.Repositories;
+using Dynamiq.API.Stripe.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -41,8 +45,15 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
+//API
+builder.Services.AddTransient<IUserRepo, UserRepo>();
+builder.Services.AddTransient<IRefreshTokenRepo, RefreshTokenRepo>();
+builder.Services.AddTransient<IProductRepo, ProductRepo>();
+
+//API.Stripe
+builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
+builder.Services.AddTransient<IStripeProductService, StripeProductService>();
+builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

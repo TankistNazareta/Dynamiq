@@ -1,6 +1,6 @@
 ﻿using Dynamiq.API.Extension.Enums;
 
-namespace Dynamiq.API.Extension.DTOs
+namespace Dynamiq.API.Mapping.DTOs
 {
     public class UserDto
     {

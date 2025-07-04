@@ -1,18 +1,18 @@
 ﻿using AutoMapper;
 using Dynamiq.API.DAL.Context;
 using Dynamiq.API.DAL.Models;
-using Dynamiq.API.Extension.DTOs;
 using Dynamiq.API.Interfaces;
+using Dynamiq.API.Mapping.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dynamiq.API.Repositories
 {
-    public class UserRepository : IUserRepository
+    public class UserRepo : IUserRepo
     {
         private readonly IMapper _mapper;
         private readonly AppDbContext _db;
 
-        public UserRepository(IMapper mapper, AppDbContext db)
+        public UserRepo(IMapper mapper, AppDbContext db)
         {
             _mapper = mapper;
             _db = db;

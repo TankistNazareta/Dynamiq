@@ -1,31 +1,18 @@
-﻿using Dynamiq.API.Interfaces;
+﻿using Dynamiq.API.DAL.Models;
 using Dynamiq.API.Mapping.DTOs;
-using Microsoft.AspNetCore.Authorization;
+using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("/users")]
-    public class UserController : ControllerBase
+    [Route("/paymentHistory")]
+    public class PaymentHistoryController : ControllerBase
     {
-        private readonly IUserRepo _repo;
+        private readonly IPaymentHistoryRepo _repo;
 
-        public UserController(IUserRepo repo)
+        public PaymentHistoryController(IPaymentHistoryRepo repo)
         {
             _repo = repo;
-        }
-
-        [HttpPut("")]
-        public async Task<IActionResult> Put([FromBody] UserDto user)
-        {
-            try
-            {
-                return Ok(await _repo.Update(user));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         [HttpGet("")]
@@ -35,26 +22,12 @@ namespace Dynamiq.API.Controllers
             {
                 return Ok(await _repo.GetAll());
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("email")]
-        public async Task<IActionResult> GetByEmail(string email)
-        {
-            try
-            {
-                return Ok(await _repo.GetByEmail(email));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
@@ -69,7 +42,7 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody] UserDto user)
+        public async Task<IActionResult> Post([FromBody] PaymentHistoryDto user)
         {
             try
             {

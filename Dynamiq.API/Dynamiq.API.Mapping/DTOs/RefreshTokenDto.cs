@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.API.Extension.DTOs
+﻿namespace Dynamiq.API.Mapping.DTOs
 {
     public class RefreshTokenDto
     {

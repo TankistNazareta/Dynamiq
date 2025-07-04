@@ -1,7 +1,6 @@
-﻿using Dynamiq.API.Extension.DTOs;
-using Dynamiq.API.Extension.Enums;
+﻿using Dynamiq.API.Extension.Enums;
 
-namespace Dynamiq.API.Payment.DTOs
+namespace Dynamiq.API.Mapping.DTOs
 {
     public class PaymentHistoryDto
     {
@@ -12,5 +11,7 @@ namespace Dynamiq.API.Payment.DTOs
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public UserDto User { get; set; }
         public Guid UserId { get; set; }
+        public ProductDto Product { get; set; }
+        public Guid ProductId { get; set; }
     }
 }

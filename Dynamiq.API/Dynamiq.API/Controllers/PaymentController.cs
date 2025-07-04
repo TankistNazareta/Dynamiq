@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dynamiq.API.Extension.RequestEntity;
+using Dynamiq.API.Stripe.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Stripe;
 using Stripe.Checkout;
 
@@ -8,79 +10,41 @@ namespace Dynamiq.API.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly string _stripeSecretKey;
-        private readonly string _webhookSecret;
+        private readonly IStripePaymentService _service;
 
-        private readonly string _successUrl;
-        private readonly string _cancelUrl;
-
-        public PaymentController()
+        public PaymentController(IStripePaymentService service)
         {
-            _stripeSecretKey = "sk_test_51ReO9sCMuKRG8STbfedMOzEyGKmDOE4PjRTHmyoHJIPa2ntdYNCTbGWWbLWFIxYyqdNgcuKBNC3gLjb4O1jKkKMc00Cl4909bj";
-            _webhookSecret = "whsec_szJm7i7UgaEGGlp1nYkw5hPr9gMB3Wgm";
-            _successUrl = "https://deepstatemap.live/";
-            _cancelUrl = "https://killer.com/";
+            _service = service;
         }
 
         [HttpPost("create-checkout-session")]
-        public IActionResult CreateCheckoutSession()
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutSessionRequest request)
         {
-            var options = new SessionCreateOptions
+            try
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>
+                var sessionUrl = await _service.CreateCheckoutSession(request);
+                return Ok(new { url = sessionUrl });
+            }
+            catch (Exception ex)
             {
-                new SessionLineItemOptions
-                {
-                    PriceData = new SessionLineItemPriceDataOptions
-                    {
-                        UnitAmount = 1000,
-                        Currency = "usd",
-                        ProductData = new SessionLineItemPriceDataProductDataOptions
-                        {
-                            Name = "Pro підписка"
-                        },
-                    },
-                    Quantity = 1,
-                },
-            },
-                Mode = "payment",
-                SuccessUrl = _successUrl,
-                CancelUrl = _cancelUrl,
-            };
-
-
-            var client = new StripeClient(_stripeSecretKey);
-            var service = new SessionService(client);
-            Session session = service.Create(options);
-
-            return Ok(new { url = session.Url });
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("webhook")]
         public async Task<IActionResult> StripeWebhook()
         {
+            string json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+            string stripeSignature = Request.Headers["Stripe-Signature"];
+
             try
             {
-                var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
-                var endpointSecret = _webhookSecret;
-
-                var stripeEvent = EventUtility.ConstructEvent(
-                    json,
-                    Request.Headers["Stripe-Signature"],
-                    endpointSecret
-                );
-
-                if (stripeEvent.Type != "checkout.session.completed")
-                    throw new Exception($"Payment wasn't successfully: {stripeEvent.Data}");
-
-                var session = stripeEvent.Data.Object as Session;
-
-                return Ok($"Payment successfully: {session.Id}");
+                await _service.StripeWebhook(json, stripeSignature);
+                return Ok(); // 200
             }
             catch (Exception ex)
             {
-                return BadRequest("Stripe webhook error: " + ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

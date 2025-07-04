@@ -1,5 +1,5 @@
-﻿using Dynamiq.API.Extension.DTOs;
-using Dynamiq.API.Extension.Enums;
+﻿using Dynamiq.API.Extension.Enums;
+using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
 using Microsoft.IdentityModel.Tokens;

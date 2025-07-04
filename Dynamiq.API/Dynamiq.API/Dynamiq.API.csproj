@@ -18,7 +18,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Dynamiq.API.DAL\Dynamiq.API.DAL.csproj" />
     <ProjectReference Include="..\Dynamiq.API.Extension\Dynamiq.API.Extension.csproj" />
-    <ProjectReference Include="..\Dynamiq.API.Payment\Dynamiq.API.Payment.csproj" />
+    <ProjectReference Include="..\Dynamiq.API.Mapping\Dynamiq.API.Mapping.csproj" />
+    <ProjectReference Include="..\Dynamiq.API.Payment\Dynamiq.API.Stripe.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.API.Interfaces
+﻿namespace Dynamiq.API.Extension.Interfaces
 {
     public interface ICRUD<T> where T : class
     {
