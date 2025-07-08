@@ -14,6 +14,7 @@ namespace Dynamiq.API.Mapping
                 config.CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
                 config.CreateMap<Product, ProductDto>().ReverseMap();
                 config.CreateMap<PaymentHistory, PaymentHistoryDto>().ReverseMap();
+                config.CreateMap<Subscription, SubscriptionDto>().ReverseMap();
             });
         }
     }

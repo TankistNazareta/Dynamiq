@@ -54,6 +54,7 @@ builder.Services.AddTransient<IProductRepo, ProductRepo>();
 builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
+builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

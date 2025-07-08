@@ -64,7 +64,7 @@ namespace Dynamiq.API.Stripe.Services
                 Active = false
             });
 
-            var recurring = CreatePriceRecurringOptions(product.PaymentType);
+            var recurring = CreatePriceRecurringOptions(product.Interval);
 
             var createdProduct = await productService.CreateAsync(new ProductCreateOptions
             {
@@ -105,20 +105,27 @@ namespace Dynamiq.API.Stripe.Services
             });
         }
 
-        private PriceRecurringOptions? CreatePriceRecurringOptions(PaymentTypeEnum paymentTypeEnum)
+        private PriceRecurringOptions? CreatePriceRecurringOptions(IntervalEnum paymentTypeEnum)
         {
             PriceRecurringOptions recurring = null;
 
             switch (paymentTypeEnum)
             {
-                case (PaymentTypeEnum.Mountly):
+                case (IntervalEnum.Mountly):
                     recurring = new PriceRecurringOptions
                     {
                         Interval = "month",
                         IntervalCount = 1,
                     };
                     break;
-                case (PaymentTypeEnum.OneTime):
+                case (IntervalEnum.Yearly):
+                    recurring = new PriceRecurringOptions
+                    {
+                        Interval = "year",
+                        IntervalCount = 1,
+                    };
+                    break;
+                case (IntervalEnum.OneTime):
                     break;
                 default:
                     throw new Exception("Unknown paymentTypeEnum: " + paymentTypeEnum.ToString());

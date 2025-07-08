@@ -10,7 +10,8 @@ namespace Dynamiq.API.DAL.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
-        public PaymentTypeEnum PaymentType { get; set; }
+        public IntervalEnum Interval { get; set; }
         public ICollection<PaymentHistory> PaymentHistories { get; set; }
+        public ICollection<Subscription> Subscriptions { get; set; }
     }
 }

@@ -32,14 +32,20 @@ namespace Dynamiq.API.Repositories
 
         public async Task<List<UserDto>> GetAll()
         {
-            var models = await _db.Users.ToListAsync();
+            var models = await _db.Users
+                .Include(u => u.PaymentHistories)
+                .Include(u => u.Subscriptions)
+                .ToListAsync();
 
             return _mapper.Map<List<UserDto>>(models);
         }
 
         public async Task<UserDto> GetByEmail(string email)
         {
-            var model = await _db.Users.FirstOrDefaultAsync(x => x.Email == email);
+            var model = await _db.Users
+                .Include(u => u.PaymentHistories)
+                .Include(u => u.Subscriptions)
+                .FirstOrDefaultAsync(x => x.Email == email);
 
             if (model == null)
                 throw new ArgumentException($"user with the email: {nameof(email)} does not exist");
@@ -49,7 +55,10 @@ namespace Dynamiq.API.Repositories
 
         public async Task<UserDto> GetById(Guid id)
         {
-            var model = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var model = await _db.Users
+                .Include(u => u.PaymentHistories)
+                .Include(u => u.Subscriptions)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
                 throw new ArgumentException($"user with the id: {nameof(id)} does not exist");

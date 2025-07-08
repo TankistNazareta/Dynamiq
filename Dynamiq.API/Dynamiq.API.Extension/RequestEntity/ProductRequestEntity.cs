@@ -7,6 +7,6 @@ namespace Dynamiq.API.Extension.RequestEntity
         public string Name { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
-        public PaymentTypeEnum PaymentType { get; set; }
+        public IntervalEnum PaymentType { get; set; }
     }
 }

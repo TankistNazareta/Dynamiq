@@ -19,8 +19,9 @@ namespace Dynamiq.API.Stripe.Services
         private readonly string _webhookSecret;
 
         private readonly IPaymentHistoryRepo _historyRepo;
+        private readonly ISubscriptionRepo _subscriptionRepo;
 
-        public StripePaymentService(IConfiguration config, IPaymentHistoryRepo historyRepo)
+        public StripePaymentService(IConfiguration config, IPaymentHistoryRepo historyRepo, ISubscriptionRepo subscriptionRepo)
         {
             _stripeSecretKey = config["Stripe:SecretKey"]!;
             _webhookSecret = config["Stripe:WebhookSecret"]!;
@@ -28,6 +29,7 @@ namespace Dynamiq.API.Stripe.Services
             _client = new StripeClient(_stripeSecretKey);
 
             _historyRepo = historyRepo;
+            _subscriptionRepo = subscriptionRepo;
         }
 
         public async Task<string> CreateCheckoutSession(CheckoutSessionRequest request)
@@ -36,10 +38,10 @@ namespace Dynamiq.API.Stripe.Services
 
             switch(request.PaymentTypeEnum)
             {
-                case PaymentTypeEnum.OneTime:
+                case IntervalEnum.OneTime:
                     ModeType = "payment";
                     break;
-                case PaymentTypeEnum.Mountly:
+                case IntervalEnum.Mountly:
                     ModeType = "subscription";
                     break;
                 default:
@@ -48,7 +50,7 @@ namespace Dynamiq.API.Stripe.Services
 
             var paymentHistoryDto = new PaymentHistoryDto()
             {
-                PaymentType = request.PaymentTypeEnum,
+                Interval = request.PaymentTypeEnum,
                 UserId = request.UserId,
                 ProductId = request.ProductId,
             };
@@ -114,15 +116,40 @@ namespace Dynamiq.API.Stripe.Services
                 paymentHistoryDto.StripePaymentId = session.PaymentIntentId;
 
                 await _historyRepo.Insert(paymentHistoryDto);
+
+                if(paymentHistoryDto.Interval == IntervalEnum.Mountly 
+                    || paymentHistoryDto.Interval == IntervalEnum.Yearly)
+                {
+                    DateTime endTime;
+
+                    switch(paymentHistoryDto.Interval)
+                    {
+                        case IntervalEnum.Yearly:
+                            endTime = DateTime.UtcNow.AddYears(1);
+                            break;
+                        case IntervalEnum.Mountly:
+                            endTime = DateTime.UtcNow.AddMonths(1);
+                            break;
+                        default: 
+                            throw new Exception("unknown type: " +  paymentHistoryDto.Interval.ToString());
+                    }
+
+                    var subscriptionDto = new SubscriptionDto()
+                    {
+                        ProductId = paymentHistoryDto.ProductId,
+                        UserId = paymentHistoryDto.UserId,
+                        EndDate = endTime,
+                    };
+
+                    await _subscriptionRepo.Insert(subscriptionDto);
+                }
             }
             catch (StripeException ex)
             {
-                // Stripe-specific errors
                 throw new Exception($"Stripe error: {ex.Message}");
             }
             catch (Exception ex)
             {
-                // Інші помилки, можеш тут логувати, а не кидати далі
                 throw new Exception($"Webhook error: {ex.Message}");
             }
         }

@@ -1,8 +1,9 @@
 ﻿namespace Dynamiq.API.Extension.Enums
 {
-    public enum PaymentTypeEnum
+    public enum IntervalEnum
     {
         OneTime,
-        Mountly
+        Mountly,
+        Yearly
     }
 }

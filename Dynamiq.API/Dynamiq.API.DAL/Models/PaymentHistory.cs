@@ -7,7 +7,7 @@ namespace Dynamiq.API.DAL.Models
         public Guid Id { get; set; }
         public string StripePaymentId { get; set; }
         public decimal Amount { get; set; }
-        public PaymentTypeEnum PaymentType { get; set; }
+        public IntervalEnum Interval { get; set; }
         public DateTime CreatedAt { get; set; }
         public User User { get; set; }
         public Guid UserId { get; set; }

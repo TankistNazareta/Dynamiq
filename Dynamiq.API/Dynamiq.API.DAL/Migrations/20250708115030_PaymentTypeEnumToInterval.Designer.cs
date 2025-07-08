@@ -4,6 +4,7 @@ using Dynamiq.API.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dynamiq.API.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250708115030_PaymentTypeEnumToInterval")]
+    partial class PaymentTypeEnumToInterval
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace Dynamiq.API.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Interval")
+                    b.Property<int>("PaymentType")
                         .HasColumnType("int");
 
                     b.Property<Guid>("ProductId")
@@ -121,36 +124,6 @@ namespace Dynamiq.API.DAL.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Dynamiq.API.DAL.Models.Subscription", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Subscriptions");
-                });
-
             modelBuilder.Entity("Dynamiq.API.DAL.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -210,30 +183,9 @@ namespace Dynamiq.API.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Dynamiq.API.DAL.Models.Subscription", b =>
-                {
-                    b.HasOne("Dynamiq.API.DAL.Models.Product", "Product")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Dynamiq.API.DAL.Models.User", "User")
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Dynamiq.API.DAL.Models.Product", b =>
                 {
                     b.Navigation("PaymentHistories");
-
-                    b.Navigation("Subscriptions");
                 });
 
             modelBuilder.Entity("Dynamiq.API.DAL.Models.User", b =>
@@ -242,8 +194,6 @@ namespace Dynamiq.API.DAL.Migrations
 
                     b.Navigation("RefreshToken")
                         .IsRequired();
-
-                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

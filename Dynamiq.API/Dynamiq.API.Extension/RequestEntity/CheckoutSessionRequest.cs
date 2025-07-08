@@ -9,7 +9,7 @@ namespace Dynamiq.API.Extension.RequestEntity
         public string SuccessUrl { get; set; }
         public string CancelUrl { get; set; }
         public int Quantity { get; set; } = 1;
-        public PaymentTypeEnum PaymentTypeEnum { get; set; }
+        public IntervalEnum PaymentTypeEnum { get; set; }
         public Guid UserId { get; set; }
     }
 }

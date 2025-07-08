@@ -13,5 +13,6 @@ namespace Dynamiq.API.DAL.Models
         public bool ConfirmedEmail { get; set; }
         public RefreshToken RefreshToken { get; set; } = null!;
         public ICollection<PaymentHistory> PaymentHistories { get; set; }
+        public ICollection<Subscription> Subscriptions { get; set; }
     }
 }
