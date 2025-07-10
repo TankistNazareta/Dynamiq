@@ -16,6 +16,7 @@ namespace Dynamiq.API.DAL.Context
         public DbSet<PaymentHistory> PaymentHistories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<EmailVerification> EmailVerifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +25,7 @@ namespace Dynamiq.API.DAL.Context
             modelBuilder.ApplyConfiguration(new PaymentHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+            modelBuilder.ApplyConfiguration(new EmailVerificationConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

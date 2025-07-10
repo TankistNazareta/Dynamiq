@@ -1,4 +1,5 @@
 using AutoMapper;
+using Dynamiq.API.BackgroundServices;
 using Dynamiq.API.DAL.Context;
 using Dynamiq.API.Interfaces;
 using Dynamiq.API.Mapping;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,12 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
 builder.Services.AddAuthentication();
 
 var mapperConfig = MapperConfig.RegisterMaps();
@@ -49,12 +57,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddTransient<IUserRepo, UserRepo>();
 builder.Services.AddTransient<IRefreshTokenRepo, RefreshTokenRepo>();
 builder.Services.AddTransient<IProductRepo, ProductRepo>();
+builder.Services.AddTransient<IEmailVerificationRepo, EmailVerificationRepo>();
 
 //API.Stripe
 builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
+
+builder.Services.AddHostedService<UserCleanupService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

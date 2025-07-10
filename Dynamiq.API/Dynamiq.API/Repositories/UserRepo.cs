@@ -4,6 +4,7 @@ using Dynamiq.API.DAL.Models;
 using Dynamiq.API.Interfaces;
 using Dynamiq.API.Mapping.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Dynamiq.API.Repositories
 {
@@ -35,6 +36,7 @@ namespace Dynamiq.API.Repositories
             var models = await _db.Users
                 .Include(u => u.PaymentHistories)
                 .Include(u => u.Subscriptions)
+                .Include(u => u.EmailVerification)
                 .ToListAsync();
 
             return _mapper.Map<List<UserDto>>(models);
@@ -45,6 +47,7 @@ namespace Dynamiq.API.Repositories
             var model = await _db.Users
                 .Include(u => u.PaymentHistories)
                 .Include(u => u.Subscriptions)
+                .Include(u => u.EmailVerification)
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             if (model == null)
@@ -58,6 +61,7 @@ namespace Dynamiq.API.Repositories
             var model = await _db.Users
                 .Include(u => u.PaymentHistories)
                 .Include(u => u.Subscriptions)
+                .Include(u => u.EmailVerification)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
@@ -91,5 +95,22 @@ namespace Dynamiq.API.Repositories
             return _mapper.Map<UserDto>(newDataUser);
         }
 
+        public async Task<int> RemoveAllExpiredUsers()
+        {
+            var expiredUsers = await _db.Users
+                .Include(u => u.EmailVerification)
+                .Where(u =>
+                u.EmailVerification.ExpiresAt < DateTime.UtcNow &&
+                !u.EmailVerification.ConfirmedEmail)
+                .ToListAsync();
+
+            if (expiredUsers.Count == 0)
+                return 0;
+
+            _db.Users.RemoveRange(expiredUsers);
+            await _db.SaveChangesAsync();
+
+            return expiredUsers.Count;
+        }
     }
 }

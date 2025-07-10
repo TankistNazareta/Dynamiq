@@ -6,56 +6,26 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
+using System.Text;
 
 namespace Dynamiq.Auth.Services
 {
-    public class AuthService : IAuthService
+    public class TokenService : ITokenService
     {
-        private readonly IConfiguration _config;
         private readonly HttpClient _apiClient;
 
-        public AuthService(IConfiguration config, IHttpClientFactory apiClient)
+        private readonly string _jwtKey;
+        private readonly string _jwtIssuer;
+        private readonly string _jwtAudience;
+
+        public TokenService(IConfiguration config, IHttpClientFactory apiClient)
         {
-            _config = config;
             _apiClient = apiClient.CreateClient("ApiClient");
-        }
 
-        public async Task<AuthResponseDto> LogIn(AuthUserDto authUser)
-        {
-            var user = await _apiClient.GetFromJsonAsync<UserDto>($"/users/email?email={authUser.Email}");
-
-            if (user == null)
-                throw new ArgumentException("User not found");
-
-            if (!CheckPassword(authUser.Password, user.PasswordHash))
-                throw new ArgumentException("Incorrect password");
-
-            return await PostAndCreateAuthResponseDto(user);
-        }
-
-        public async Task<AuthResponseDto> SignUp(AuthUserDto authUser)
-        {
-            var user = new UserDto()
-            {
-                Email = authUser.Email,
-                PasswordHash = HashPassword(authUser.Password),
-                Role = RoleEnum.User,
-                ConfirmedEmail = false
-            };
-
-            var content = new StringContent(
-                JsonSerializer.Serialize(user),
-                Encoding.UTF8,
-                "application/json");
-
-            var response = await _apiClient.PostAsync("/users", content);
-
-            if (!response.IsSuccessStatusCode)
-                throw new Exception($"Failed to create user: {response.Content}");
-
-            return await PostAndCreateAuthResponseDto(user);
+            _jwtKey = config["JwtSettings:Key"]!;
+            _jwtIssuer = config["JwtSettings:Issuer"]!;
+            _jwtAudience = config["JwtSettings:Audience"]!;
         }
 
         public async Task<AuthResponseDto> Refresh(string token)
@@ -76,7 +46,7 @@ namespace Dynamiq.Auth.Services
             if (!responsePut.IsSuccessStatusCode)
                 throw new Exception("Failed to revoke token");
 
-            var authResponseDto = await PostAndCreateAuthResponseDto(new()
+            var authResponseDto = await CreateAuthResponse(new()
             {
                 Id = responseToken.User.Id,
                 Email = responseToken.User.Email,
@@ -93,7 +63,7 @@ namespace Dynamiq.Auth.Services
                 throw new Exception("Failed to revoke new refresh token");
         }
 
-        private async Task<AuthResponseDto> PostAndCreateAuthResponseDto(UserDto user, DateTime? expiresAt = null)
+        public async Task<AuthResponseDto> CreateAuthResponse(UserDto user, DateTime? expiresAt = null)
         {
             var accessToken = GenerateJwtToken(user.Email, user.Role);
             var refreshToken = GenerateRefreshToken(user.Id, expiresAt);
@@ -115,10 +85,6 @@ namespace Dynamiq.Auth.Services
             };
         }
 
-        private string HashPassword(string password) => BCrypt.Net.BCrypt.HashPassword(password);
-        private bool CheckPassword(string password, string HashedPassword)
-            => BCrypt.Net.BCrypt.Verify(password, HashedPassword);
-
         private string GenerateJwtToken(string email, RoleEnum role)
         {
             var claims = new[]
@@ -127,12 +93,12 @@ namespace Dynamiq.Auth.Services
                 new Claim(ClaimTypes.Role, role.ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Key"]!));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: _config["JwtSettings:Issuer"],
-                audience: _config["JwtSettings:Audience"],
+                issuer: _jwtIssuer,
+                audience: _jwtAudience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(2),
                 signingCredentials: creds

@@ -4,6 +4,7 @@ using Dynamiq.API.DAL.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dynamiq.API.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250709114916_AddEmailVerification")]
+    partial class AddEmailVerification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,11 +31,11 @@ namespace Dynamiq.API.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("ConfirmedEmail")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime>("ExpiresAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Token")
                         .IsRequired()
@@ -44,11 +47,7 @@ namespace Dynamiq.API.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Token")
-                        .IsUnique();
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("EmailVerifications");
                 });
@@ -188,6 +187,9 @@ namespace Dynamiq.API.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("ConfirmedEmail")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -211,8 +213,8 @@ namespace Dynamiq.API.DAL.Migrations
             modelBuilder.Entity("Dynamiq.API.DAL.Models.EmailVerification", b =>
                 {
                     b.HasOne("Dynamiq.API.DAL.Models.User", "User")
-                        .WithOne("EmailVerification")
-                        .HasForeignKey("Dynamiq.API.DAL.Models.EmailVerification", "UserId")
+                        .WithMany("EmailVerifications")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -277,8 +279,7 @@ namespace Dynamiq.API.DAL.Migrations
 
             modelBuilder.Entity("Dynamiq.API.DAL.Models.User", b =>
                 {
-                    b.Navigation("EmailVerification")
-                        .IsRequired();
+                    b.Navigation("EmailVerifications");
 
                     b.Navigation("PaymentHistories");
 

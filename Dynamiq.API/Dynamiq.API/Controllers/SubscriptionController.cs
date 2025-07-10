@@ -42,7 +42,6 @@ namespace Dynamiq.API.Controllers
             }
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {

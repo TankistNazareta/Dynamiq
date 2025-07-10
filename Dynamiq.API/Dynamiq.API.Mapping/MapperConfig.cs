@@ -15,6 +15,7 @@ namespace Dynamiq.API.Mapping
                 config.CreateMap<Product, ProductDto>().ReverseMap();
                 config.CreateMap<PaymentHistory, PaymentHistoryDto>().ReverseMap();
                 config.CreateMap<Subscription, SubscriptionDto>().ReverseMap();
+                config.CreateMap<EmailVerification, EmailVerificationDto>().ReverseMap();
             });
         }
     }

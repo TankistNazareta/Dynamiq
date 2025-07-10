@@ -8,6 +8,9 @@ namespace Dynamiq.API.Mapping.DTOs
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public RoleEnum Role { get; set; }
-        public bool ConfirmedEmail { get; set; }
+        public RefreshTokenDto RefreshToken { get; set; } = null!;
+        public ICollection<PaymentHistoryDto> PaymentHistories { get; set; }
+        public ICollection<SubscriptionDto> Subscriptions { get; set; }
+        public EmailVerificationDto EmailVerification { get; set; }
     }
 }

@@ -20,9 +20,6 @@ namespace Dynamiq.API.DAL.Context.Configurations
             builder.Property(u => u.Role)
                    .IsRequired();
 
-            builder.Property(u => u.ConfirmedEmail)
-                   .IsRequired();
-
             builder.HasOne(u => u.RefreshToken)
                    .WithOne(rt => rt.User)
                    .HasForeignKey<RefreshToken>(rt => rt.UserId)
@@ -34,9 +31,14 @@ namespace Dynamiq.API.DAL.Context.Configurations
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.Subscriptions)
-                .WithOne(s => s.User)
-                .HasForeignKey(s => s.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                    .WithOne(s => s.User)
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(u => u.EmailVerification)
+                   .WithOne(ev => ev.User)
+                   .HasForeignKey<EmailVerification>(ev => ev.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

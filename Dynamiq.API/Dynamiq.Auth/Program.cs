@@ -1,3 +1,5 @@
+using Dynamiq.API.Extension.Interfaces;
+using Dynamiq.API.Extension.Services;
 using Dynamiq.Auth.Interfaces;
 using Dynamiq.Auth.Services;
 
@@ -14,7 +16,13 @@ builder.Services.AddHttpClient("ApiClient", client =>
     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
 
-builder.Services.AddTransient<IAuthService, AuthService>();
+//Auth
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<ISignUpService, SignUpService>();
+builder.Services.AddTransient<ILogInService, LogInService>();
+
+//Extensions
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

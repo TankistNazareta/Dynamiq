@@ -6,5 +6,6 @@ namespace Dynamiq.API.Interfaces
     public interface IUserRepo : ICRUD<UserDto>
     {
         public Task<UserDto> GetByEmail(string email);
+        public Task<int> RemoveAllExpiredUsers();
     }
 }

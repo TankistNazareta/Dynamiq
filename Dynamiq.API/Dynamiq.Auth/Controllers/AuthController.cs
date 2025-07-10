@@ -7,11 +7,15 @@ namespace Dynamiq.Auth.Controllers
     [Route("/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService;
+        private readonly ISignUpService _signUpService;
+        private readonly ILogInService _logInService;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(ISignUpService signUpService, ILogInService logInService, ITokenService tokenService)
         {
-            _authService = authService;
+            _logInService = logInService;
+            _signUpService = signUpService;
+            _tokenService = tokenService;
         }
 
         [HttpPost("login")]
@@ -19,7 +23,7 @@ namespace Dynamiq.Auth.Controllers
         {
             try
             {
-                var token = await _authService.LogIn(authUser);
+                var token = await _logInService.LogIn(authUser);
                 return Ok(new { token });
             }
             catch (Exception ex)
@@ -33,8 +37,8 @@ namespace Dynamiq.Auth.Controllers
         {
             try
             {
-                var token = await _authService.SignUp(authUser);
-                return Ok(new { token });
+                await _signUpService.SignUp(authUser);
+                return Ok("Please confirm your email, before log in");
             }
             catch (Exception ex)
             {
@@ -47,7 +51,7 @@ namespace Dynamiq.Auth.Controllers
         {
             try
             {
-                var tokens = await _authService.Refresh(token);
+                var tokens = await _tokenService.Refresh(token);
                 return Ok(tokens);
             }
             catch (Exception ex)
@@ -61,7 +65,7 @@ namespace Dynamiq.Auth.Controllers
         {
             try
             {
-                await _authService.Revoke(token);
+                await _tokenService.Revoke(token);
                 return Ok("Token revoked successfully");
             }
             catch (Exception ex)
