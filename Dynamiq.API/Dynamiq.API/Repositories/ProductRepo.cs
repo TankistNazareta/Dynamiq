@@ -23,7 +23,7 @@ namespace Dynamiq.API.Repository
             var model = await _db.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"Product with the id: {id} does not exist");
 
             _db.Products.Remove(model);
 
@@ -44,7 +44,7 @@ namespace Dynamiq.API.Repository
             var model = await _db.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"product with the id: {nameof(id)} does not exist");
+                throw new KeyNotFoundException($"product with the id: {id} does not exist");
 
             return _mapper.Map<ProductDto>(model);
         }

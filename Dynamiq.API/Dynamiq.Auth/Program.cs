@@ -1,3 +1,4 @@
+using Dynamiq.API.Extension;
 using Dynamiq.API.Extension.Interfaces;
 using Dynamiq.API.Extension.Services;
 using Dynamiq.Auth.Interfaces;
@@ -6,6 +7,10 @@ using Dynamiq.Auth.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 builder.Services.AddHttpClient("ApiClient", client =>
 {
@@ -30,6 +35,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -23,7 +23,7 @@ namespace Dynamiq.API.Stripe.Repositories
             var model = await _db.PaymentHistories.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"Payment History with the id: {id} wasn't found");
 
             _db.PaymentHistories.Remove(model);
 
@@ -40,6 +40,9 @@ namespace Dynamiq.API.Stripe.Repositories
         public async Task<PaymentHistoryDto> GetById(Guid id)
         {
             var model = await _db.PaymentHistories.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (model == null)
+                throw new KeyNotFoundException($"Payment History with the id: {id} wasn't found");
 
             return _mapper.Map<PaymentHistoryDto>(model);
         }

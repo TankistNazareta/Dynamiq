@@ -12,87 +12,69 @@ namespace Dynamiq.API.Controllers
     {
         private readonly IProductRepo _repo;
         private readonly IStripeProductService _stripeProductService;
+        private readonly ILogger _logger;
 
-        public ProductController(IProductRepo repo, IStripeProductService stripeService)
+        public ProductController(
+            IProductRepo repo,
+            IStripeProductService stripeService,
+            ILogger<ProductController> logger)
         {
-            _stripeProductService = stripeService;
             _repo = repo;
+            _stripeProductService = stripeService;
+            _logger = logger;
         }
 
-        [HttpPost] 
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProductRequestEntity productRequest)
         {
-            try
-            {
-                var productDto = await _stripeProductService.CreateProductStripe(productRequest);
-                await _repo.Insert(productDto);
+            var productDto = await _stripeProductService.CreateProductStripe(productRequest);
+            var inserted = await _repo.Insert(productDto);
 
-                return Ok(productDto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _logger.LogInformation("Created product with ID: {Id}", inserted.Id);
+
+            return CreatedAtAction(nameof(GetById), new { id = inserted.Id }, inserted);
         }
 
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] ProductDto productRequest)
         {
-            try
-            {
-                var productDto = await _stripeProductService.UpdateProductStripe(productRequest);
-                await _repo.Update(productDto);
+            var updated = await _stripeProductService.UpdateProductStripe(productRequest);
+            await _repo.Update(updated);
 
-                return Ok(productDto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _logger.LogInformation("Updated product with ID: {Id}", updated.Id);
+
+            return Ok(updated);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                return Ok(await _repo.GetAll());
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var all = await _repo.GetAll();
+
+            _logger.LogInformation("Retrieved all products, count: {Count}", all?.Count() ?? -1);
+
+            return Ok(all);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(await _repo.GetById(id));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var product = await _repo.GetById(id);
+
+            return Ok(product);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            try
-            {
-               var product = await _repo.GetById(id);
+            var product = await _repo.GetById(id);
 
-                await _repo.Delete(id);
-                await _stripeProductService.DeleteProductStripe(product.StripePriceId, product.StripeProductId);
+            await _repo.Delete(id);
+            await _stripeProductService.DeleteProductStripe(product.StripePriceId, product.StripeProductId);
 
-                return Ok("Product was removed");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            _logger.LogInformation("Deleted product with ID: {Id}", id);
+
+            return Ok("Product was removed");
         }
     }
 }

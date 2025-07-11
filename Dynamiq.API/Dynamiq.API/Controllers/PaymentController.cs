@@ -1,8 +1,7 @@
-﻿using Dynamiq.API.Extension.RequestEntity;
+﻿using Dynamiq.API.DAL.Models;
+using Dynamiq.API.Extension.RequestEntity;
 using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Stripe;
-using Stripe.Checkout;
 
 namespace Dynamiq.API.Controllers
 {
@@ -11,24 +10,22 @@ namespace Dynamiq.API.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IStripePaymentService _service;
+        private readonly ILogger _logger;
 
-        public PaymentController(IStripePaymentService service)
+        public PaymentController(IStripePaymentService service, ILogger<PaymentController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpPost("create-checkout-session")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutSessionRequest request)
         {
-            try
-            {
-                var sessionUrl = await _service.CreateCheckoutSession(request);
-                return Ok(new { url = sessionUrl });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var sessionUrl = await _service.CreateCheckoutSession(request);
+
+            _logger.LogInformation("checkout session was created for user: {Id}", request.UserId);
+
+            return Ok(new { url = sessionUrl });
         }
 
         [HttpPost("webhook")]
@@ -37,15 +34,11 @@ namespace Dynamiq.API.Controllers
             string json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             string stripeSignature = Request.Headers["Stripe-Signature"];
 
-            try
-            {
-                await _service.StripeWebhook(json, stripeSignature);
-                return Ok(); // 200
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var res = await _service.StripeWebhook(json, stripeSignature);
+
+            _logger.LogInformation("payment completed successfully, payment history id: {Id}", res.Id);
+
+            return Ok("completed successfully");
         }
     }
 }

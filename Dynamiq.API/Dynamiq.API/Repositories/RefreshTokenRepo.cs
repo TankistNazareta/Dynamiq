@@ -25,39 +25,41 @@ namespace Dynamiq.API.Repositories
                 .FirstOrDefaultAsync(t => t.Token == token);
 
             if (rt == null)
-                throw new ArgumentException("Token isn't correct");
+                throw new KeyNotFoundException($"Refresh Token with the token: {token} wasn't found");
 
             return _mapper.Map<RefreshTokenDto>(rt);
         }
 
-        public async Task<RefreshTokenDto> GetByUserId(Guid userId)
+        public async Task<RefreshTokenDto> GetByUserId(Guid id)
         {
             var rt = await _db.RefreshTokens
                 .Include(t => t.User)
-                .FirstOrDefaultAsync(t => t.UserId == userId);
+                .FirstOrDefaultAsync(t => t.UserId == id);
 
             if (rt == null)
-                throw new ArgumentException("userId isn't correct");
+                throw new KeyNotFoundException($"Refresh Token with the id: {id} wasn't found");
 
             return _mapper.Map<RefreshTokenDto>(rt);
         }
 
-        public async Task Insert(RefreshTokenDto token)
+        public async Task<RefreshTokenDto> Insert(RefreshTokenDto token)
         {
             var model = _mapper.Map<RefreshToken>(token);
 
             _db.RefreshTokens.Add(model);
 
             await _db.SaveChangesAsync();
+
+            return _mapper.Map<RefreshTokenDto>(model);
         }
 
         public async Task Revoke(string token)
         {
             var rt = await _db.RefreshTokens.FirstOrDefaultAsync(t => t.Token == token);
 
-            if (rt == null)
-                throw new ArgumentException("Token isn't correct");
-            
+            if (rt == null) 
+                throw new KeyNotFoundException($"Refresh Token with the token: {token} wasn't found");
+
             rt.IsRevoked = true;
             await _db.SaveChangesAsync(); 
         }

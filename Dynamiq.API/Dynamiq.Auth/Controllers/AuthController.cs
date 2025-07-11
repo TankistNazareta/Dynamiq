@@ -21,57 +21,29 @@ namespace Dynamiq.Auth.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LogIn([FromBody] AuthUserDto authUser)
         {
-            try
-            {
-                var token = await _logInService.LogIn(authUser);
-                return Ok(new { token });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var token = await _logInService.LogIn(authUser);
+            return Ok(new { token });
         }
 
         [HttpPost("signup")]
         public async Task<IActionResult> SignUp([FromBody] AuthUserDto authUser)
         {
-            try
-            {
-                await _signUpService.SignUp(authUser);
-                return Ok("Please confirm your email, before log in");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _signUpService.SignUp(authUser);
+            return Ok("Please confirm your email, before log in");
         }
 
         [HttpPut("refresh")]
         public async Task<IActionResult> Refresh([FromBody] string token)
         {
-            try
-            {
-                var tokens = await _tokenService.Refresh(token);
-                return Ok(tokens);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var tokens = await _tokenService.Refresh(token);
+            return Ok(tokens);
         }
 
         [HttpPut("revoke")]
         public async Task<IActionResult> Revoke([FromBody] string token)
         {
-            try
-            {
-                await _tokenService.Revoke(token);
-                return Ok("Token revoked successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _tokenService.Revoke(token);
+            return Ok("Token revoked successfully");
         }
     }
 }

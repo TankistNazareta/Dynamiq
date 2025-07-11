@@ -7,6 +7,6 @@
         public DateTime ExpiresAt { get; set; }
         public bool IsRevoked { get; set; } = false;
         public Guid UserId { get; set; }
-        public UserDto User { get; set; } = null;
+        public UserDto? User { get; set; } = null;
     }
 }

@@ -1,6 +1,8 @@
 using AutoMapper;
+using Dynamiq.API;
 using Dynamiq.API.BackgroundServices;
 using Dynamiq.API.DAL.Context;
+using Dynamiq.API.Extension;
 using Dynamiq.API.Interfaces;
 using Dynamiq.API.Mapping;
 using Dynamiq.API.Repositories;
@@ -38,6 +40,11 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -73,6 +80,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

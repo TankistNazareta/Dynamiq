@@ -1,4 +1,5 @@
-﻿using Dynamiq.API.Extension.Interfaces;
+﻿using Dynamiq.API.Extension.CustomExceptions;
+using Dynamiq.API.Extension.Interfaces;
 using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
@@ -12,12 +13,19 @@ namespace Dynamiq.Auth.Services
         private readonly ITokenService _tokenService;
         private readonly IEmailService _emailService;
 
-        public LogInService(IHttpClientFactory apiClient, ITokenService tokenService, IEmailService emailService)
+        private readonly ILogger _logger;
+
+        public LogInService(
+            IHttpClientFactory apiClient, 
+            ITokenService tokenService, 
+            IEmailService emailService, 
+            ILogger<LogInService> logger)
         {
             _apiClient = apiClient.CreateClient("ApiClient");
 
             _tokenService = tokenService;
             _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task<AuthResponseDto> LogIn(AuthUserDto authUser)
@@ -25,10 +33,10 @@ namespace Dynamiq.Auth.Services
             var user = await _apiClient.GetFromJsonAsync<UserDto>($"/users/email?email={authUser.Email}");
 
             if (user == null)
-                throw new ArgumentException("User not found");
+                throw new KeyNotFoundException("User not found");
 
             if (user.EmailVerification.ConfirmedEmail == false)
-                throw new Exception("Please, confirm your email");
+                throw new EmailNotConfirmedException(authUser.Email);
 
             //check password
             if (!BCrypt.Net.BCrypt.Verify(authUser.Password, user.PasswordHash))

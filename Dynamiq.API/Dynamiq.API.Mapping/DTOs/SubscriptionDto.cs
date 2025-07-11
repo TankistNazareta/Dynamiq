@@ -8,7 +8,7 @@
         public bool IsActive { get; set; } = true;
         public Guid ProductId { get; set; }
         public Guid UserId { get; set; }
-        public ProductDto Product { get; set; }
-        public UserDto User { get; set; }
+        public ProductDto? Product { get; set; } = null!;
+        public UserDto? User { get; set; } = null!;
     }
 }

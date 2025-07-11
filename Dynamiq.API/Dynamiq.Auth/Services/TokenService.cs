@@ -15,13 +15,17 @@ namespace Dynamiq.Auth.Services
     {
         private readonly HttpClient _apiClient;
 
+        private readonly ILogger _logger;
+
         private readonly string _jwtKey;
         private readonly string _jwtIssuer;
         private readonly string _jwtAudience;
 
-        public TokenService(IConfiguration config, IHttpClientFactory apiClient)
+        public TokenService(IConfiguration config, IHttpClientFactory apiClient, ILogger<TokenService> logger)
         {
             _apiClient = apiClient.CreateClient("ApiClient");
+
+            _logger = logger;
 
             _jwtKey = config["JwtSettings:Key"]!;
             _jwtIssuer = config["JwtSettings:Issuer"]!;
@@ -53,6 +57,8 @@ namespace Dynamiq.Auth.Services
                 Role = responseToken.User.Role,
             }, responseToken.ExpiresAt);
 
+            _logger.LogInformation("{FirstToken} token refreshed to {RefreshedToken}", token, authResponseDto.RefreshToken);
+
             return authResponseDto;
         }
 
@@ -61,6 +67,8 @@ namespace Dynamiq.Auth.Services
             var response = await _apiClient.PutAsync($"/refresh/{token}", null);
             if (!response.IsSuccessStatusCode)
                 throw new Exception("Failed to revoke new refresh token");
+
+            _logger.LogInformation("{Token} token was revoked", token);
         }
 
         public async Task<AuthResponseDto> CreateAuthResponse(UserDto user, DateTime? expiresAt = null)

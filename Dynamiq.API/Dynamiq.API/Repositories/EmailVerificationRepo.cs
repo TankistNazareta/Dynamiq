@@ -23,7 +23,7 @@ namespace Dynamiq.API.Repositories
             var model = await _db.EmailVerifications.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"{id} does not exist");
 
             _db.EmailVerifications.Remove(model);
 
@@ -44,7 +44,7 @@ namespace Dynamiq.API.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"Email verification with the id: {id} does not exist");
+                throw new KeyNotFoundException($"Email verification with the id: {id} does not exist");
 
             return _mapper.Map<EmailVerificationDto>(model);
         }
@@ -56,7 +56,7 @@ namespace Dynamiq.API.Repositories
                     .FirstOrDefaultAsync(x => x.Token == token);
 
             if (model == null)
-                throw new ArgumentException($"Email verification with the token: {token} does not exist");
+                throw new KeyNotFoundException($"Email verification with the token: {token} does not exist");
 
             return _mapper.Map<EmailVerificationDto>(model);
         }
@@ -77,7 +77,11 @@ namespace Dynamiq.API.Repositories
             var model = await _db.EmailVerifications.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"token with id: {id} does not exist, or he was expired");
+            if (model.ExpiresAt < DateTime.UtcNow)
+                throw new TimeoutException("Token expired");
+            if (model.ConfirmedEmail)
+                throw new InvalidOperationException("This token has already been activated.");
 
             model.ConfirmedEmail = true;
             await _db.SaveChangesAsync();

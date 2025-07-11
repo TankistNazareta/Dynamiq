@@ -24,7 +24,7 @@ namespace Dynamiq.API.Repositories
             var model = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"User with the id: {id} wasn't found");
 
             _db.Users.Remove(model);
 
@@ -51,7 +51,7 @@ namespace Dynamiq.API.Repositories
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             if (model == null)
-                throw new ArgumentException($"user with the email: {nameof(email)} does not exist");
+                throw new KeyNotFoundException($"User with the email: {email} wasn't found");
 
             return _mapper.Map<UserDto>(model);
         }
@@ -65,7 +65,7 @@ namespace Dynamiq.API.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"user with the id: {nameof(id)} does not exist");
+                throw new KeyNotFoundException($"User with the id: {id} wasn't found");
 
             return _mapper.Map<UserDto>(model);
         }

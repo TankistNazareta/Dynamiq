@@ -4,107 +4,83 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("/emailVerification")]
+    [Route("emailVerification")]
+    [ApiController]
     public class EmailVerificationController : ControllerBase
     {
         private readonly IEmailVerificationRepo _emailRepo;
+        private readonly ILogger<EmailVerificationController> _logger;
 
-        public EmailVerificationController(IEmailVerificationRepo emailRepo)
+        public EmailVerificationController(IEmailVerificationRepo emailRepo, ILogger<EmailVerificationController> logger)
         {
             _emailRepo = emailRepo;
+            _logger = logger;
         }
 
-        [HttpPut("")]
-        public async Task<IActionResult> Put([FromBody] EmailVerificationDto subscription)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] EmailVerificationDto emailVerification)
         {
-            try
-            {
-                return Ok(await _emailRepo.Update(subscription));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var response = await _emailRepo.Update(emailVerification);
+
+            _logger.LogInformation("Email Verification with id: {Id} was updated", emailVerification.Id);
+
+            return Ok(response);
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                return Ok(await _emailRepo.GetAll());
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var all = await _emailRepo.GetAll();
+
+            _logger.LogInformation("Retrieved all Email Verification records, count: {Count}", all?.Count() ?? -1);
+
+            return Ok(all);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(await _emailRepo.GetById(id));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _emailRepo.GetById(id);
+
+            return Ok(result);
         }
 
-        [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody] EmailVerificationDto subscription)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] EmailVerificationDto emailVerification)
         {
-            try
-            {
-                return Ok(await _emailRepo.Insert(subscription));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var response = await _emailRepo.Insert(emailVerification);
+
+            _logger.LogInformation("Email Verification with id: {Id} was created", response.Id);
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            try
-            {
-                await _emailRepo.Delete(id);
-                return Ok("SubscriptionData was removed");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _emailRepo.Delete(id);
+
+            _logger.LogInformation("Email Verification with id: {Id} was removed", id);
+
+            return Ok("EmailVerificationData was removed");
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] Guid id)
         {
-            try
-            {
-                await _emailRepo.ConfirmEmail(id);
-                return Ok("You confirmed email successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _emailRepo.ConfirmEmail(id);
+
+            _logger.LogInformation("Email Verification with id: {Id} was confirmed", id);
+
+            return Ok("You confirmed email successfully");
         }
 
         [HttpGet("token/{token}")]
-        public async Task<IActionResult> GetByToken([FromQuery] string token)
+        public async Task<IActionResult> GetByToken([FromRoute] string token)
         {
-            try
-            {
-                return Ok(await _emailRepo.GetByToken(token));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _emailRepo.GetByToken(token);
+
+            return Ok(result);
         }
     }
 }

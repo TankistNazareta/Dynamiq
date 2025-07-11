@@ -84,7 +84,7 @@ namespace Dynamiq.API.Stripe.Services
             return session.Url;
         }
 
-        public async Task StripeWebhook(string stripeResponseJson, string stripeSignatureHeader)
+        public async Task<PaymentHistoryDto> StripeWebhook(string stripeResponseJson, string stripeSignatureHeader)
         {
             try
             {
@@ -95,21 +95,18 @@ namespace Dynamiq.API.Stripe.Services
                 );
 
                 if (stripeEvent.Type != "checkout.session.completed")
-                    return;
+                    return null;
 
                 var session = stripeEvent.Data.Object as Session;
 
-                if (session?.Metadata == null || !session.Metadata.TryGetValue("PaymentHistoryDtoJson", out var paymentHistoryDtoJson))
-                {
-                    throw new Exception("Metadata 'PaymentHistoryDtoJson' not found in session.");
-                }
+                if (session?.Metadata == null ||
+                    !session.Metadata.TryGetValue("PaymentHistoryDtoJson", out var paymentHistoryDtoJson))
+                    throw new KeyNotFoundException("Metadata 'PaymentHistoryDtoJson' not found in session.");
 
                 var paymentHistoryDto = JsonSerializer.Deserialize<PaymentHistoryDto>(paymentHistoryDtoJson);
 
                 if (paymentHistoryDto == null)
-                {
-                    throw new Exception("Failed to deserialize PaymentHistoryDtoJson.");
-                }
+                    throw new InvalidDataException("Failed to deserialize PaymentHistoryDtoJson.");
 
                 paymentHistoryDto.CreatedAt = DateTime.UtcNow;
                 paymentHistoryDto.Amount = session.AmountTotal.HasValue ? session.AmountTotal.Value / 100m : 0m;
@@ -117,12 +114,12 @@ namespace Dynamiq.API.Stripe.Services
 
                 await _historyRepo.Insert(paymentHistoryDto);
 
-                if(paymentHistoryDto.Interval == IntervalEnum.Mountly 
+                if (paymentHistoryDto.Interval == IntervalEnum.Mountly
                     || paymentHistoryDto.Interval == IntervalEnum.Yearly)
                 {
                     DateTime endTime;
 
-                    switch(paymentHistoryDto.Interval)
+                    switch (paymentHistoryDto.Interval)
                     {
                         case IntervalEnum.Yearly:
                             endTime = DateTime.UtcNow.AddYears(1);
@@ -130,11 +127,12 @@ namespace Dynamiq.API.Stripe.Services
                         case IntervalEnum.Mountly:
                             endTime = DateTime.UtcNow.AddMonths(1);
                             break;
-                        default: 
-                            throw new Exception("unknown type: " +  paymentHistoryDto.Interval.ToString());
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(paymentHistoryDto.Interval),
+                                $"Unsupported interval type: {paymentHistoryDto.Interval}");
                     }
 
-                    var subscriptionDto = new SubscriptionDto()
+                    var subscriptionDto = new SubscriptionDto
                     {
                         ProductId = paymentHistoryDto.ProductId,
                         UserId = paymentHistoryDto.UserId,
@@ -143,14 +141,20 @@ namespace Dynamiq.API.Stripe.Services
 
                     await _subscriptionRepo.Insert(subscriptionDto);
                 }
+
+                return paymentHistoryDto;
             }
             catch (StripeException ex)
             {
-                throw new Exception($"Stripe error: {ex.Message}");
+                throw new ApplicationException($"Stripe error: {ex.Message}", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidDataException("Invalid JSON format for PaymentHistoryDtoJson.", ex);
             }
             catch (Exception ex)
             {
-                throw new Exception($"Webhook error: {ex.Message}");
+                throw new ApplicationException("Unexpected error in Stripe webhook.", ex);
             }
         }
 

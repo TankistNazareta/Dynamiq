@@ -4,83 +4,67 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("/refresh")]
+    [Route("refresh")]
+    [ApiController]
     public class RefreshTokenController : ControllerBase
     {
         private readonly IRefreshTokenRepo _repo;
+        private readonly ILogger _logger;
 
-        public RefreshTokenController(IRefreshTokenRepo repo)
+        public RefreshTokenController(IRefreshTokenRepo repo, ILogger<RefreshTokenController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
-        [HttpPost("")]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] RefreshTokenDto token)
         {
-            try
-            {
-                await _repo.Insert(token);
-                return Ok("Token successfully posted");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var created = await _repo.Insert(token);
+
+            _logger.LogInformation("Refresh token created for UserId: {UserId}", created.UserId);
+
+            return CreatedAtAction(nameof(GetByToken), new { token = created.Token }, created);
         }
 
         [HttpGet("{token}")]
-        public async Task<IActionResult> GetByToken([FromQuery] string token)
+        public async Task<IActionResult> GetByToken([FromRoute] string token)
         {
-            try
-            {
-                
-                return Ok(await _repo.GetByToken(token));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _repo.GetByToken(token);
+
+            _logger.LogInformation("Retrieved refresh token: {Token}", token);
+
+            return Ok(result);
         }
 
-        [HttpGet("userId")]
-        public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
         {
-            try
-            {
-                return Ok(await _repo.GetByUserId(userId));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _repo.GetByUserId(userId);
+
+            _logger.LogInformation("Retrieved refresh token for userId: {UserId}", userId);
+
+            return Ok(result);
         }
 
         [HttpPut("revoke")]
         public async Task<IActionResult> Revoke([FromQuery] string token)
         {
-            try
-            {
-                await _repo.Revoke(token);
-                return Ok("Token successfully revoked");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _repo.Revoke(token);
+
+            _logger.LogInformation("Refresh token revoked: {Token}", token);
+
+            return Ok("Token successfully revoked");
         }
 
-        [HttpPut("")]
+        [HttpPut]
         public async Task<IActionResult> Put([FromBody] RefreshTokenDto token)
         {
-            try
-            {
-                await _repo.Update(token);
-                return Ok("Token successfully updated");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _repo.Update(token);
+
+            _logger.LogInformation("Refresh token updated for UserId: {UserId}", token.UserId);
+
+            return Ok("Token successfully updated");
         }
     }
 }

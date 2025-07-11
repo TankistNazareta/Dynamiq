@@ -23,7 +23,7 @@ namespace Dynamiq.API.Stripe.Repositories
             var model = await _db.Subscriptions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"{nameof(id)} does not exist");
+                throw new KeyNotFoundException($"Subscription with the id: {id} wasn't found");
 
             _db.Subscriptions.Remove(model);
 
@@ -42,7 +42,7 @@ namespace Dynamiq.API.Stripe.Repositories
             var model = await _db.Subscriptions.FirstOrDefaultAsync(x => x.Id == id);
 
             if (model == null)
-                throw new ArgumentException($"user with the id: {nameof(id)} does not exist");
+                throw new KeyNotFoundException($"Subscription with the id: {id} wasn't found");
 
             return _mapper.Map<SubscriptionDto>(model);
         }

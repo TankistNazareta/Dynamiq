@@ -7,6 +7,6 @@
         public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddHours(1);
         public bool ConfirmedEmail { get; set; } = false;
         public Guid UserId { get; set; }
-        public UserDto User { get; set; }
+        public UserDto? User { get; set; } = null!;
     }
 }

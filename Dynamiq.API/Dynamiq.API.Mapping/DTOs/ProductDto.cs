@@ -11,6 +11,6 @@ namespace Dynamiq.API.Mapping.DTOs
         public string Description { get; set; }
         public int Price { get; set; }
         public IntervalEnum Interval { get; set; }
-        public ICollection<PaymentHistoryDto> PaymentHistories { get; set; } = null;
+        public List<PaymentHistoryDto> PaymentHistories { get; set; } = new ();
     }
 }

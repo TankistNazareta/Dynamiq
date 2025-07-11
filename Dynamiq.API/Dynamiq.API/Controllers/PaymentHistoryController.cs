@@ -1,71 +1,57 @@
-﻿using Dynamiq.API.DAL.Models;
-using Dynamiq.API.Mapping.DTOs;
+﻿using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("/paymentHistory")]
+    [Route("paymentHistory")]
+    [ApiController]
     public class PaymentHistoryController : ControllerBase
     {
         private readonly IPaymentHistoryRepo _repo;
+        private readonly ILogger<PaymentHistoryController> _logger;
 
-        public PaymentHistoryController(IPaymentHistoryRepo repo)
+        public PaymentHistoryController(IPaymentHistoryRepo repo, ILogger<PaymentHistoryController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                return Ok(await _repo.GetAll());
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var all = await _repo.GetAll();
+
+            _logger.LogInformation("Retrieved all Payment History records, count: {Count}", all?.Count() ?? -1);
+
+            return Ok(all);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            try
-            {
-                return Ok(await _repo.GetById(id));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var result = await _repo.GetById(id);
+            return Ok(result);
         }
 
-        [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody] PaymentHistoryDto user)
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] PaymentHistoryDto paymentHistory)
         {
-            try
-            {
-                return Ok(await _repo.Insert(user));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            var response = await _repo.Insert(paymentHistory);
+
+            _logger.LogInformation("Payment History with id {Id} was posted", response.Id);
+
+            return CreatedAtAction(nameof(GetById), new { id = response.Id }, response);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            try
-            {
-                await _repo.Delete(id);
-                return Ok("User was removed");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _repo.Delete(id);
+
+            _logger.LogInformation("Payment History with id {Id} was removed", id);
+
+            return Ok("Payment history was removed");
         }
     }
 }

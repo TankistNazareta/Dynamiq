@@ -13,12 +13,14 @@ namespace Dynamiq.Auth.Services
         private readonly HttpClient _apiClient;
 
         private readonly IEmailService _emailService;
+        private readonly ILogger<SignUpService> _logger;
 
-        public SignUpService(IHttpClientFactory apiClient, IEmailService emailService)
+        public SignUpService(IHttpClientFactory apiClient, IEmailService emailService, ILogger<SignUpService> logger)
         {
             _apiClient = apiClient.CreateClient("ApiClient");
 
             _emailService = emailService;
+            _logger = logger;
         }
 
         public async Task SignUp(AuthUserDto authUser)
@@ -56,6 +58,8 @@ namespace Dynamiq.Auth.Services
                 throw new Exception($"Failed to create session for email: {responseEmailVerification.Content}");
 
             await _emailService.SendEmail(authUser.Email, "Confirm your email", GetHtmlBodyForSignUp(emailVerify.Token));
+
+            _logger.LogInformation("user made sign up to email: {Email}", authUser.Email);
         }
 
         private string GetHtmlBodyForSignUp(string token) => $@"
