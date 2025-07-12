@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dynamiq.Auth.Controllers
 {
     [Route("/auth")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly ISignUpService _signUpService;

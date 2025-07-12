@@ -10,6 +10,9 @@ using Dynamiq.API.Repository;
 using Dynamiq.API.Stripe.Interfaces;
 using Dynamiq.API.Stripe.Repositories;
 using Dynamiq.API.Stripe.Services;
+using Dynamiq.API.Validation.DTOsValidator;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -50,6 +53,10 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+
+builder.Services.AddFluentValidationAutoValidation()
+                .AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 
 builder.Services.AddAuthentication();
 

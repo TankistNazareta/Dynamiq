@@ -72,9 +72,6 @@ namespace Dynamiq.API.Repositories
 
         public async Task<UserDto> Insert(UserDto user)
         {
-            if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.PasswordHash))
-                throw new ArgumentNullException(nameof(user));
-
             var model = _mapper.Map<User>(user);
 
             _db.Users.Add(model);

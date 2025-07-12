@@ -3,6 +3,9 @@ using Dynamiq.API.Extension.Interfaces;
 using Dynamiq.API.Extension.Services;
 using Dynamiq.Auth.Interfaces;
 using Dynamiq.Auth.Services;
+using Dynamiq.Auth.Validations;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,10 @@ builder.Services.AddHttpClient("ApiClient", client =>
 {
     ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
 });
+
+builder.Services.AddFluentValidationAutoValidation()
+                .AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<AuthUserDtoValidator>();
 
 //Auth
 builder.Services.AddTransient<ITokenService, TokenService>();
