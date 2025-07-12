@@ -1,5 +1,4 @@
 using AutoMapper;
-using Dynamiq.API;
 using Dynamiq.API.BackgroundServices;
 using Dynamiq.API.DAL.Context;
 using Dynamiq.API.Extension;
@@ -14,14 +13,17 @@ using Dynamiq.API.Validation.DTOsValidator;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add JWT
 
 builder.Services.AddAuthentication(x =>
 {
@@ -43,27 +45,50 @@ builder.Services.AddAuthentication(x =>
     };
 });
 
+builder.Services.AddAuthentication();
 
+//Add logger
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-    });
-
+//Add Fluent validation
 builder.Services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 
-builder.Services.AddAuthentication();
+//AddRateLimiter
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("CreateCheckoutLimiter", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 3;
+        limiterOptions.Window = TimeSpan.FromMinutes(3);
+        limiterOptions.QueueLimit = 0;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
 
+    options.OnRejected = async (context, ct) =>
+    {
+        context.HttpContext.Response.StatusCode = 429;
+        context.HttpContext.Response.ContentType = "application/json";
+
+        var response = new
+        {
+            error = "Too many requests, please wait some time"
+        };
+
+        var json = JsonSerializer.Serialize(response);
+        await context.HttpContext.Response.WriteAsync(json, cancellationToken: ct);
+    };
+});
+
+//Add mapper
 var mapperConfig = MapperConfig.RegisterMaps();
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
+//Add dbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -79,9 +104,14 @@ builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
 
+//Add background services
 builder.Services.AddHostedService<UserCleanupService>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+}); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -89,6 +119,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseRateLimiter();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

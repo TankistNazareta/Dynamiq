@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dynamiq.API.Extension.CustomExceptions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
@@ -46,7 +47,6 @@ namespace Dynamiq.API.Extension
                     message = ex.Message;
                     _logger.LogWarning(ex, "Unauthorized.");
                     break;
-
                 case TimeoutException:
                 case InvalidOperationException:
                 case ArgumentOutOfRangeException:

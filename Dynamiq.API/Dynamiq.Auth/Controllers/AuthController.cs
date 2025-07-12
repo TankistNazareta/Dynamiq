@@ -1,6 +1,7 @@
 ﻿using Dynamiq.Auth.DTOs;
 using Dynamiq.Auth.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dynamiq.Auth.Controllers
 {
@@ -20,6 +21,7 @@ namespace Dynamiq.Auth.Controllers
         }
 
         [HttpPost("login")]
+        [EnableRateLimiting("loginLimiter")]
         public async Task<IActionResult> LogIn([FromBody] AuthUserDto authUser)
         {
             var token = await _logInService.LogIn(authUser);
@@ -27,6 +29,7 @@ namespace Dynamiq.Auth.Controllers
         }
 
         [HttpPost("signup")]
+        [EnableRateLimiting("signupLimiter")]
         public async Task<IActionResult> SignUp([FromBody] AuthUserDto authUser)
         {
             await _signUpService.SignUp(authUser);

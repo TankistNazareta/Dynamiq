@@ -1,7 +1,7 @@
-﻿using Dynamiq.API.DAL.Models;
-using Dynamiq.API.Extension.RequestEntity;
+﻿using Dynamiq.API.Extension.RequestEntity;
 using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dynamiq.API.Controllers
 {
@@ -19,6 +19,7 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPost("create-checkout-session")]
+        [EnableRateLimiting("CreateCheckoutLimiter")]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutSessionRequest request)
         {
             var sessionUrl = await _service.CreateCheckoutSession(request);
