@@ -8,39 +8,25 @@ using System.Linq;
 
 namespace Dynamiq.API.Repositories
 {
-    public class UserRepo : IUserRepo
+    public class UserRepo : DefaultCrudRepo<UserDto, User>, IUserRepo
     {
         private readonly IMapper _mapper;
         private readonly AppDbContext _db;
 
-        public UserRepo(IMapper mapper, AppDbContext db)
+        public UserRepo(IMapper mapper, AppDbContext db) : base(db, mapper)
         {
             _mapper = mapper;
             _db = db;
         }
 
-        public async Task Delete(Guid id)
+        protected virtual IQueryable<User> Query()
         {
-            var model = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (model == null)
-                throw new KeyNotFoundException($"User with the id: {id} wasn't found");
-
-            _db.Users.Remove(model);
-
-            await _db.SaveChangesAsync();
-        }
-
-        public async Task<List<UserDto>> GetAll()
-        {
-            var models = await _db.Users
+            return _db.Users
                 .Include(u => u.PaymentHistories)
                 .Include(u => u.Subscriptions)
-                .Include(u => u.EmailVerification)
-                .ToListAsync();
-
-            return _mapper.Map<List<UserDto>>(models);
+                .Include(u => u.EmailVerification);
         }
+
 
         public async Task<UserDto> GetByEmail(string email)
         {
@@ -54,60 +40,6 @@ namespace Dynamiq.API.Repositories
                 throw new KeyNotFoundException($"User with the email: {email} wasn't found");
 
             return _mapper.Map<UserDto>(model);
-        }
-
-        public async Task<UserDto> GetById(Guid id)
-        {
-            var model = await _db.Users
-                .Include(u => u.PaymentHistories)
-                .Include(u => u.Subscriptions)
-                .Include(u => u.EmailVerification)
-                .FirstOrDefaultAsync(x => x.Id == id);
-
-            if (model == null)
-                throw new KeyNotFoundException($"User with the id: {id} wasn't found");
-
-            return _mapper.Map<UserDto>(model);
-        }
-
-        public async Task<UserDto> Insert(UserDto user)
-        {
-            var model = _mapper.Map<User>(user);
-
-            _db.Users.Add(model);
-
-            await _db.SaveChangesAsync();
-
-            return _mapper.Map<UserDto>(model);
-        }
-
-        public async Task<UserDto> Update(UserDto user)
-        {
-            var newDataUser = _mapper.Map<User>(user);
-
-            _db.Users.Update(newDataUser);
-
-            await _db.SaveChangesAsync();
-
-            return _mapper.Map<UserDto>(newDataUser);
-        }
-
-        public async Task<int> RemoveAllExpiredUsers()
-        {
-            var expiredUsers = await _db.Users
-                .Include(u => u.EmailVerification)
-                .Where(u =>
-                u.EmailVerification.ExpiresAt < DateTime.UtcNow &&
-                !u.EmailVerification.ConfirmedEmail)
-                .ToListAsync();
-
-            if (expiredUsers.Count == 0)
-                return 0;
-
-            _db.Users.RemoveRange(expiredUsers);
-            await _db.SaveChangesAsync();
-
-            return expiredUsers.Count;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using Dynamiq.API.Interfaces;
+﻿using Dynamiq.API.Commands.User;
+using Dynamiq.API.Interfaces;
+using MediatR;
 
 namespace Dynamiq.API.BackgroundServices
 {
@@ -19,8 +21,8 @@ namespace Dynamiq.API.BackgroundServices
             {
                 using (var scope = _services.CreateScope())
                 {
-                    var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepo>();
-                    var countOfRemoved = await userRepo.RemoveAllExpiredUsers();
+                    var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
+                    var countOfRemoved = await mediator.Send(new RemoveAllExpiredUsersCommand());
 
                     _logger.LogInformation($"Count of expiredUsers removed: {countOfRemoved}");
                 }

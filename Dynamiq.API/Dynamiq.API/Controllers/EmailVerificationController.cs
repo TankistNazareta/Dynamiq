@@ -1,5 +1,7 @@
-﻿using Dynamiq.API.Interfaces;
+﻿using Dynamiq.API.Commands.EmailVerification;
+using Dynamiq.API.Interfaces;
 using Dynamiq.API.Mapping.DTOs;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
@@ -10,11 +12,13 @@ namespace Dynamiq.API.Controllers
     {
         private readonly IEmailVerificationRepo _emailRepo;
         private readonly ILogger<EmailVerificationController> _logger;
+        private readonly IMediator _mediator;
 
-        public EmailVerificationController(IEmailVerificationRepo emailRepo, ILogger<EmailVerificationController> logger)
+        public EmailVerificationController(IEmailVerificationRepo emailRepo, ILogger<EmailVerificationController> logger, IMediator mediator)
         {
             _emailRepo = emailRepo;
             _logger = logger;
+            _mediator = mediator;
         }
 
         [HttpPut]
@@ -68,7 +72,7 @@ namespace Dynamiq.API.Controllers
         [HttpPut("confirm")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] Guid id)
         {
-            await _emailRepo.ConfirmEmail(id);
+            await _mediator.Send(new ConfirmEmailCommand(id));
 
             _logger.LogInformation("Email Verification with id: {Id} was confirmed", id);
 

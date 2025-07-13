@@ -1,5 +1,4 @@
-﻿using Dynamiq.API.Interfaces;
-using Dynamiq.API.Mapping.DTOs;
+﻿using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.API.Stripe.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -36,6 +35,16 @@ namespace Dynamiq.API.Controllers
             _logger.LogInformation("Retrieved subscription with id: {Id}", id);
 
             return Ok(subscription);
+        }
+
+        [HttpGet("check/{id}")]
+        public async Task<IActionResult> CheckSubscribtionUser(Guid id)
+        {
+            var res = await _repo.HasActiveSubscription(id);
+
+            _logger.LogInformation("Check subscription in user with id: {Id}, status - {HasSubscription}", id, res);
+
+            return Ok(res);
         }
 
         [HttpPost]

@@ -3,8 +3,8 @@ using Dynamiq.API.Mapping.DTOs;
 
 namespace Dynamiq.API.Stripe.Interfaces
 {
-    public interface ISubscriptionRepo : ICRUD<SubscriptionDto>
+    public interface ISubscriptionRepo : ICrudRepo<SubscriptionDto>
     {
-        Task<bool> HaveActiveSubscription(Guid userId);
+        Task<bool> HasActiveSubscription(Guid userId);
     }
 }

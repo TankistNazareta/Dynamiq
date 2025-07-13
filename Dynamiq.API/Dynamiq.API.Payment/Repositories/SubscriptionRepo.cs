@@ -47,7 +47,7 @@ namespace Dynamiq.API.Stripe.Repositories
             return _mapper.Map<SubscriptionDto>(model);
         }
 
-        public async Task<bool> HaveActiveSubscription(Guid userId)
+        public async Task<bool> HasActiveSubscription(Guid userId)
         {
             var models = await _db.Subscriptions
                 .Where(s => s.UserId == userId)

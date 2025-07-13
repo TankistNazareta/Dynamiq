@@ -20,6 +20,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Dynamiq.API.Handlers.EmailVerification;
+using Dynamiq.API.Stripe.Handlers.PaymentStripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +83,13 @@ builder.Services.AddRateLimiter(options =>
         var json = JsonSerializer.Serialize(response);
         await context.HttpContext.Response.WriteAsync(json, cancellationToken: ct);
     };
+});
+
+//AddMediatR
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssemblyContaining<ConfirmEmailHandler>();
+    cfg.RegisterServicesFromAssemblyContaining<ProcessStripeWebhookHandler>();
 });
 
 //Add mapper

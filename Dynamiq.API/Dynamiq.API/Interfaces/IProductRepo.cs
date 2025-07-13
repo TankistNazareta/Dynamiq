@@ -3,7 +3,7 @@ using Dynamiq.API.Mapping.DTOs;
 
 namespace Dynamiq.API.Interfaces
 {
-    public interface IProductRepo : ICRUD<ProductDto>
+    public interface IProductRepo : ICrudRepo<ProductDto>
     {
     }
 }

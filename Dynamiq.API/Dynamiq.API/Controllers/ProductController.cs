@@ -1,7 +1,9 @@
-﻿using Dynamiq.API.Extension.RequestEntity;
+﻿using Dynamiq.API.Commands.Product;
+using Dynamiq.API.Extension.RequestEntity;
 using Dynamiq.API.Interfaces;
 using Dynamiq.API.Mapping.DTOs;
 using Dynamiq.API.Stripe.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
@@ -11,24 +13,23 @@ namespace Dynamiq.API.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductRepo _repo;
-        private readonly IStripeProductService _stripeProductService;
         private readonly ILogger _logger;
+        private readonly IMediator _mediator;
 
         public ProductController(
             IProductRepo repo,
-            IStripeProductService stripeService,
+            IMediator mediator,
             ILogger<ProductController> logger)
         {
             _repo = repo;
-            _stripeProductService = stripeService;
+            _mediator = mediator;
             _logger = logger;
         }
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] ProductRequestEntity productRequest)
         {
-            var productDto = await _stripeProductService.CreateProductStripe(productRequest);
-            var inserted = await _repo.Insert(productDto);
+            var inserted = await _mediator.Send(new CreateProductCommand(productRequest));
 
             _logger.LogInformation("Created product with ID: {Id}", inserted.Id);
 
@@ -36,10 +37,9 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] ProductDto productRequest)
+        public async Task<IActionResult> Put([FromBody] ProductDto product)
         {
-            var updated = await _stripeProductService.UpdateProductStripe(productRequest);
-            await _repo.Update(updated);
+            var updated = await _mediator.Send(new UpdateProductCommand(product));
 
             _logger.LogInformation("Updated product with ID: {Id}", updated.Id);
 
@@ -67,10 +67,7 @@ namespace Dynamiq.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            var product = await _repo.GetById(id);
-
-            await _repo.Delete(id);
-            await _stripeProductService.DeleteProductStripe(product.StripePriceId, product.StripeProductId);
+            await _mediator.Send(new DeleteProductCommand(id));
 
             _logger.LogInformation("Deleted product with ID: {Id}", id);
 

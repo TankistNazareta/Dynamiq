@@ -3,9 +3,8 @@ using Dynamiq.API.Mapping.DTOs;
 
 namespace Dynamiq.API.Interfaces
 {
-    public interface IUserRepo : ICRUD<UserDto>
+    public interface IUserRepo : ICrudRepo<UserDto>
     {
         public Task<UserDto> GetByEmail(string email);
-        public Task<int> RemoveAllExpiredUsers();
     }
 }
