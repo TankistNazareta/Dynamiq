@@ -9,6 +9,7 @@
   <ItemGroup>
 	  <PackageReference Include="AutoMapper" Version="14.0.0" />
 	  <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+	  <PackageReference Include="MediatR" Version="13.0.0" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.17" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
@@ -17,11 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dynamiq.API.DAL\Dynamiq.API.DAL.csproj" />
-    <ProjectReference Include="..\Dynamiq.API.Extension\Dynamiq.API.Extension.csproj" />
-    <ProjectReference Include="..\Dynamiq.API.Mapping\Dynamiq.API.Mapping.csproj" />
-    <ProjectReference Include="..\Dynamiq.API.Payment\Dynamiq.API.Stripe.csproj" />
-    <ProjectReference Include="..\Dynamiq.API.Validation\Dynamiq.API.Validation.csproj" />
+    <ProjectReference Include="..\Dynamiq.Application\Dynamiq.Application.csproj" />
+    <ProjectReference Include="..\Dynamiq.Infrastructure\Dynamiq.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,27 +1,31 @@
 using AutoMapper;
-using Dynamiq.API.BackgroundServices;
-using Dynamiq.API.DAL.Context;
-using Dynamiq.API.Extension;
-using Dynamiq.API.Interfaces;
-using Dynamiq.API.Mapping;
-using Dynamiq.API.Repositories;
-using Dynamiq.API.Repository;
-using Dynamiq.API.Stripe.Interfaces;
-using Dynamiq.API.Stripe.Repositories;
-using Dynamiq.API.Stripe.Services;
-using Dynamiq.API.Validation.DTOsValidator;
+using Dynamiq.API.Middlewares;
+using Dynamiq.Application;
+using Dynamiq.Application.Commands.EmailVerifications.Commands;
+using Dynamiq.Application.Commands.EmailVerifications.Validators;
+using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Application.Interfaces.Services;
+using Dynamiq.Application.Interfaces.Stripe;
+using Dynamiq.Application.Interfaces.UseCases;
+using Dynamiq.Application.UseCases;
+using Dynamiq.Domain.Interfaces;
+using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Infrastructure.BackgroundServices;
+using Dynamiq.Infrastructure.Persistence.Context;
+using Dynamiq.Infrastructure.Repositories;
+using Dynamiq.Infrastructure.Services;
+using Dynamiq.Infrastructure.Services.Auth;
+using Dynamiq.Infrastructure.StripeServices;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
-using System.Threading.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Json.Serialization;
 using System.Text.Json;
-using Dynamiq.API.Handlers.EmailVerification;
-using Dynamiq.API.Stripe.Handlers.PaymentStripe;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +61,7 @@ builder.Logging.AddDebug();
 //Add Fluent validation
 builder.Services.AddFluentValidationAutoValidation()
                 .AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ConfirmEmailByTokenCommandValidator>();
 
 //AddRateLimiter
 builder.Services.AddRateLimiter(options =>
@@ -67,6 +71,22 @@ builder.Services.AddRateLimiter(options =>
         limiterOptions.PermitLimit = 3;
         limiterOptions.Window = TimeSpan.FromMinutes(3);
         limiterOptions.QueueLimit = 0;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+
+    options.AddFixedWindowLimiter("LogInLimiter", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 5;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueLimit = 2;
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+    });
+
+    options.AddFixedWindowLimiter("SignUpLimiter", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 3;
+        limiterOptions.Window = TimeSpan.FromMinutes(2);
+        limiterOptions.QueueLimit = 2;
         limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
     });
 
@@ -88,8 +108,7 @@ builder.Services.AddRateLimiter(options =>
 //AddMediatR
 builder.Services.AddMediatR(cfg =>
 {
-    cfg.RegisterServicesFromAssemblyContaining<ConfirmEmailHandler>();
-    cfg.RegisterServicesFromAssemblyContaining<ProcessStripeWebhookHandler>();
+    cfg.RegisterServicesFromAssemblyContaining<ConfirmEmailByTokenCommand>();
 });
 
 //Add mapper
@@ -101,17 +120,29 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-//API
+//Repo
 builder.Services.AddTransient<IUserRepo, UserRepo>();
 builder.Services.AddTransient<IRefreshTokenRepo, RefreshTokenRepo>();
 builder.Services.AddTransient<IProductRepo, ProductRepo>();
 builder.Services.AddTransient<IEmailVerificationRepo, EmailVerificationRepo>();
+builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
+builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+//Services
+builder.Services.AddTransient<IEmailService, EmailService>();
+builder.Services.AddTransient<IPasswordService, PasswordService>();
+builder.Services.AddTransient<ITokenService, TokenService>();
+builder.Services.AddTransient<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
+
+//UseCases
+builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
 
 //API.Stripe
 builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
-builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
-builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
+builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
+
 
 //Add background services
 builder.Services.AddHostedService<UserCleanupService>();

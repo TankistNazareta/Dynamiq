@@ -1,0 +1,12 @@
+﻿using Dynamiq.Application.DTOs;
+using Dynamiq.Shared.DTOs;
+
+namespace Dynamiq.Application.Interfaces.Stripe
+{
+    public interface IStripeProductService
+    {
+        Task<StripeIdsDto> CreateProductStripeAsync(ProductDto product);
+        Task<StripeIdsDto> UpdateProductStripeAsync(ProductDto product, string stripeProductId, string stripePriceId);
+        Task DeleteProductStripeAsync(string priceId, string productId);
+    }
+}

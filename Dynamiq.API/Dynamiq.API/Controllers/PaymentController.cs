@@ -1,6 +1,5 @@
-﻿using Dynamiq.API.Extension.RequestEntity;
-using Dynamiq.API.Stripe.Commands.PaymentStripe;
-using Dynamiq.API.Stripe.Interfaces;
+﻿using Dynamiq.Application.Commands.Payment.Commands;
+using Dynamiq.Application.Interfaces.Stripe;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -11,22 +10,20 @@ namespace Dynamiq.API.Controllers
     [ApiController]
     public class PaymentController : ControllerBase
     {
-        private readonly IStripePaymentService _service;
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
-        public PaymentController(IStripePaymentService service, ILogger<PaymentController> logger, IMediator mediator)
+        public PaymentController(ILogger<PaymentController> logger, IMediator mediator)
         {
-            _service = service;
             _logger = logger;
             _mediator = mediator;
         }
 
         [HttpPost("create-checkout-session")]
         [EnableRateLimiting("CreateCheckoutLimiter")]
-        public async Task<IActionResult> CreateCheckoutSession([FromBody] CheckoutSessionRequest request)
+        public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionCommand request)
         {
-            var sessionUrl = await _service.CreateCheckoutSession(request);
+            var sessionUrl = await _mediator.Send(request);
 
             _logger.LogInformation("checkout session was created for user: {Id}", request.UserId);
 
@@ -39,9 +36,9 @@ namespace Dynamiq.API.Controllers
             string json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             string stripeSignature = Request.Headers["Stripe-Signature"];
 
-            var res = await _mediator.Send(new ProcessStripeWebhookCommand(json, stripeSignature));
+            await _mediator.Send(new StripeWebhookCommand(json, stripeSignature));
 
-            _logger.LogInformation("payment completed successfully, payment history id: {Id}", res.Id);
+            _logger.LogInformation("payment completed successfully");
 
             return Ok("completed successfully");
         }

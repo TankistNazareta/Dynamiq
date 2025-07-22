@@ -1,8 +1,6 @@
-﻿using Dynamiq.API.Commands.Product;
-using Dynamiq.API.Extension.RequestEntity;
-using Dynamiq.API.Interfaces;
-using Dynamiq.API.Mapping.DTOs;
-using Dynamiq.API.Stripe.Interfaces;
+﻿using Dynamiq.Application.Commands.Products.Commands;
+using Dynamiq.Application.DTOs;
+using Dynamiq.Application.Queries.Products.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,44 +10,41 @@ namespace Dynamiq.API.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly IProductRepo _repo;
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
 
         public ProductController(
-            IProductRepo repo,
             IMediator mediator,
             ILogger<ProductController> logger)
         {
-            _repo = repo;
             _mediator = mediator;
             _logger = logger;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] ProductRequestEntity productRequest)
+        public async Task<IActionResult> Post([FromBody] AddProductCommand command)
         {
-            var inserted = await _mediator.Send(new CreateProductCommand(productRequest));
+            await _mediator.Send(command);
 
-            _logger.LogInformation("Created product with ID: {Id}", inserted.Id);
+            _logger.LogInformation("Product was created");
 
-            return CreatedAtAction(nameof(GetById), new { id = inserted.Id }, inserted);
+            return Ok("Product was created");
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] ProductDto product)
+        public async Task<IActionResult> Put([FromBody] UpdateProductCommand command)
         {
-            var updated = await _mediator.Send(new UpdateProductCommand(product));
+            await _mediator.Send(command);
 
-            _logger.LogInformation("Updated product with ID: {Id}", updated.Id);
+            _logger.LogInformation("Updated product with");
 
-            return Ok(updated);
+            return Ok("Product updated successfully");
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var all = await _repo.GetAll();
+            var all = await _mediator.Send(new GetAllProductsQuery());
 
             _logger.LogInformation("Retrieved all products, count: {Count}", all?.Count() ?? -1);
 
@@ -59,7 +54,7 @@ namespace Dynamiq.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var product = await _repo.GetById(id);
+            var product = await _mediator.Send(new GetProductByIdQuery(id));
 
             return Ok(product);
         }
