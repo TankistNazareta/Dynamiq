@@ -30,15 +30,15 @@ namespace Dynamiq.API.Controllers
             return Ok(user);
         }
 
-        //[HttpPut]
-        //public async Task<IActionResult> Put([FromBody] UserDto user)
-        //{
-        //    var updated = await _repo.Update(user);
+        [HttpPut("changePassword")]
+        public async Task<IActionResult> Put([FromBody] ChangeUserPasswordCommand command)
+        {
+            await _mediator.Send(command);
 
-        //    _logger.LogInformation("Updated user with id: {Id}", user.Id);
+            _logger.LogInformation("Changed password for user with email: {Email}", command.Email);
 
-        //    return Ok(updated);
-        //}
+            return Ok("You successfully changed your password");
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] Guid id)

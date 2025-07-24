@@ -18,15 +18,25 @@ namespace Dynamiq.Domain.Entities
         private readonly List<Subscription> _subscriptions = new();
         public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
 
+        public Guid CategoryId { get; private set; }
+
         private Product() { } // EF Core
 
-        public Product(string stripeProductId, string stripePriceId, string name, string description, int price, IntervalEnum interval)
+        public Product(
+            string stripeProductId, string stripePriceId,
+            string name, string description,
+            int price, IntervalEnum interval,
+            Guid categoryId)
         {
             Id = Guid.NewGuid();
-            Update(stripeProductId, stripePriceId, name, description, price, interval);
+            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId);
         }
 
-        public void Update(string stripeProductId, string stripePriceId, string name, string description, int price, IntervalEnum interval)
+        public void Update(
+            string stripeProductId,
+            string stripePriceId, string name,
+            string description, int price,
+            IntervalEnum interval, Guid categoryId)
         {
             if (string.IsNullOrWhiteSpace(stripeProductId))
                 throw new ArgumentException("StripeProductId cannot be empty");
@@ -46,6 +56,7 @@ namespace Dynamiq.Domain.Entities
             Description = description;
             Price = price;
             Interval = interval;
+            CategoryId = categoryId;
         }
 
         public void ChangePrice(int newPrice)

@@ -30,6 +30,15 @@ namespace Dynamiq.Infrastructure.Repositories
         public async Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken ct)
                 => await _db.Products.AsNoTracking().ToListAsync(ct);
 
+        public async Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, CancellationToken ct)
+        {
+            var category = await _db.Categories
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Slug == slug, ct);
+
+            return category?.Products.ToList() ?? new List<Product>();
+        }
+
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct)
                 => await _db.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
     }

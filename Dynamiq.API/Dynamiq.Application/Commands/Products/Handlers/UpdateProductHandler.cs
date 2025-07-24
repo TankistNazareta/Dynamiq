@@ -35,7 +35,8 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 productDto.Name,
                 productDto.Description,
                 productDto.Price,
-                productDto.Interval);
+                productDto.Interval,
+                request.CategoryId);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

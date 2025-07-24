@@ -105,6 +105,12 @@ builder.Services.AddRateLimiter(options =>
     };
 });
 
+//Add Configuration
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false)
+    .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
+
 //AddMediatR
 builder.Services.AddMediatR(cfg =>
 {
@@ -128,6 +134,7 @@ builder.Services.AddTransient<IEmailVerificationRepo, EmailVerificationRepo>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 
 //Services
 builder.Services.AddTransient<IEmailService, EmailService>();

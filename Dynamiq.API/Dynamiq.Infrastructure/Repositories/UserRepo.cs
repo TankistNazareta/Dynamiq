@@ -23,7 +23,7 @@ namespace Dynamiq.Infrastructure.Repositories
         public async Task<List<User>> GetAllExpiredUsersAsync(CancellationToken ct)
                     => await _db.Users
                                 .Include(u => u.EmailVerification)
-                                .Where(u => !u.EmailVerification.IsConfirmed && u.EmailVerification.ExpiresAt > DateTime.UtcNow)
+                                .Where(u => !u.EmailVerification.IsConfirmed && u.EmailVerification.ExpiresAt <= DateTime.UtcNow)
                                 .ToListAsync();
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken ct)

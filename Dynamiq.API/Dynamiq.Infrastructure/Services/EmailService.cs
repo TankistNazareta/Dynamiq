@@ -1,9 +1,8 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
-using Dynamiq.Infrastructure.Settings;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using MimeKit;
 
 namespace Dynamiq.Infrastructure.Services
@@ -12,20 +11,20 @@ namespace Dynamiq.Infrastructure.Services
     {
         private readonly ILogger _logger;
 
-        private readonly string _emailFrom = "youtopak@gmail.com";
-        private readonly string _emailPassword = "yeriznpcttczlobo";
-        private readonly string _smtpHost = "smtp.gmail.com";
-        private readonly int _smtpPort = 587;
+        private readonly string _emailFrom;
+        private readonly string _emailPassword;
+        private readonly string _smtpHost;
+        private readonly int _smtpPort;
 
         public EmailService(
-            IOptions<EmailSettings> options,
+            IConfiguration config,
             ILogger<EmailService> logger
             )
         {
-            //_emailFrom = options.Value.EmailFrom;
-            //_emailPassword = options.Value.EmailPassword;
-            //_smtpHost = options.Value.SmtpHost;
-            //_smtpPort = options.Value.SmtpPort;
+            _emailFrom = config["Smtp:EmailFrom"]!;
+            _emailPassword = config["Smtp:Password"]!;
+            _smtpHost = config["Smtp:Host"]!;
+            _smtpPort = int.Parse(config["Smtp:Port"]!);
 
             _logger = logger;
         }
