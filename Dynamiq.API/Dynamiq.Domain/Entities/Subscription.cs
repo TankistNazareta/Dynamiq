@@ -12,7 +12,7 @@ namespace Dynamiq.Domain.Entities
         public Guid UserId { get; private set; }
         public Guid PaymentHistoryId { get; private set; }
 
-        private Subscription() { } // Для EF Core
+        private Subscription() { } // EF Core
 
         public Subscription(Guid userId, Guid productId, Guid paymentHistoryId, IntervalEnum interval)
         {

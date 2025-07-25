@@ -10,7 +10,7 @@
         public bool IsRevoked { get; private set; }
         public Guid UserId { get; private set; }
 
-        private RefreshToken() { }
+        private RefreshToken() { } // EF Core
 
         public RefreshToken(Guid userId, string token)
         {
@@ -29,6 +29,9 @@
             IsRevoked = isRevoked;
             ExpiresAt = needSetDefaultExpireAt ? DefaultTimeForExpireAt : ExpiresAt;
         }
+
+        public void Refresh(string token)
+            => Update(token, false, false);
 
         public void Revoke()
         {

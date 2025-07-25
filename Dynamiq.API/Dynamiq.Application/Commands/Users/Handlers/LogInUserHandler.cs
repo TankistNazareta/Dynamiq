@@ -14,7 +14,6 @@ namespace Dynamiq.Application.Commands.Users.Handlers
     {
         private readonly IUserRepo _userRepo;
         private readonly IPasswordService _passwordService;
-        private readonly IRefreshTokenRepo _refreshTokenRepo;
         private readonly ITokenService _tokenService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
@@ -22,14 +21,12 @@ namespace Dynamiq.Application.Commands.Users.Handlers
         public LogInUserHandler(
             IUserRepo userRepo,
             IPasswordService passwordService,
-            IRefreshTokenRepo refreshTokenRepo,
             ITokenService tokenService,
             IUnitOfWork unitOfWork,
             IEmailService emailService)
         {
             _passwordService = passwordService;
             _userRepo = userRepo;
-            _refreshTokenRepo = refreshTokenRepo;
             _tokenService = tokenService;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
@@ -37,7 +34,7 @@ namespace Dynamiq.Application.Commands.Users.Handlers
 
         public async Task<AuthResponseDto> Handle(LogInUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepo.GetUserWithEmailVerificationByEmail(request.Email, cancellationToken);
+            var user = await _userRepo.GetByEmailAsync(request.Email, cancellationToken);
             if (user == null)
                 throw new KeyNotFoundException("User with this email wasn't found");
 
@@ -48,18 +45,17 @@ namespace Dynamiq.Application.Commands.Users.Handlers
             if (!check)
                 throw new ArgumentException("Your password isn't correct");
 
-            var refreshToken = await _refreshTokenRepo.GetByUserIdAsync(user.Id, cancellationToken);
             var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role);
 
-            if (refreshToken == null)
+            if (user.RefreshToken == null)
             {
                 var refreshTokenForAdd = new RefreshToken(user.Id, authResponseDto.RefreshToken);
 
-                await _refreshTokenRepo.AddAsync(refreshTokenForAdd, cancellationToken);
+                user.SetRefreshToken(refreshTokenForAdd);
             }
             else
             {
-                refreshToken.Update(authResponseDto.RefreshToken, false, true);
+                user.RefreshToken.Update(authResponseDto.RefreshToken, false, true);
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

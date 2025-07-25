@@ -8,7 +8,7 @@
         public bool IsConfirmed { get; private set; }
         public Guid UserId { get; private set; }
 
-        private EmailVerification() { }
+        private EmailVerification() { } // EF Core
 
         public EmailVerification(Guid userId)
         {

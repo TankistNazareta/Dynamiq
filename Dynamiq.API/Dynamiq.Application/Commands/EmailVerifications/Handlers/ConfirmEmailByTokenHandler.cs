@@ -7,9 +7,9 @@ namespace Dynamiq.Application.Commands.EmailVerifications.Handlers
     public class ConfirmEmailByTokenHandler : IRequestHandler<ConfirmEmailByTokenCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IEmailVerificationRepo _repo;
+        private readonly IUserRepo _repo;
 
-        public ConfirmEmailByTokenHandler(IUnitOfWork unitOfWork, IEmailVerificationRepo repo)
+        public ConfirmEmailByTokenHandler(IUnitOfWork unitOfWork, IUserRepo repo)
         {
             _repo = repo;
             _unitOfWork = unitOfWork;
@@ -17,12 +17,12 @@ namespace Dynamiq.Application.Commands.EmailVerifications.Handlers
 
         public async Task Handle(ConfirmEmailByTokenCommand request, CancellationToken cancellationToken)
         {
-            var ev = await _repo.GetByTokenAsync(request.Token, cancellationToken);
+            var user = await _repo.GetByEmailVerificationTokenAsyc(request.Token, cancellationToken);
 
-            if (ev == null)
+            if (user == null)
                 throw new KeyNotFoundException("token doesn't exist");
 
-            ev.Confirm();
+            user.EmailVerification.Confirm();
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

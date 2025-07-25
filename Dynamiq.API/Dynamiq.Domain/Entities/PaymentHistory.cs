@@ -14,7 +14,7 @@ namespace Dynamiq.Domain.Entities
         public Guid UserId { get; private set; }
         public Guid ProductId { get; private set; }
 
-        private PaymentHistory() { }
+        private PaymentHistory() { } // EF Core
 
         public PaymentHistory(Guid userId, Guid productId, string stripePaymentId, decimal amount, IntervalEnum interval)
         {

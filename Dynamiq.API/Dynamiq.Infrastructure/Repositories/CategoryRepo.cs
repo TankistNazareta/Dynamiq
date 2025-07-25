@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;

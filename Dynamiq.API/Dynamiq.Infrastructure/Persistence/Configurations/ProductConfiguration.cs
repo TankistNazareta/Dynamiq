@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -38,11 +38,6 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .WithOne()
                    .HasForeignKey(ph => ph.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(p => p.Subscriptions)
-                   .WithOne()
-                   .HasForeignKey(s => s.ProductId)
-                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne<Category>()
                 .WithMany()

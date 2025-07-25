@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 
 namespace Dynamiq.Domain.Interfaces.Repositories
 {
@@ -9,5 +9,6 @@ namespace Dynamiq.Domain.Interfaces.Repositories
         Task<Product?> GetByIdAsync(Guid id, CancellationToken ct);
         void Delete(Product product);
         Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, CancellationToken ct);
+        Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct);
     }
 }

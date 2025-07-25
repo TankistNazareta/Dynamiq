@@ -1,4 +1,5 @@
-﻿using Dynamiq.Domain.Common;
+﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Common;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Configurations;

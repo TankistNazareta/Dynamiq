@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.Domain.Entities
+﻿namespace Dynamiq.Domain.Aggregates
 {
     public class Category
     {
@@ -18,7 +18,7 @@
         private readonly List<Product> _products = new();
         public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-        private Category() { }
+        private Category() { }// EF Core
 
         public Category(string name, Guid? parentCategoryId = null)
         {

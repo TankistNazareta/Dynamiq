@@ -1,17 +1,16 @@
-﻿using Dynamiq.Domain.Common;
+﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Common;
 
 namespace Dynamiq.Domain.Events
 {
     public class UserRegisteredEvent : IDomainEvent
     {
         public DateTime OccurredOn { get; }
-        public Guid UserId { get; }
-        public string Email { get; }
+        public User User { get; }
 
-        public UserRegisteredEvent(Guid userId, string email)
+        public UserRegisteredEvent(User user)
         {
-            UserId = userId;
-            Email = email;
+            User = user;
             OccurredOn = DateTime.Now;
         }
     }

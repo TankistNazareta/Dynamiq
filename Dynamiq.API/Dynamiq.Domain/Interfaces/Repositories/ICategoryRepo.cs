@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 
 namespace Dynamiq.Domain.Interfaces.Repositories
 {

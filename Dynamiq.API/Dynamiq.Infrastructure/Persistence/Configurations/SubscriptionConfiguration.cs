@@ -1,4 +1,5 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,7 +27,7 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                     .IsRequired();
 
             builder.HasOne<Product>()
-                   .WithMany(p => p.Subscriptions)
+                   .WithMany()
                    .HasForeignKey(s => s.ProductId)
                    .OnDelete(DeleteBehavior.Restrict);
 

@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs;
-using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Aggregates;
 
 namespace Dynamiq.Application
 {

@@ -1,7 +1,7 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Interfaces.Stripe;
-using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
@@ -23,8 +23,8 @@ namespace Dynamiq.Application.Commands.Products.Handlers
         public async Task Handle(AddProductCommand request, CancellationToken cancellationToken)
         {
             var productDto = new ProductDto(
-                Guid.Empty, request.Name, 
-                request.Description, request.Price, 
+                Guid.Empty, request.Name,
+                request.Description, request.Price,
                 request.Interval);
             var stripeIds = await _stripeService.CreateProductStripeAsync(productDto);
 

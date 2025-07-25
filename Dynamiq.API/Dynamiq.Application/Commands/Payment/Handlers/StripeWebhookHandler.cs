@@ -1,10 +1,9 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
+using Dynamiq.Application.IntegrationEvents;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Events;
 using Dynamiq.Domain.Interfaces.Repositories;
-using Dynamiq.Domain.Enums;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Payment.Handlers

@@ -1,8 +1,7 @@
 ﻿using Dynamiq.Domain.Common;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Enums;
 
-namespace Dynamiq.Domain.Events
+namespace Dynamiq.Application.IntegrationEvents
 {
     public class SubscriptionPaymentEvent : IDomainEvent
     {

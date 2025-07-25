@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -41,5 +41,10 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct)
                 => await _db.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+        public async Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct)
+                => await _db.Products
+                            .Where(p => p.Interval != Domain.Enums.IntervalEnum.OneTime)
+                            .ToListAsync(ct);
     }
 }

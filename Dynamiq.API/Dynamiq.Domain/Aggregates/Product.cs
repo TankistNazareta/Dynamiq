@@ -1,6 +1,7 @@
-﻿using Dynamiq.Domain.Enums;
+﻿using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Enums;
 
-namespace Dynamiq.Domain.Entities
+namespace Dynamiq.Domain.Aggregates
 {
     public class Product
     {
@@ -15,12 +16,9 @@ namespace Dynamiq.Domain.Entities
         private readonly List<PaymentHistory> _paymentHistories = new();
         public IReadOnlyCollection<PaymentHistory> PaymentHistories => _paymentHistories.AsReadOnly();
 
-        private readonly List<Subscription> _subscriptions = new();
-        public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
-
         public Guid CategoryId { get; private set; }
 
-        private Product() { } // EF Core
+        private Product() { }// EF Core
 
         public Product(
             string stripeProductId, string stripePriceId,
@@ -65,16 +63,6 @@ namespace Dynamiq.Domain.Entities
                 throw new ArgumentException("Price must be greater than zero");
 
             Price = newPrice;
-        }
-
-        public void AddPaymentHistory(PaymentHistory history)
-        {
-            _paymentHistories.Add(history);
-        }
-
-        public void AddSubscription(Subscription subscription)
-        {
-            _subscriptions.Add(subscription);
         }
     }
 }

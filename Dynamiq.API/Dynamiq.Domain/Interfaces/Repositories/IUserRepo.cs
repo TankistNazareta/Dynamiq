@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 
 namespace Dynamiq.Domain.Interfaces.Repositories
 {
@@ -9,6 +9,7 @@ namespace Dynamiq.Domain.Interfaces.Repositories
         Task AddAsync(User user, CancellationToken ct);
         void Delete(User user);
         Task<List<User>> GetAllExpiredUsersAsync(CancellationToken ct);
-        Task<User?> GetUserWithEmailVerificationByEmail(string email, CancellationToken ct);
+        Task<User?> GetByEmailVerificationTokenAsyc(string token, CancellationToken ct); 
+        Task<User?> GetByRefreshTokenAsync(string token, CancellationToken ct); 
     }
 }

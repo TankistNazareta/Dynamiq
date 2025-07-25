@@ -128,11 +128,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 //Repo
 builder.Services.AddTransient<IUserRepo, UserRepo>();
-builder.Services.AddTransient<IRefreshTokenRepo, RefreshTokenRepo>();
 builder.Services.AddTransient<IProductRepo, ProductRepo>();
-builder.Services.AddTransient<IEmailVerificationRepo, EmailVerificationRepo>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
-builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 
