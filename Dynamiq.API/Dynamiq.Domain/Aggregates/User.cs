@@ -39,12 +39,23 @@ namespace Dynamiq.Domain.Aggregates
             AddDomainEvent(new UserRegisteredEvent(this));
         }
 
+        public void LogInRefreshToken(string newToken)
+        {
+            if (RefreshToken == null)
+                SetRefreshToken(new RefreshToken(Id, newToken));
+            else
+                RefreshToken.Update(newToken, false, true);
+        }
+
+
         public void ChangePassword(string newPasswordHash)
         {
             if (string.IsNullOrWhiteSpace(newPasswordHash))
                 throw new ArgumentException("Password cannot be empty.", nameof(newPasswordHash));
 
             PasswordHash = newPasswordHash;
+
+            AddDomainEvent(new UserChangedPasswordEvent(Email));
         }
 
         public void AddSubscription(Subscription subscription)

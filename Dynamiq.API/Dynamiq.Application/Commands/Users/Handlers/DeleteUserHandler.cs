@@ -24,7 +24,6 @@ namespace Dynamiq.Application.Commands.Users.Handlers
 
             _userRepo.Delete(user);
 
-            await _userRepo.AddAsync(user, ct);
             await _unitOfWork.SaveChangesAsync(ct);
         }
     }

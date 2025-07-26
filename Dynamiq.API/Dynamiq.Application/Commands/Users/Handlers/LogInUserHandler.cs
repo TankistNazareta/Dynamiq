@@ -41,22 +41,12 @@ namespace Dynamiq.Application.Commands.Users.Handlers
             if (!user.EmailVerification.IsConfirmed)
                 throw new EmailNotConfirmedException(user.Email);
 
-            var check = _passwordService.Check(user.PasswordHash, request.Password);
-            if (!check)
+            if (!_passwordService.Check(user.PasswordHash, request.Password))
                 throw new ArgumentException("Your password isn't correct");
 
             var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role);
 
-            if (user.RefreshToken == null)
-            {
-                var refreshTokenForAdd = new RefreshToken(user.Id, authResponseDto.RefreshToken);
-
-                user.SetRefreshToken(refreshTokenForAdd);
-            }
-            else
-            {
-                user.RefreshToken.Update(authResponseDto.RefreshToken, false, true);
-            }
+            user.LogInRefreshToken(authResponseDto.RefreshToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

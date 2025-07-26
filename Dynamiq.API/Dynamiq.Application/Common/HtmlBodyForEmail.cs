@@ -35,5 +35,6 @@
                 </p>
             </div>
         </body>";
+        public static string GetWelcomeBody(string email) => "Welcome to Dynamiq";
     }
 }

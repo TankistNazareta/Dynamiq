@@ -11,7 +11,7 @@ namespace Dynamiq.Domain.Events
         public UserRegisteredEvent(User user)
         {
             User = user;
-            OccurredOn = DateTime.Now;
+            OccurredOn = DateTime.UtcNow;
         }
     }
 }

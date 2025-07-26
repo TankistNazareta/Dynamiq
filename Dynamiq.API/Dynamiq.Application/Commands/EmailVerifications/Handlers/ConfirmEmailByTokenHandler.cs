@@ -22,7 +22,7 @@ namespace Dynamiq.Application.Commands.EmailVerifications.Handlers
             if (user == null)
                 throw new KeyNotFoundException("token doesn't exist");
 
-            user.EmailVerification.Confirm();
+            user.EmailVerification.Confirm(user.Email);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

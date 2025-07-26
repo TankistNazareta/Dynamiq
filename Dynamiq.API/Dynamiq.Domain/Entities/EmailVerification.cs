@@ -1,6 +1,9 @@
-﻿namespace Dynamiq.Domain.Entities
+﻿using Dynamiq.Domain.Common;
+using Dynamiq.Domain.Events;
+
+namespace Dynamiq.Domain.Entities
 {
-    public class EmailVerification
+    public class EmailVerification : BaseEntity
     {
         public Guid Id { get; private set; }
         public string Token { get; private set; }
@@ -19,7 +22,7 @@
             IsConfirmed = false;
         }
 
-        public void Confirm()
+        public void Confirm(string email)
         {
             if (IsConfirmed)
                 throw new InvalidOperationException("Email already confirmed.");
@@ -28,6 +31,8 @@
                 throw new TimeoutException("Verification token expired.");
 
             IsConfirmed = true;
+
+            AddDomainEvent(new UserConfirmedEmailEvent(email));
         }
     }
 }
