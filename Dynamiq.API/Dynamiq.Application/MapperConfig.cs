@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs;
 using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.ValueObject;
 
 namespace Dynamiq.Application
 {
@@ -12,6 +13,8 @@ namespace Dynamiq.Application
             {
                 config.CreateMap<User, UserDto>().ReverseMap();
                 config.CreateMap<Product, ProductDto>().ReverseMap();
+                config.CreateMap<Cart, CartDto>().ReverseMap();
+                config.CreateMap<CartItem, CartItemDto>().ReverseMap();
             });
         }
     }

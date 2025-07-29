@@ -25,6 +25,7 @@ namespace Dynamiq.Infrastructure.Persistence.Context
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<EmailVerification> EmailVerifications { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +36,7 @@ namespace Dynamiq.Infrastructure.Persistence.Context
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
             modelBuilder.ApplyConfiguration(new EmailVerificationConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new CartConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

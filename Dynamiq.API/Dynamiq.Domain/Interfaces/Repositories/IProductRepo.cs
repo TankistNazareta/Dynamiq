@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Common;
 
 namespace Dynamiq.Domain.Interfaces.Repositories
 {
@@ -10,5 +11,6 @@ namespace Dynamiq.Domain.Interfaces.Repositories
         void Delete(Product product);
         Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, CancellationToken ct);
         Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct);
+        Task<List<Product>> GetFilteredAsync(ProductFilter request, CancellationToken ct);
     }
 }

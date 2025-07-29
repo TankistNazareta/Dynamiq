@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
-using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Queries.Products.Queries;
+using Dynamiq.Application.Queries.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -81,6 +81,14 @@ namespace Dynamiq.API.Controllers
         public async Task<IActionResult> GetAllProductByCategory(string slug)
         {
             var products = await _mediator.Send(new GetAllProductBySlugQuery(slug));
+
+            return Ok(products);
+        }
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFiltered([FromBody] GetFilteredProductsQuery command)
+        {
+            var products = await _mediator.Send(command);
 
             return Ok(products);
         }

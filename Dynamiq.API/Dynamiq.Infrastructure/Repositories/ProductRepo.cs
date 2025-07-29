@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Common;
 using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,30 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct)
                 => await _db.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
+
+        public async Task<List<Product>> GetFilteredAsync(ProductFilter request, CancellationToken ct)
+        {
+            var query = _db.Products.AsQueryable();
+
+            if (request.CategoryId.HasValue)
+                query = query.Where(p => p.CategoryId == request.CategoryId.Value);
+
+            if (request.MinPrice.HasValue)
+                query = query.Where(p => p.Price >= request.MinPrice.Value);
+
+            if (request.MaxPrice.HasValue)
+                query = query.Where(p => p.Price <= request.MaxPrice.Value);
+
+            if (!string.IsNullOrWhiteSpace(request.SearchTerm))
+            {
+                var term = request.SearchTerm.ToLower();
+                query = query.Where(p =>
+                    p.Name.ToLower().Contains(term) ||
+                    p.Description.ToLower().Contains(term));
+            }
+
+            return await query.ToListAsync(ct);
+        }
 
         public async Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct)
                 => await _db.Products
