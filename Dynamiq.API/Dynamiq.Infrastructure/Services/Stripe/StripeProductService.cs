@@ -5,7 +5,7 @@ using Dynamiq.Shared.DTOs;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 
-namespace Dynamiq.Infrastructure.StripeServices
+namespace Dynamiq.Infrastructure.Services.Stripe
 {
     public class StripeProductService : IStripeProductService
     {

@@ -34,7 +34,7 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.Property(p => p.CategoryId)
                     .IsRequired();
 
-            builder.HasMany(p => p.PaymentHistories)
+            builder.HasMany(p => p.ProductPaymentHistories)
                    .WithOne()
                    .HasForeignKey(ph => ph.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);

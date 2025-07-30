@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
+﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +16,6 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task AddAsync(PaymentHistory paymentHistory, CancellationToken ct)
                 => await _db.PaymentHistories.AddAsync(paymentHistory, ct);
-
-        public async Task<IReadOnlyList<PaymentHistory>> GetListByProductIdAsync(Guid productId, CancellationToken ct)
-                => await _db.PaymentHistories
-                        .AsNoTracking()
-                        .Where(ph => ph.ProductId == productId)
-                        .ToListAsync(ct);
 
         public async Task<IReadOnlyList<PaymentHistory>> GetListByUserIdAsync(Guid userId, CancellationToken ct)
                 => await _db.PaymentHistories

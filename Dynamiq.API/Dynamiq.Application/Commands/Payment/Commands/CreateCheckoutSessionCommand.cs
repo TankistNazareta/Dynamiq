@@ -3,8 +3,9 @@
 namespace Dynamiq.Application.Commands.Payment.Commands
 {
     public record class CreateCheckoutSessionCommand(
-        Guid ProductId, Guid UserId,
+        Guid UserId,
         string SuccessUrl, string CancelUrl,
-        int Quantity
+        Guid? CartId,
+        int? Quantity, Guid? ProductId
         ) : IRequest<string>;
 }

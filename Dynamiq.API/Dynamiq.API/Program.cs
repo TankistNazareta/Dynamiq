@@ -15,7 +15,7 @@ using Dynamiq.Infrastructure.Persistence.Context;
 using Dynamiq.Infrastructure.Repositories;
 using Dynamiq.Infrastructure.Services;
 using Dynamiq.Infrastructure.Services.Auth;
-using Dynamiq.Infrastructure.StripeServices;
+using Dynamiq.Infrastructure.Services.Stripe;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -132,6 +132,7 @@ builder.Services.AddTransient<IProductRepo, ProductRepo>();
 builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
+builder.Services.AddTransient<ICartRepo, CartRepo>();
 
 //Services
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -143,7 +144,7 @@ builder.Services.AddTransient<IDomainEventDispatcher, MediatRDomainEventDispatch
 builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
 
 //API.Stripe
-builder.Services.AddTransient<IStripePaymentService, StripePaymentService>();
+builder.Services.AddTransient<IStripeCheckoutSession, StripeCheckoutSession>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
 

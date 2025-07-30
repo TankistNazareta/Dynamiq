@@ -1,0 +1,23 @@
+﻿using Dynamiq.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+
+namespace Dynamiq.Infrastructure.Persistence.Configurations
+{
+    public class ProductPaymentHistoryConfig : IEntityTypeConfiguration<ProductPaymentHistory>
+    {
+        public void Configure(EntityTypeBuilder<ProductPaymentHistory> builder)
+        {
+            builder.HasKey(p => p.Id);
+
+            builder.Property(p => p.Quantity)
+                   .IsRequired();
+
+            builder.Property(p => p.ProductId)
+                   .IsRequired();
+
+            builder.Property(p => p.PaymentHistoryId)
+                   .IsRequired();
+        }
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.CustomExceptions;
+using Dynamiq.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Net;
@@ -36,21 +37,22 @@ namespace Dynamiq.API.Middlewares
 
             switch (exception)
             {
-                case KeyNotFoundException ex:
+                case KeyNotFoundException:
                     statusCode = HttpStatusCode.NotFound;
-                    message = ex.Message;
-                    _logger.LogWarning(ex, "Not found.");
+                    message = exception.Message;
+                    _logger.LogWarning(exception, "Not found.");
                     break;
 
-                case UnauthorizedAccessException ex:
+                case UnauthorizedAccessException:
                     statusCode = HttpStatusCode.Unauthorized;
-                    message = ex.Message;
-                    _logger.LogWarning(ex, "Unauthorized.");
+                    message = exception.Message;
+                    _logger.LogWarning(exception, "Unauthorized.");
                     break;
-                case EmailNotConfirmedException ex:
+                case EmailNotConfirmedException:
+                case CartEmptyException:
                     statusCode = HttpStatusCode.Forbidden;
-                    message = ex.Message;
-                    _logger.LogWarning(ex, "Not confirmed Email.");
+                    message = exception.Message;
+                    _logger.LogWarning(exception, "Not confirmed Email.");
                     break;
                 case TimeoutException:
                 case InvalidOperationException:

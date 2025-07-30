@@ -6,7 +6,7 @@ using Stripe;
 using Stripe.Checkout;
 using System.Text.Json;
 
-namespace Dynamiq.Infrastructure.StripeServices
+namespace Dynamiq.Infrastructure.Services.Stripe
 {
     public class StripeWebhookParser : IStripeWebhookParser
     {
@@ -17,7 +17,7 @@ namespace Dynamiq.Infrastructure.StripeServices
             _webhookSecret = config["Stripe:WebhookSecret"];
         }
 
-        public PaymentHistoryDto ParseCheckoutSessionCompleted(string json, string signature)
+        public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature)
         {
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
@@ -31,13 +31,13 @@ namespace Dynamiq.Infrastructure.StripeServices
             var session = stripeEvent.Data.Object as Session;
 
             if (session?.Metadata == null ||
-                !session.Metadata.TryGetValue("PaymentHistoryDtoJson", out var paymentHistoryDtoJson))
-                throw new KeyNotFoundException("Metadata 'PaymentHistoryDtoJson' not found in session.");
+                !session.Metadata.TryGetValue("WebhookParserDto", out var paymentHistoryDtoJson))
+                throw new KeyNotFoundException("Metadata 'WebhookParserDto' not found in session.");
 
-            var paymentHistoryDto = JsonSerializer.Deserialize<PaymentHistoryDto>(paymentHistoryDtoJson);
+            var paymentHistoryDto = JsonSerializer.Deserialize<WebhookParserDto>(paymentHistoryDtoJson);
 
             if (paymentHistoryDto == null)
-                throw new InvalidDataException("Failed to deserialize PaymentHistoryDtoJson.");
+                throw new InvalidDataException("Failed to deserialize WebhookParserDtoJson.");
 
             paymentHistoryDto.Amount = session.AmountTotal.HasValue ? session.AmountTotal.Value / 100m : 0m;
             paymentHistoryDto.StripePaymentId = session.PaymentIntentId;

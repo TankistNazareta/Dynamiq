@@ -39,14 +39,8 @@ namespace Dynamiq.Domain.Aggregates
             AddDomainEvent(new UserRegisteredEvent(this));
         }
 
-        public void LogInRefreshToken(string newToken)
-        {
-            if (RefreshToken == null)
-                SetRefreshToken(new RefreshToken(Id, newToken));
-            else
-                RefreshToken.Update(newToken, false, true);
-        }
-
+        public void SetRefreshToken(string token)
+            => RefreshToken.UpdateToken(token);
 
         public void ChangePassword(string newPasswordHash)
         {

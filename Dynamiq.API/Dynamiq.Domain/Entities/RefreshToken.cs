@@ -16,22 +16,19 @@
         {
             Id = Guid.NewGuid();
             UserId = userId;
-
-            Update(token, false, true);
+            UpdateToken(token);
+            IsRevoked = false;
         }
 
-        public void Update(string token, bool isRevoked, bool needSetDefaultExpireAt)
+        public void UpdateToken(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException("Token cannot be empty", nameof(token));
 
             Token = token;
-            IsRevoked = isRevoked;
-            ExpiresAt = needSetDefaultExpireAt ? DefaultTimeForExpireAt : ExpiresAt;
+            ExpiresAt = DateTime.UtcNow.AddDays(7);
+            IsRevoked = false;
         }
-
-        public void Refresh(string token)
-            => Update(token, false, false);
 
         public void Revoke()
         {

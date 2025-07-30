@@ -6,55 +6,59 @@ using Stripe;
 using Stripe.Checkout;
 using System.Text.Json;
 
-namespace Dynamiq.Infrastructure.StripeServices
+namespace Dynamiq.Infrastructure.Services.Stripe
 {
-    public class StripePaymentService : IStripePaymentService
+    public class StripeCheckoutSession : IStripeCheckoutSession
     {
         private readonly StripeClient _client;
 
         private readonly string _stripeSecretKey;
 
-        public StripePaymentService(IConfiguration config)
+        public StripeCheckoutSession(IConfiguration config)
         {
             _stripeSecretKey = config["Stripe:SecretKey"]!;
 
             _client = new StripeClient(_stripeSecretKey);
         }
 
-        public async Task<string> CreateCheckoutSessionAsync(CheckoutSessionDto request)
+        public async Task<string> CreateCheckoutSessionAsync(CheckoutSessionDto request, List<StripeCartItemDto> cartItems)
         {
             string ModeType = "subscription";
 
             if (request.Interval == IntervalEnum.OneTime)
                 ModeType = "payment";
 
-            var paymentHistoryDto = new PaymentHistoryDto()
+            var optionsItems = new List<SessionLineItemOptions>();
+
+            foreach (var cartItem in cartItems)
             {
-                ProductId = request.ProductId,
+                optionsItems.Add(new SessionLineItemOptions()
+                {
+                    Price = cartItem.StripePriceId,
+                    Quantity = cartItem.Quantity
+                });
+            }
+
+            var metaData = new WebhookParserDto()
+            {
                 UserId = request.UserId,
-                Interval = request.Interval
+                ProductId = request.ProductId,
+                Interval = request.Interval,
             };
 
-            var paymentHistoryDtoJson = JsonSerializer.Serialize(paymentHistoryDto);
+            var metaDataJson = JsonSerializer.Serialize(metaData);
 
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>
-                {
-                    new SessionLineItemOptions
-                    {
-                        Price = request.StripePriceId,
-                        Quantity = request.Quantity
-                    }
-                },
+                LineItems = optionsItems,
                 Mode = ModeType,
                 SuccessUrl = request.SuccessUrl,
                 CancelUrl = request.CancelUrl,
 
                 Metadata = new Dictionary<string, string>
                 {
-                    { "PaymentHistoryDtoJson", paymentHistoryDtoJson }
+                    { "WebhookParserDto",  metaDataJson}
                 }
             };
 

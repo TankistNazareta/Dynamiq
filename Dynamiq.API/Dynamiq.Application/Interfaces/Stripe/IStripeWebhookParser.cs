@@ -5,6 +5,6 @@ namespace Dynamiq.Application.Interfaces.Stripe
 {
     public interface IStripeWebhookParser
     {
-        PaymentHistoryDto ParseCheckoutSessionCompleted(string json, string signature);
+        WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature);
     }
 }

@@ -46,7 +46,7 @@ namespace Dynamiq.Application.Commands.Users.Handlers
 
             var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role);
 
-            user.LogInRefreshToken(authResponseDto.RefreshToken);
+            user.SetRefreshToken(new RefreshToken(user.Id, authResponseDto.RefreshToken));
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

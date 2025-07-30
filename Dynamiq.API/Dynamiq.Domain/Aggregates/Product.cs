@@ -13,8 +13,8 @@ namespace Dynamiq.Domain.Aggregates
         public int Price { get; private set; }
         public IntervalEnum Interval { get; private set; }
 
-        private readonly List<PaymentHistory> _paymentHistories = new();
-        public IReadOnlyCollection<PaymentHistory> PaymentHistories => _paymentHistories.AsReadOnly();
+        private readonly List<ProductPaymentHistory> _productPaymentHistories = new();
+        public IReadOnlyCollection<ProductPaymentHistory> ProductPaymentHistories => _productPaymentHistories.AsReadOnly();
 
         public Guid CategoryId { get; private set; }
 

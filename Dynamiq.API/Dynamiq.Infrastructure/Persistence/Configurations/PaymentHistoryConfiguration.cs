@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -16,8 +15,8 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .HasMaxLength(100);
 
             builder.Property(p => p.Amount)
-                   .HasColumnType("decimal(18,2)")
-                   .IsRequired();
+                    .HasColumnName("Amount")
+                    .HasColumnType("decimal(18,2)");
 
             builder.Property(p => p.Interval)
                    .IsRequired();
@@ -28,18 +27,13 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.Property(p => p.UserId)
                    .IsRequired();
 
-            builder.Property(p => p.ProductId)
-                   .IsRequired();
-
             builder.HasOne<User>()
                    .WithMany(u => u.PaymentHistories)
                    .HasForeignKey(p => p.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasOne<Product>()
-                   .WithMany(prod => prod.PaymentHistories)
-                   .HasForeignKey(p => p.ProductId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.Navigation(p => p.Products).Metadata.SetField("_products");
+            builder.Navigation(p => p.Products).UsePropertyAccessMode(PropertyAccessMode.Field);
         }
     }
 }
