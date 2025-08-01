@@ -2,6 +2,7 @@
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Events;
+using Microsoft.Extensions.Primitives;
 
 namespace Dynamiq.Domain.Aggregates
 {
@@ -18,7 +19,9 @@ namespace Dynamiq.Domain.Aggregates
         private readonly List<Subscription> _subscriptions = new();
         public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
 
-        public RefreshToken RefreshToken { get; private set; }
+        private readonly List<RefreshToken> _refreshTokens = new();
+        public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
+
         public EmailVerification EmailVerification { get; private set; }
 
         private User() { } // EF Core
@@ -31,16 +34,12 @@ namespace Dynamiq.Domain.Aggregates
             if (string.IsNullOrWhiteSpace(passwordHash))
                 throw new ArgumentException("Password cannot be empty.", nameof(passwordHash));
 
-            Id = Guid.NewGuid();
             Email = email;
             PasswordHash = passwordHash;
             Role = role;
 
             AddDomainEvent(new UserRegisteredEvent(this));
         }
-
-        public void SetRefreshToken(string token)
-            => RefreshToken.UpdateToken(token);
 
         public void ChangePassword(string newPasswordHash)
         {
@@ -60,8 +59,28 @@ namespace Dynamiq.Domain.Aggregates
             _subscriptions.Add(subscription);
         }
 
-        public void SetRefreshToken(RefreshToken refreshToken)
-                => RefreshToken = refreshToken;
+        public void UpdateToken(string oldToken, string newToken)
+        {
+            var token = _refreshTokens.FirstOrDefault(rt => rt.Token == oldToken);
+
+            if(token == null)
+                throw new KeyNotFoundException($"users token with this id wasn't found: {token}");
+
+            token.UpdateToken(newToken);
+        }
+
+        public void RevokeRefreshToken(string rt)
+        {
+            var refresh = _refreshTokens.FirstOrDefault(refresh => refresh.Token == rt);
+
+            if (refresh == null)
+                throw new KeyNotFoundException("refreshToken wasn't found");
+
+            refresh.Revoke();
+        }
+
+        public void AddRefreshToken(RefreshToken refreshToken)
+                => _refreshTokens.Add(refreshToken);
 
         public void SetEmailVerification(EmailVerification emailVerification)
                 => EmailVerification = emailVerification;

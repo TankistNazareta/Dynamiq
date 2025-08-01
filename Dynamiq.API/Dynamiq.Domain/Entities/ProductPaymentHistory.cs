@@ -16,7 +16,6 @@ namespace Dynamiq.Domain.Entities
             if (quantity <= 0)
                 throw new ArgumentException("quantity must be greater than zero", nameof(quantity));
 
-            Id = Guid.NewGuid();
             ProductId = productId;
             Quantity = quantity;
             PaymentHistoryId = paymentHistoryId;

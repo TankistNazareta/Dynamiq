@@ -11,6 +11,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.ToTable("Carts");
 
             builder.HasKey(c => c.Id);
+            builder.Property(c => c.Id)
+                   .ValueGeneratedOnAdd()
+                   .HasDefaultValueSql("NEWID()");
 
             builder.Property(c => c.UserId)
                 .IsRequired();

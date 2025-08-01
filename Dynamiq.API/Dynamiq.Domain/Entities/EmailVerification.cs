@@ -15,7 +15,6 @@ namespace Dynamiq.Domain.Entities
 
         public EmailVerification(Guid userId)
         {
-            Id = Guid.NewGuid();
             UserId = userId;
             Token = Guid.NewGuid().ToString();
             ExpiresAt = DateTime.UtcNow.AddHours(2);

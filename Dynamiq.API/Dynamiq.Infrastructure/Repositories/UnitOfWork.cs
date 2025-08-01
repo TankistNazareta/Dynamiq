@@ -13,8 +13,6 @@ namespace Dynamiq.Infrastructure.Repositories
         }
 
         public async Task SaveChangesAsync(CancellationToken ct)
-        {
-            await _db.SaveChangesAsync(ct);
-        }
+                => await _db.SaveChangesAsync(ct);
     }
 }

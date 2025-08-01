@@ -9,6 +9,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<PaymentHistory> builder)
         {
             builder.HasKey(p => p.Id);
+            builder.Property(rt => rt.Id)
+                   .ValueGeneratedOnAdd()
+                   .HasDefaultValueSql("NEWID()");
 
             builder.Property(p => p.StripePaymentId)
                    .IsRequired()

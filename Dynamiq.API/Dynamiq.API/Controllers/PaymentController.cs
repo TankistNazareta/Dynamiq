@@ -36,8 +36,11 @@ namespace Dynamiq.API.Controllers
             string json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
             string stripeSignature = Request.Headers["Stripe-Signature"];
 
-            await _mediator.Send(new StripeWebhookCommand(json, stripeSignature));
+            var needResponse = await _mediator.Send(new StripeWebhookCommand(json, stripeSignature));
 
+            if (!needResponse)
+                return Ok();
+                
             _logger.LogInformation("payment completed successfully");
 
             return Ok("completed successfully");

@@ -29,7 +29,6 @@ namespace Dynamiq.Domain.Entities
                         $"Unsupported interval type: {interval}");
             }
 
-            Id = Guid.NewGuid();
             UserId = userId;
             ProductId = productId;
             PaymentHistoryId = paymentHistoryId;

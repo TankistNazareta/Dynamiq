@@ -10,6 +10,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<EmailVerification> builder)
         {
             builder.HasKey(ev => ev.Id);
+            builder.Property(ev => ev.Id)
+               .ValueGeneratedOnAdd()
+               .HasDefaultValueSql("NEWID()");
 
             builder.Property(ev => ev.Token)
                 .IsRequired()

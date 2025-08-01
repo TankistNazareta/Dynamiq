@@ -17,7 +17,7 @@ namespace Dynamiq.Application.Commands.EmailVerifications.Handlers
 
         public async Task Handle(ConfirmEmailByTokenCommand request, CancellationToken cancellationToken)
         {
-            var user = await _repo.GetByEmailVerificationTokenAsyc(request.Token, cancellationToken);
+            var user = await _repo.GetByEmailVerificationTokenAsync(request.Token, cancellationToken);
 
             if (user == null)
                 throw new KeyNotFoundException("token doesn't exist");

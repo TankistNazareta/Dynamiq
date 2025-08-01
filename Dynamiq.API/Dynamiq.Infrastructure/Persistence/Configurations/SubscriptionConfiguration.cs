@@ -10,6 +10,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Subscription> builder)
         {
             builder.HasKey(s => s.Id);
+            builder.Property(s => s.Id)
+               .ValueGeneratedOnAdd()
+               .HasDefaultValueSql("NEWID()");
 
             builder.Property(s => s.StartDate)
                    .IsRequired();

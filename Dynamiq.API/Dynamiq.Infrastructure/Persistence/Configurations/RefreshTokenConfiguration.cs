@@ -10,6 +10,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<RefreshToken> builder)
         {
             builder.HasKey(rt => rt.Id);
+            builder.Property(rt => rt.Id)
+                   .ValueGeneratedOnAdd()
+                   .HasDefaultValueSql("NEWID()");
 
             builder.Property(rt => rt.Token)
                    .IsUnicode()
@@ -25,8 +28,8 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .IsRequired();
 
             builder.HasOne<User>()
-                   .WithOne(u => u.RefreshToken)
-                   .HasForeignKey<RefreshToken>(rt => rt.UserId)
+                   .WithMany(u => u.RefreshTokens)
+                   .HasForeignKey(rt => rt.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

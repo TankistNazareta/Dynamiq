@@ -31,15 +31,15 @@ namespace Dynamiq.Infrastructure.Repositories
                                     .Include(u => u.EmailVerification)
                                     .Include(u => u.Subscriptions)
                                     .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshToken)
+                                    .Include(u => u.RefreshTokens)
                                     .FirstOrDefaultAsync(u => u.Email == email, ct);
 
-        public async Task<User?> GetByEmailVerificationTokenAsyc(string token, CancellationToken ct)
+        public async Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct)
                     => await _db.Users
                                     .Include(u => u.EmailVerification)
                                     .Include(u => u.Subscriptions)
                                     .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshToken)
+                                    .Include(u => u.RefreshTokens)
                                     .FirstOrDefaultAsync(u => u.EmailVerification.Token == token);
 
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
@@ -47,15 +47,18 @@ namespace Dynamiq.Infrastructure.Repositories
                                     .Include(u => u.EmailVerification)
                                     .Include(u => u.Subscriptions)
                                     .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshToken)
+                                    .Include(u => u.RefreshTokens)
                                     .FirstOrDefaultAsync(u => u.Id == id, ct);
 
         public async Task<User?> GetByRefreshTokenAsync(string token, CancellationToken ct)
                     => await _db.Users
+                                    .Include(u => u.RefreshTokens)
                                     .Include(u => u.EmailVerification)
                                     .Include(u => u.Subscriptions)
                                     .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshToken)
-                                    .FirstOrDefaultAsync(u => u.RefreshToken.Token == token);
+                                    .FirstOrDefaultAsync(u =>
+                                                    u.RefreshTokens.Any(rt => rt.Token == token &&
+                                                    !rt.IsRevoked &&
+                                                    rt.ExpiresAt > DateTime.UtcNow), ct);
     }
 }

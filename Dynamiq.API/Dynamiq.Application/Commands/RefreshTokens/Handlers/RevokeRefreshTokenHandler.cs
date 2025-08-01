@@ -21,7 +21,7 @@ namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
             if (user == null)
                 throw new KeyNotFoundException($"Refresh Token with token: {request.Token} wasn't found");
 
-            user.RefreshToken.Revoke();
+            user.RevokeRefreshToken(request.Token);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

@@ -22,7 +22,6 @@
 
         public Category(string name, Guid? parentCategoryId = null)
         {
-            Id = Guid.NewGuid();
             Name = name;
             Slug = name.Trim().ToLower().Replace(" ", "-"); ;
             ParentCategoryId = parentCategoryId;

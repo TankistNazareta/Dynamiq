@@ -7,26 +7,25 @@ namespace Dynamiq.Application.Commands.Payment.Validators
     {
         public CreateCheckoutSessionCommandValidator()
         {
-            RuleFor(x => x.ProductId)
-                .NotEmpty().WithMessage("ProductId is required.");
-
             RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required.");
+                .NotEmpty().WithMessage("UserId is required");
 
             RuleFor(x => x.SuccessUrl)
-                .NotEmpty().WithMessage("SuccessUrl is required.")
-                .MaximumLength(500).WithMessage("SuccessUrl must not exceed 500 characters.")
-                .Must(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                .WithMessage("SuccessUrl must be a valid URL.");
+                .NotEmpty().WithMessage("SuccessUrl is required")
+                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
+                .WithMessage("SuccessUrl must be a valid URL");
 
             RuleFor(x => x.CancelUrl)
-                .NotEmpty().WithMessage("CancelUrl is required.")
-                .MaximumLength(500).WithMessage("CancelUrl must not exceed 500 characters.")
-                .Must(uri => Uri.IsWellFormedUriString(uri, UriKind.Absolute))
-                .WithMessage("CancelUrl must be a valid URL.");
+                .NotEmpty().WithMessage("CancelUrl is required")
+                .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))
+                .WithMessage("CancelUrl must be a valid URL");
 
-            RuleFor(x => x.Quantity)
-                .GreaterThan(0).WithMessage("Quantity must be greater than zero.");
+            When(x => x.ProductId.HasValue, () =>
+            {
+                RuleFor(x => x.Quantity)
+                    .NotNull().WithMessage("Quantity is required when ProductId is specified")
+                    .GreaterThan(0).WithMessage("Quantity must be greater than zero");
+            });
         }
     }
 }

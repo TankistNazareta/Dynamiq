@@ -10,11 +10,10 @@
         public bool IsRevoked { get; private set; }
         public Guid UserId { get; private set; }
 
-        private RefreshToken() { } // EF Core
+        private RefreshToken() {} // EF Core
 
         public RefreshToken(Guid userId, string token)
         {
-            Id = Guid.NewGuid();
             UserId = userId;
             UpdateToken(token);
             IsRevoked = false;

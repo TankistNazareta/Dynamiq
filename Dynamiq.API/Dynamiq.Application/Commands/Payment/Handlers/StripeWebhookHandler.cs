@@ -10,7 +10,7 @@ using MediatR;
 
 namespace Dynamiq.Application.Commands.Payment.Handlers
 {
-    public class StripeWebhookHandler : IRequestHandler<StripeWebhookCommand>
+    public class StripeWebhookHandler : IRequestHandler<StripeWebhookCommand, bool>
     {
         private readonly IPaymentHistoryRepo _repo;
         private readonly ICartRepo _cartRepo;
@@ -28,9 +28,12 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
             _cartRepo = cartRepo;
         }
 
-        public async Task Handle(StripeWebhookCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(StripeWebhookCommand request, CancellationToken cancellationToken)
         {
             var parserDto = _webhookParser.ParseCheckoutSessionCompleted(request.Json, request.Signature);
+
+            if (parserDto == null)
+                return false;
 
             var paymentHistory = new PaymentHistory(parserDto.UserId, parserDto.StripePaymentId,
                 parserDto.Amount, parserDto.Interval);
@@ -64,6 +67,8 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
             }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

@@ -26,7 +26,6 @@ namespace Dynamiq.Domain.Aggregates
             int price, IntervalEnum interval,
             Guid categoryId)
         {
-            Id = Guid.NewGuid();
             Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId);
         }
 

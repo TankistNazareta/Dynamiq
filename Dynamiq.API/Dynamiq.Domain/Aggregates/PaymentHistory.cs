@@ -26,7 +26,6 @@ namespace Dynamiq.Domain.Aggregates
             if (amount <= 0)
                 throw new ArgumentException("Quantity must be greater than zero", nameof(amount));
 
-            Id = Guid.NewGuid();
             UserId = userId;
             StripePaymentId = stripePaymentId;
             Amount = amount;

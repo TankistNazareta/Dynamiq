@@ -9,7 +9,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasKey(c => c.Id);
-
+            builder.Property(c => c.Id)
+                .ValueGeneratedOnAdd()
+                .HasDefaultValueSql("NEWID()");
             builder.Property(c => c.Name)
                 .IsRequired()
                 .HasMaxLength(100);

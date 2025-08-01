@@ -58,7 +58,8 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 UserId = request.UserId,
                 SuccessUrl = request.SuccessUrl,
                 CancelUrl = request.CancelUrl,
-                Interval = interval
+                Interval = interval,
+                ProductId = request.ProductId
             };
 
             return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems);

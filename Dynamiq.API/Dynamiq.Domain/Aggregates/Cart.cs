@@ -14,7 +14,6 @@ namespace Dynamiq.Domain.Aggregates
 
         public Cart(Guid userId)
         {
-            Id = Guid.NewGuid();
             UserId = userId;
         }
 

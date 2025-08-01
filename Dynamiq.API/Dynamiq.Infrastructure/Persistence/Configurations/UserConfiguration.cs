@@ -10,6 +10,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(u => u.Id);
+            builder.Property(rt => rt.Id)
+                   .ValueGeneratedOnAdd()
+                   .HasDefaultValueSql("NEWID()");
 
             builder.HasIndex(u => u.Email).IsUnique();
 
@@ -22,9 +25,9 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.Property(u => u.Role)
                    .IsRequired();
 
-            builder.HasOne(u => u.RefreshToken)
+            builder.HasMany(u => u.RefreshTokens)
                    .WithOne()
-                   .HasForeignKey<RefreshToken>(rt => rt.UserId)
+                   .HasForeignKey(rt => rt.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.PaymentHistories)

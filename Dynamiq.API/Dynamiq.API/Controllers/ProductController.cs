@@ -77,7 +77,7 @@ namespace Dynamiq.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("category/{category}")]
+        [HttpGet("category/{slug}")]
         public async Task<IActionResult> GetAllProductByCategory(string slug)
         {
             var products = await _mediator.Send(new GetAllProductBySlugQuery(slug));
