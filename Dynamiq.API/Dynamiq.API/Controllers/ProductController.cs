@@ -1,6 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.Queries.Products.Queries;
-using Dynamiq.Application.Queries.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

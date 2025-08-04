@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs;
-using Dynamiq.Application.Queries.Users.Queries;
+using Dynamiq.Application.Queries.Products.Queries;
 using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace Dynamiq.Application.Queries.Users.Handlers
+namespace Dynamiq.Application.Queries.Products.Handlers
 {
     internal class GetFilteredProductsHandler : IRequestHandler<GetFilteredProductsQuery, List<ProductDto>>
     {

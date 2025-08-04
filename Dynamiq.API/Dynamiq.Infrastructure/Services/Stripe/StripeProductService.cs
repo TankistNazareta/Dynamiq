@@ -98,7 +98,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
 
             switch (paymentTypeEnum)
             {
-                case IntervalEnum.Mountly:
+                case IntervalEnum.Monthly:
                     recurring = new PriceRecurringOptions
                     {
                         Interval = "month",

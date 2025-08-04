@@ -21,7 +21,7 @@ namespace Dynamiq.Domain.Entities
                 case IntervalEnum.Yearly:
                     EndDate = DateTime.UtcNow.AddYears(1);
                     break;
-                case IntervalEnum.Mountly:
+                case IntervalEnum.Monthly:
                     EndDate = DateTime.UtcNow.AddMonths(1);
                     break;
                 default:
