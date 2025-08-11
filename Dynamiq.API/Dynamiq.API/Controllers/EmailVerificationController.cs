@@ -17,8 +17,8 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPut("confirm/{token}")]
-        public async Task<IActionResult> ConfirmEmail([FromRoute] string token)
+        [HttpPut("confirm")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
         {
             await _mediator.Send(new ConfirmEmailByTokenCommand(token));
 

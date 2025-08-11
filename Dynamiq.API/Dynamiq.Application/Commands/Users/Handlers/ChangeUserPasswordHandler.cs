@@ -25,7 +25,7 @@ namespace Dynamiq.Application.Commands.Users.Handlers
             if (user == null)
                 throw new KeyNotFoundException("user with this email doesn't exist");
 
-            if (_passwordService.Check(user.PasswordHash, request.OldPassword))
+            if (!_passwordService.Check(user.PasswordHash, request.OldPassword))
                 throw new ArgumentException("your old password isn't correct");
 
             user.ChangePassword(_passwordService.HashPassword(request.NewPassword));

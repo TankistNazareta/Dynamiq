@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.Infrastructure.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dynamiq.Domain.Tests", "Dynamiq.Domain.Tests\Dynamiq.Domain.Tests.csproj", "{5D1622A6-50FB-4E99-9229-B8A61378C171}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dynamiq.API.Tests", "Dynamiq.API.Tests\Dynamiq.API.Tests.csproj", "{406D1F45-53D8-4D77-95FB-378E48BCD828}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{5D1622A6-50FB-4E99-9229-B8A61378C171}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D1622A6-50FB-4E99-9229-B8A61378C171}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D1622A6-50FB-4E99-9229-B8A61378C171}.Release|Any CPU.Build.0 = Release|Any CPU
+		{406D1F45-53D8-4D77-95FB-378E48BCD828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{406D1F45-53D8-4D77-95FB-378E48BCD828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{406D1F45-53D8-4D77-95FB-378E48BCD828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{406D1F45-53D8-4D77-95FB-378E48BCD828}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{85CBDBC4-0220-4527-BFC0-9B635C55940C} = {E1CF7DAC-05E3-48A3-BEC3-7E1E2C98A192}
 		{5D1622A6-50FB-4E99-9229-B8A61378C171} = {E1CF7DAC-05E3-48A3-BEC3-7E1E2C98A192}
+		{406D1F45-53D8-4D77-95FB-378E48BCD828} = {E1CF7DAC-05E3-48A3-BEC3-7E1E2C98A192}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {248FB238-9BF9-40FC-8DB3-131DED0A4CC6}

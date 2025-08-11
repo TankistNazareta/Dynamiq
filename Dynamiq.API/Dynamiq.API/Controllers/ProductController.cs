@@ -51,15 +51,18 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var product = await _mediator.Send(new GetProductByIdQuery(id));
+
+            if (product != null)
+                return NotFound();
 
             return Ok(product);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Guid id)
         {
             await _mediator.Send(new DeleteProductCommand(id));
 

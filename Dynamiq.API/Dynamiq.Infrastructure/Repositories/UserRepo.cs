@@ -36,11 +36,11 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct)
                     => await _db.Users
-                                    .Include(u => u.EmailVerification)
-                                    .Include(u => u.Subscriptions)
-                                    .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshTokens)
-                                    .FirstOrDefaultAsync(u => u.EmailVerification.Token == token);
+                               .Include(u => u.EmailVerification)
+                               .Include(u => u.Subscriptions)
+                               .Include(u => u.PaymentHistories)
+                               .Include(u => u.RefreshTokens)
+                               .FirstOrDefaultAsync(u => u.EmailVerification.Token == token);
 
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
                     => await _db.Users

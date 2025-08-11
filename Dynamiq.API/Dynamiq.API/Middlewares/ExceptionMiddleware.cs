@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.CustomExceptions;
+using Dynamiq.Application.DTOs;
 using Dynamiq.Domain.Exceptions;
 using System.Net;
 using System.Text.Json;
@@ -73,11 +74,9 @@ namespace Dynamiq.API.Middlewares
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)statusCode;
 
-            var result = JsonSerializer.Serialize(new
-            {
-                error = message,
-                statusCode = context.Response.StatusCode
-            });
+            var resDto = new ExceptionResponseDto(statusCode, message);
+
+            var result = JsonSerializer.Serialize(resDto);
 
             await context.Response.WriteAsync(result);
         }

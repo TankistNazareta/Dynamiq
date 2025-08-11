@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.Shared.DTOs
+﻿namespace Dynamiq.Application.DTOs
 {
     public record class StripeIdsDto(string PriceId, string ProductId);
 }

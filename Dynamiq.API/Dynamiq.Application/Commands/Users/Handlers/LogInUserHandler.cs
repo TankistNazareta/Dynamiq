@@ -44,7 +44,7 @@ namespace Dynamiq.Application.Commands.Users.Handlers
             if (!_passwordService.Check(user.PasswordHash, request.Password))
                 throw new ArgumentException("Your password isn't correct");
 
-            var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role);
+            var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role, user.Id);
 
             user.AddRefreshToken(new RefreshToken(user.Id, authResponseDto.RefreshToken));
 

@@ -29,7 +29,7 @@ namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
             if (user == null)
                 throw new KeyNotFoundException("User wasn`t found by his user");
 
-            var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role);
+            var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role, user.Id);
 
             user.UpdateToken(request.RefreshToken, authResponseDto.RefreshToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

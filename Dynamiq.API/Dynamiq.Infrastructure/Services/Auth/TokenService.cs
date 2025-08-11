@@ -23,21 +23,22 @@ namespace Dynamiq.Infrastructure.Services.Auth
             _jwtAudience = config["JwtSettings:Audience"]!;
         }
 
-        public AuthResponseDto CreateAuthResponse(string email, RoleEnum role)
+        public AuthResponseDto CreateAuthResponse(string email, RoleEnum role, Guid userId)
         {
-            var accessToken = GenerateJwtToken(email, role);
+            var accessToken = GenerateJwtToken(email, role, userId);
             var refreshToken = GenerateRefreshToken();
 
             return new(accessToken, refreshToken);
         }
 
 
-        private string GenerateJwtToken(string email, RoleEnum role)
+        private string GenerateJwtToken(string email, RoleEnum role, Guid userId)
         {
             var claims = new[]
             {
                 new Claim(ClaimTypes.Email, email),
-                new Claim(ClaimTypes.Role, role.ToString())
+                new Claim(ClaimTypes.Role, role.ToString()),
+                new Claim(JwtClaims.UserId, userId.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));

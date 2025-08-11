@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Carts.Commands;
+using Dynamiq.Application.Queries.Carts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,28 +16,39 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("{userId}")]
-        public async Task<IActionResult> AddItemToCart([FromRoute] Guid userId, Guid productId, int quantity)
+        [HttpPost]
+        public async Task<IActionResult> AddItemToCart(AddItemToCartCommand command)
         {
-            var cart = await _mediator.Send(new AddItemToCartCommand(userId, productId, quantity));
+            var cart = await _mediator.Send(command);
 
             return Ok(cart);
         }
 
-        [HttpPut("{userId}")]
-        public async Task<IActionResult> RemoveItem([FromRoute] Guid userId, Guid productId, int quantity)
+        [HttpPut]
+        public async Task<IActionResult> RemoveItem(RemoveItemFromCartCommand command)
         {
-            var cart = await _mediator.Send(new RemoveItemFromCartCommand(userId, productId, quantity));
+            var cart = await _mediator.Send(command);
 
             return Ok(cart);
         }
 
-        [HttpDelete("{userId}")]
-        public async Task<IActionResult> Clear([FromRoute] Guid userId)
+        [HttpDelete]
+        public async Task<IActionResult> Clear(ClearCartCommand command)
         {
-            await _mediator.Send(new ClearCartCommand(userId));
+            await _mediator.Send(command);
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetByUserId([FromBody] Guid userId)
+        {
+            var cart = await _mediator.Send(new GetCartByUserIdQuery(userId));
+
+            if (cart == null)
+                return NotFound();
+
+            return Ok(cart);
         }
     }
 }

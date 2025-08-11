@@ -4,7 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>d6e5b43d-7021-4988-a624-debc9870576b</UserSecretsId>
+	<PreserveCompilationContext>true</PreserveCompilationContext>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,5 +23,10 @@
     <ProjectReference Include="..\Dynamiq.Application\Dynamiq.Application.csproj" />
     <ProjectReference Include="..\Dynamiq.Infrastructure\Dynamiq.Infrastructure.csproj" />
   </ItemGroup>
+	<ItemGroup>
+		<None Update="xunit.runner.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

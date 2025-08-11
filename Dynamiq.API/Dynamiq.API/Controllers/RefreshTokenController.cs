@@ -18,11 +18,11 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPut("revoke")]
-        public async Task<IActionResult> Revoke([FromQuery] string token)
+        public async Task<IActionResult> Revoke([FromBody] RevokeRefreshTokenCommand command)
         {
-            await _mediator.Send(new RevokeRefreshTokenCommand(token));
+            await _mediator.Send(command);
 
-            _logger.LogInformation("Refresh token revoked: {Token}", token);
+            _logger.LogInformation("Refresh token revoked: {Token}", command.Token);
 
             return Ok("Token successfully revoked");
         }

@@ -1,6 +1,5 @@
 ﻿using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Interfaces.Stripe;
-using Dynamiq.Shared.DTOs;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using Stripe.Checkout;

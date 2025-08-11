@@ -1,7 +1,6 @@
 ﻿using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Shared.DTOs;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 
