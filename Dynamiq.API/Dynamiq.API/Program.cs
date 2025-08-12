@@ -153,7 +153,10 @@ builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
 
 
 //Add background services
-builder.Services.AddHostedService<UserCleanupService>();
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHostedService<UserCleanupService>();
+}
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
