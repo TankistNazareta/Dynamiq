@@ -13,7 +13,6 @@ jobs:
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: '1'
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
-      # Якщо на раннері виникають проблеми з Ryuk, тимчасово включи 'true'
       TESTCONTAINERS_RYUK_DISABLED: 'true'
       ASPNETCORE_ENVIRONMENT: Testing
 
@@ -54,9 +53,7 @@ jobs:
           docker ps -a || true
 
       - name: Run tests
-        # створюємо .trx через --logger для зручного аналізу/CI UI
         run: |
-          # запускаємо всі тести у рішенні; TRX файли зберігаються поряд з проектами
           dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity minimal
         env:
           ASPNETCORE_ENVIRONMENT: Testing
