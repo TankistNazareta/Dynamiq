@@ -1,11 +1,3 @@
-name: .NET CI
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -13,6 +5,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Setup Docker
+        run: |
+          docker version
+          docker info
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4

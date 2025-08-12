@@ -12,8 +12,7 @@ using Testcontainers.MsSql;
 
 namespace Dynamiq.API.Tests
 {
-    public class CustomWebApplicationFactory<TProgram>
-        : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
+    public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
     {
         private static readonly MsSqlContainer _dbContainer = new MsSqlBuilder()
             .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
@@ -23,21 +22,14 @@ namespace Dynamiq.API.Tests
         private string? _connectionString;
         private string? _dbName;
 
-        public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized yet.");
-
-        public CustomWebApplicationFactory()
-        {
-            // Заблокуємо створення хоста, поки не ініціалізуємо контейнер і БД
-            InitializeAsync().GetAwaiter().GetResult();
-        }
+        public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized.");
 
         public async Task InitializeAsync()
         {
-            // Запускаємо контейнер (StartAsync ігнорує, якщо він вже запущений)
             await _dbContainer.StartAsync();
 
-            // Створюємо унікальну тестову базу
             var masterConnectionString = _dbContainer.GetConnectionString();
+
             await using var connection = new SqlConnection(masterConnectionString);
             await connection.OpenAsync();
 
@@ -54,9 +46,10 @@ namespace Dynamiq.API.Tests
                 InitialCatalog = _dbName,
                 MultipleActiveResultSets = true
             };
+
             _connectionString = builder.ToString();
 
-            // Переконуємося, що база доступна
+            // Retry opening connection to new DB
             var retries = 5;
             while (retries-- > 0)
             {
@@ -79,37 +72,26 @@ namespace Dynamiq.API.Tests
 
             builder.ConfigureServices(services =>
             {
-                // Видаляємо реєстрацію DbContext, якщо є
-                var dbContextDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-                if (dbContextDescriptor != null)
-                    services.Remove(dbContextDescriptor);
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+                if (descriptor != null) services.Remove(descriptor);
 
-                // Додаємо DbContext з тестовим connection string
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(_connectionString!));
 
-                // Створюємо схему БД після побудови сервісів
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 db.Database.Migrate();
 
-                // Мокаємо IEmailService
-                var emailDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(IEmailService));
-                if (emailDescriptor != null)
-                    services.Remove(emailDescriptor);
-
+                // Mock email service
+                var emailServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
+                if (emailServiceDescriptor != null) services.Remove(emailServiceDescriptor);
                 var mockEmail = new Mock<IEmailService>();
-                mockEmail.Setup(p => p.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+                mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
-                // Видаляємо всі HostedService (щоб не чіплялись до реальної БД)
-                var hostedServices = services
-                    .Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType))
-                    .ToList();
-
+                // Remove hosted services (if any)
+                var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
                 foreach (var hostedService in hostedServices)
                     services.Remove(hostedService);
             });
@@ -125,8 +107,8 @@ namespace Dynamiq.API.Tests
 
                 await using var command = connection.CreateCommand();
                 command.CommandText = $@"
-                    ALTER DATABASE [{_dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                    DROP DATABASE [{_dbName}];";
+                ALTER DATABASE [{_dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                DROP DATABASE [{_dbName}];";
                 await command.ExecuteNonQueryAsync();
             }
 
