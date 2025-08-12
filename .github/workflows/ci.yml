@@ -2,36 +2,36 @@ name: CI (.NET 8 tests with Testcontainers)
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: '1'
-      TESTCONTAINERS_RYUK_DISABLED: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+      TESTCONTAINERS_RYUK_DISABLED: "true"
       ASPNETCORE_ENVIRONMENT: Testing
 
     steps:
-      - name: Checkout
+      - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: Show runner info
+      - name: "Show runner info"
         run: |
           echo "=== runner info ==="
           uname -a
           dotnet --info || true
 
-      - name: Setup .NET 8 SDK
+      - name: "Setup .NET 8 SDK"
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
-      - name: Cache NuGet packages
+      - name: "Cache NuGet packages"
         uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
@@ -39,31 +39,31 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
-      - name: Restore
+      - name: "Restore"
         run: dotnet restore
 
-      - name: Build
+      - name: "Build"
         run: dotnet build --no-restore --configuration Release
 
-      - name: Sanity: docker info & ps (diagnostics)
+      - name: "Sanity: docker info & ps (diagnostics)"
         run: |
           echo "=== docker info ==="
           docker info || true
           echo "=== docker ps -a ==="
           docker ps -a || true
 
-      - name: Run tests
+      - name: "Run tests"
         run: |
           dotnet test --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity minimal
         env:
           ASPNETCORE_ENVIRONMENT: Testing
 
-      - name: Collect test result files
+      - name: "Collect test result files"
         run: |
           echo "Found TRX files:"
           find . -type f -name "*.trx" -print || true
 
-      - name: Upload test results
+      - name: "Upload test results"
         uses: actions/upload-artifact@v4
         with:
           name: test-results
@@ -71,7 +71,7 @@ jobs:
             **/*.trx
             test-results.trx
 
-      - name: Debug: docker logs for mssql containers (only on failure)
+      - name: "Debug: docker logs for mssql containers (only on failure)"
         if: failure()
         run: |
           echo "=== docker ps -a ==="
