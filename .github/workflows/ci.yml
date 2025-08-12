@@ -40,10 +40,10 @@ jobs:
             nuget-${{ runner.os }}-
 
       - name: "Restore"
-        run: dotnet restore Dynamiq.API/Dynamiq.sln
+        run: dotnet restore Dynamiq.API/Dynamiq.API.sln
 
       - name: "Build"
-        run: dotnet build Dynamiq.API/Dynamiq.sln --no-restore --configuration Release
+        run: dotnet build Dynamiq.API/Dynamiq.API.sln --no-restore --configuration Release
 
       - name: "Sanity: docker info & ps (diagnostics)"
         run: |
@@ -53,7 +53,7 @@ jobs:
           docker ps -a || true
 
       - name: "Run tests"
-        run: dotnet test Dynamiq.API/Dynamiq.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity minimal
+        run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity minimal
         env:
           ASPNETCORE_ENVIRONMENT: Testing
 
