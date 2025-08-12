@@ -2,32 +2,28 @@ name: .NET CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      docker:
-        image: docker:20.10-dind
-        options: --privileged
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up .NET
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: "8.0.x"
 
-      - name: Install dependencies
-        run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore Dynamiq.API/Dynamiq.API/Dynamiq.API.sln
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build Dynamiq.API/Dynamiq.API/Dynamiq.API.sln --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --logger "trx;LogFileName=test_results.trx"
+        run: dotnet test Dynamiq.API/Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --verbosity normal
