@@ -75,7 +75,7 @@ jobs:
         if: failure()
         run: |
           echo "=== docker ps -a ==="
-          docker ps -a
+          docker ps -a || true
           echo "=== mssql container logs (ancestor filter) ==="
           containers=$(docker ps -a --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" -q)
           if [ -n "$containers" ]; then
