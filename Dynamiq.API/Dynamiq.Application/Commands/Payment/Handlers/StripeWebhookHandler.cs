@@ -59,14 +59,16 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
 
             await _repo.AddAsync(paymentHistory, cancellationToken);
 
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             if (parserDto.Interval != IntervalEnum.OneTime && parserDto.ProductId != null)
             {
                 await _mediator.Publish(new SubscriptionPaymentEvent(
                     paymentHistory.Id, paymentHistory.UserId, parserDto.ProductId.Value, paymentHistory.Interval
                 ));
-            }
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+            }
 
             return true;
         }

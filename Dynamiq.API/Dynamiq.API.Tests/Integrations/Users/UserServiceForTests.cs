@@ -1,6 +1,9 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.DTOs;
+using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -17,15 +20,20 @@ namespace Dynamiq.API.Tests.Integrations.Users
             HttpClient client,
             RegisterUserCommand command)
         {
-            await client.PostAsJsonAsync("/auth/signup", command);
-
             using var scope = factory.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
 
-            var emailVerification = await db.EmailVerifications.FirstOrDefaultAsync(ev => !ev.IsConfirmed);
+            var user = new User(command.Email, passwordService.HashPassword(command.Password), RoleEnum.DefaultUser);
+            db.Users.Add(user);
 
-            if(emailVerification != null)
-                await client.PutAsync($"/emailVerification/confirm?token={emailVerification.Token}", null);
+            await db.SaveChangesAsync();
+
+            var emailVerification = new EmailVerification(user.Id);
+            emailVerification.Confirm(command.Email);
+            db.EmailVerifications.Add(emailVerification);
+
+            await db.SaveChangesAsync();
         }
     }
 }

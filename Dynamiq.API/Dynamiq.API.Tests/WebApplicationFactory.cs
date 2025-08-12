@@ -85,7 +85,7 @@ namespace Dynamiq.API.Tests
                 using (var scope = services.BuildServiceProvider().CreateScope())
                 {
                     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.EnsureCreated();
+                    db.Database.Migrate();
                 }
 
                 // Мокаємо EmailService
