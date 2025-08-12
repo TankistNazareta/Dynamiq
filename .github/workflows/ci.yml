@@ -1,4 +1,4 @@
-name: CI (.NET 8 tests with Testcontainers)
+name: .NET CI
 
 on:
   push:
@@ -7,81 +7,23 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
-      TESTCONTAINERS_RYUK_DISABLED: "true"
-      ASPNETCORE_ENVIRONMENT: Testing
+  build:
+    runs-on: ubuntu-22.04
 
     steps:
-      - name: "Checkout"
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: "Show runner info"
-        run: |
-          echo "=== runner info ==="
-          uname -a
-          dotnet --info || true
-
-      - name: "Setup .NET 8 SDK"
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.0.x"
 
-      - name: "Cache NuGet packages"
-        uses: actions/cache@v4
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            nuget-${{ runner.os }}-
-
-      - name: "Restore"
+      - name: Restore dependencies
         run: dotnet restore Dynamiq.API/Dynamiq.API.sln
 
-      - name: "Build"
+      - name: Build
         run: dotnet build Dynamiq.API/Dynamiq.API.sln --no-restore --configuration Release
 
-      - name: "Sanity: docker info & ps (diagnostics)"
-        run: |
-          echo "=== docker info ==="
-          docker info || true
-          echo "=== docker ps -a ==="
-          docker ps -a || true
-
-      - name: "Run tests"
-        run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --logger "trx;LogFileName=test-results.trx" --verbosity minimal
-        env:
-          ASPNETCORE_ENVIRONMENT: Testing
-
-      - name: "Collect test result files"
-        run: |
-          echo "Found TRX files:"
-          find . -type f -name "*.trx" -print || true
-
-      - name: "Upload test results"
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: |
-            **/*.trx
-            test-results.trx
-
-      - name: "Debug: docker logs for mssql containers (only on failure)"
-        if: failure()
-        run: |
-          echo "=== docker ps -a ==="
-          docker ps -a || true
-          echo "=== mssql container logs (ancestor filter) ==="
-          containers=$(docker ps -a --filter "ancestor=mcr.microsoft.com/mssql/server:2022-latest" -q)
-          if [ -n "$containers" ]; then
-            for c in $containers; do
-              echo "----- logs for $c -----"
-              docker logs $c || true
-            done
-          else
-            echo "No mssql containers found by ancestor filter"
-          fi
+      - name: Run tests
+        run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --verbosity normal
