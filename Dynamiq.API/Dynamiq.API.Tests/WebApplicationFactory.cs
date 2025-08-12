@@ -22,6 +22,8 @@ namespace Dynamiq.API.Tests
         private string _connectionString = null!;
         private string _dbName = null!;
 
+        public string ConnectionString => _connectionString;
+
         public async Task InitializeAsync()
         {
             // Стартуємо MSSQL контейнер
@@ -77,7 +79,7 @@ namespace Dynamiq.API.Tests
                 if (dbContextDescriptor != null)
                     services.Remove(dbContextDescriptor);
 
-                // Реєструємо AppDbContext з тестовою БД
+                // Реєструємо AppDbContext з тестовою БД (вже готовий connection string)
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(_connectionString));
 
