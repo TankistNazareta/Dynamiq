@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using System.Threading;
 using Testcontainers.MsSql;
 
 namespace Dynamiq.API.Tests
@@ -19,30 +20,35 @@ namespace Dynamiq.API.Tests
             .WithPassword("YourStrongPassword123!")
             .Build();
 
-        private string _connectionString = null!;
-        private string _dbName = null!;
+        private string? _connectionString;
+        private string? _dbName;
 
-        public string ConnectionString => _connectionString;
+        public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized yet.");
+
+        public CustomWebApplicationFactory()
+        {
+            // Заблокуємо створення хоста, поки не ініціалізуємо контейнер і БД
+            InitializeAsync().GetAwaiter().GetResult();
+        }
 
         public async Task InitializeAsync()
         {
-            // Стартуємо MSSQL контейнер
+            // Запускаємо контейнер (StartAsync ігнорує, якщо він вже запущений)
             await _dbContainer.StartAsync();
 
-            // Створюємо тестову БД
+            // Створюємо унікальну тестову базу
             var masterConnectionString = _dbContainer.GetConnectionString();
-            using var connection = new SqlConnection(masterConnectionString);
+            await using var connection = new SqlConnection(masterConnectionString);
             await connection.OpenAsync();
 
             _dbName = $"TestDb_{Guid.NewGuid():N}";
 
-            using (var command = connection.CreateCommand())
+            await using (var command = connection.CreateCommand())
             {
                 command.CommandText = $"CREATE DATABASE [{_dbName}];";
                 await command.ExecuteNonQueryAsync();
             }
 
-            // Формуємо connection string для нової БД
             var builder = new SqlConnectionStringBuilder(masterConnectionString)
             {
                 InitialCatalog = _dbName,
@@ -50,13 +56,13 @@ namespace Dynamiq.API.Tests
             };
             _connectionString = builder.ToString();
 
-            // Health-check — чекаємо, поки БД стане доступною
+            // Переконуємося, що база доступна
             var retries = 5;
             while (retries-- > 0)
             {
                 try
                 {
-                    using var testConn = new SqlConnection(_connectionString);
+                    await using var testConn = new SqlConnection(_connectionString);
                     await testConn.OpenAsync();
                     break;
                 }
@@ -73,24 +79,23 @@ namespace Dynamiq.API.Tests
 
             builder.ConfigureServices(services =>
             {
-                // Видаляємо стандартний DbContext
+                // Видаляємо реєстрацію DbContext, якщо є
                 var dbContextDescriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
                 if (dbContextDescriptor != null)
                     services.Remove(dbContextDescriptor);
 
-                // Реєструємо AppDbContext з тестовою БД (вже готовий connection string)
+                // Додаємо DbContext з тестовим connection string
                 services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlServer(_connectionString));
+                    options.UseSqlServer(_connectionString!));
 
-                // Створюємо схему БД
-                using (var scope = services.BuildServiceProvider().CreateScope())
-                {
-                    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                    db.Database.Migrate();
-                }
+                // Створюємо схему БД після побудови сервісів
+                var sp = services.BuildServiceProvider();
+                using var scope = sp.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                db.Database.Migrate();
 
-                // Мокаємо EmailService
+                // Мокаємо IEmailService
                 var emailDescriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(IEmailService));
                 if (emailDescriptor != null)
@@ -100,28 +105,25 @@ namespace Dynamiq.API.Tests
                 mockEmail.Setup(p => p.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
-                // Прибираємо всі HostedService (щоб не стукались у реальну БД)
+                // Видаляємо всі HostedService (щоб не чіплялись до реальної БД)
                 var hostedServices = services
                     .Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType))
                     .ToList();
 
                 foreach (var hostedService in hostedServices)
-                {
                     services.Remove(hostedService);
-                }
             });
         }
 
         public async Task DisposeAsync()
         {
-            // Видаляємо тестову БД після завершення
             if (!string.IsNullOrEmpty(_dbName))
             {
                 var masterConnectionString = _dbContainer.GetConnectionString();
-                using var connection = new SqlConnection(masterConnectionString);
+                await using var connection = new SqlConnection(masterConnectionString);
                 await connection.OpenAsync();
 
-                using var command = connection.CreateCommand();
+                await using var command = connection.CreateCommand();
                 command.CommandText = $@"
                     ALTER DATABASE [{_dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                     DROP DATABASE [{_dbName}];";
