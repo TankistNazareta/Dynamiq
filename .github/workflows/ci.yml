@@ -10,6 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        env:
+          SA_PASSWORD: Your_password123
+          ACCEPT_EULA: Y
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "exit 0"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -19,6 +33,17 @@ jobs:
         with:
           dotnet-version: "8.0.x"
 
+      - name: Wait for SQL Server to be ready
+        run: |
+          for i in {1..30}; do
+            if /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Your_password123' -Q 'SELECT 1' > /dev/null 2>&1; then
+              echo "SQL Server is up!"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "SQL Server did not start in time" && exit 1
+
       - name: Restore dependencies
         run: dotnet restore Dynamiq.API/Dynamiq.API.sln
 
@@ -26,4 +51,6 @@ jobs:
         run: dotnet build Dynamiq.API/Dynamiq.API.sln --no-restore --configuration Release
 
       - name: Run tests
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=DynamiqDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;"
         run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --verbosity normal
