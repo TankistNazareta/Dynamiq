@@ -1,10 +1,13 @@
-﻿using Dynamiq.Infrastructure.Persistence.Context;
+﻿using Dynamiq.Application.Interfaces.Services;
+using Dynamiq.Application.Interfaces.Stripe;
+using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 using Testcontainers.MsSql;
 
 namespace Dynamiq.API.Tests
@@ -60,8 +63,19 @@ namespace Dynamiq.API.Tests
                 using var scope = services.BuildServiceProvider().CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-                // Можеш викликати EnsureCreated або Migrate, залежно від підходу
                 db.Database.EnsureCreated();
+            });
+
+            builder.ConfigureServices(services =>
+            {
+                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
+                if (descriptor != null)
+                    services.Remove(descriptor);
+
+                var mockParser = new Mock<IEmailService>();
+                mockParser.Setup(p => p.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
+
+                services.AddSingleton(mockParser.Object);
             });
         }
 
