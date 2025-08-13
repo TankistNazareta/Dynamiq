@@ -7,33 +7,47 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
+
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-          - 1433:1433
         env:
           SA_PASSWORD: "YourStrongPassword123!"
           ACCEPT_EULA: "Y"
+        ports:
+          - 1433:1433
         options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrongPassword123! -Q 'SELECT 1'" 
-          --health-interval 10s 
-          --health-timeout 5s 
-          --health-retries 5
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrongPassword123! -C -Q 'SELECT 1'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=20
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
-      - name: Restore dependencies
+
+      - name: Wait for SQL Server to be ready
+        run: |
+          for i in {1..30}; do
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P YourStrongPassword123! -C -Q "SELECT 1" && break
+            echo "Waiting for MSSQL..."
+            sleep 2
+          done
+
+      - name: Install dependencies
         run: dotnet restore
+
       - name: Build
-        run: dotnet build --no-restore
+        run: dotnet build --no-restore --configuration Release
+
       - name: Run tests
         env:
-          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=DynamiqTestDb;User Id=sa;Password=YourStrongPassword123!;"
-        run: dotnet test --no-build --verbosity normal
+          ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=Dynamiq;User=sa;Password=YourStrongPassword123!;TrustServerCertificate=True"
+        run: dotnet test --no-build --configuration Release --logger trx
