@@ -27,7 +27,9 @@ namespace Dynamiq.API.Tests.Integrations.Products
         [Fact]
         public async Task UpdateProduct_WithValidData_ShouldReturnOk()
         {
-            await ProductServiceForTests.CreateProductAsync(_factory, _scopeFactory);
+            string productName = $"{Guid.NewGuid():N} Product";
+
+            await ProductServiceForTests.CreateProductAsync(_factory, _scopeFactory, productName);
 
             var stripeServiceMock = new Mock<IStripeProductService>();
             stripeServiceMock
@@ -52,13 +54,15 @@ namespace Dynamiq.API.Tests.Integrations.Products
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
                 var products = await repo.GetAllAsync(CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == "Test Product").Subject;
+                var created = products.Should().ContainSingle(p => p.Name == productName).Subject;
 
                 productId = created.Id;
                 categoryId = created.CategoryId;
             }
 
-            var command = new UpdateProductCommand(productId, "NewName", "NewDescr", 11111, IntervalEnum.OneTime, categoryId);
+            var newName = $"newName{Guid.NewGuid():N}";
+
+            var command = new UpdateProductCommand(productId, newName, "NewDescr", 11111, IntervalEnum.OneTime, categoryId);
 
             var response = await client.PutAsJsonAsync("/product", command);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +71,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
                 var products = await repo.GetAllAsync(CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == "NewName").Subject;
+                var created = products.Should().ContainSingle(p => p.Name == newName).Subject;
 
                 created.Should().NotBeNull();
                 created.Description.Should().Be("NewDescr");

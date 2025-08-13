@@ -15,7 +15,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
             _client = factory.CreateClient();
         }
 
-        private RegisterUserCommand CreateValidCommand(string email = "test@example.com") =>
+        private RegisterUserCommand CreateValidCommand(string email) =>
             new RegisterUserCommand(email, "StrongP@ssword1");
 
         private async Task<HttpResponseMessage> RegisterAsync(RegisterUserCommand command) =>
@@ -24,7 +24,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         [Fact]
         public async Task RegisterUser_WithValidData_ShouldReturnSuccess()
         {
-            var command = CreateValidCommand();
+            var command = CreateValidCommand($"test{Guid.NewGuid():N}@example.com");
             var response = await RegisterAsync(command);
 
             Console.WriteLine(response);

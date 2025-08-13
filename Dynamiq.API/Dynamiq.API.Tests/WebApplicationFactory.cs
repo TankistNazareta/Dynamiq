@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
+using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,63 +8,54 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
-using System.Threading;
-using Testcontainers.MsSql;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Dynamiq.API.Tests
 {
-    public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime where TProgram : class
+    public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime
+    where TProgram : class
     {
-        private static readonly MsSqlContainer _dbContainer = new MsSqlBuilder()
-            .WithImage("mcr.microsoft.com/mssql/server:2022-latest")
-            .WithPassword("YourStrongPassword123!")
-            .Build();
-
         private string? _connectionString;
-        private string? _dbName;
+        private const string TestDbName = "DynamiqTestDb";
 
         public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized.");
 
         public async Task InitializeAsync()
         {
-            await _dbContainer.StartAsync();
-
-            var masterConnectionString = _dbContainer.GetConnectionString();
+            var masterConnectionString = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true"
+                ? "Server=localhost,1433;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
+                : "Server=DESKTOP-HPNA4RC;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
 
             await using var connection = new SqlConnection(masterConnectionString);
             await connection.OpenAsync();
 
-            _dbName = $"TestDb_{Guid.NewGuid():N}";
-
+            // Створюємо БД якщо ще немає
             await using (var command = connection.CreateCommand())
             {
-                command.CommandText = $"CREATE DATABASE [{_dbName}];";
+                command.CommandText = $@"
+                    IF DB_ID(N'{TestDbName}') IS NULL
+                        CREATE DATABASE [{TestDbName}];";
                 await command.ExecuteNonQueryAsync();
             }
 
             var builder = new SqlConnectionStringBuilder(masterConnectionString)
             {
-                InitialCatalog = _dbName,
+                InitialCatalog = TestDbName,
                 MultipleActiveResultSets = true
             };
-
             _connectionString = builder.ToString();
 
-            // Retry opening connection to new DB
-            var retries = 5;
-            while (retries-- > 0)
-            {
-                try
-                {
-                    await using var testConn = new SqlConnection(_connectionString);
-                    await testConn.OpenAsync();
-                    break;
-                }
-                catch
-                {
-                    await Task.Delay(2000);
-                }
-            }
+            // Виконуємо міграції один раз
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseSqlServer(_connectionString)
+                .Options;
+
+            using var scope = Services.CreateScope();
+            var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
+            using var db = new AppDbContext(options, dispatcher);
+            await db.Database.MigrateAsync();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -72,47 +64,33 @@ namespace Dynamiq.API.Tests
 
             builder.ConfigureServices(services =>
             {
+                // Перевизначаємо DbContext
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
                 if (descriptor != null) services.Remove(descriptor);
 
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(_connectionString!));
 
-                var sp = services.BuildServiceProvider();
-                using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                db.Database.Migrate();
-
                 // Mock email service
-                var emailServiceDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
-                if (emailServiceDescriptor != null) services.Remove(emailServiceDescriptor);
+                var emailDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
+                if (emailDescriptor != null) services.Remove(emailDescriptor);
+
                 var mockEmail = new Mock<IEmailService>();
                 mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
-                // Remove hosted services (if any)
+                // Відключаємо hosted services
                 var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
-                foreach (var hostedService in hostedServices)
-                    services.Remove(hostedService);
+                foreach (var hs in hostedServices)
+                    services.Remove(hs);
             });
         }
 
-        public async Task DisposeAsync()
+        public Task DisposeAsync()
         {
-            if (!string.IsNullOrEmpty(_dbName))
-            {
-                var masterConnectionString = _dbContainer.GetConnectionString();
-                await using var connection = new SqlConnection(masterConnectionString);
-                await connection.OpenAsync();
-
-                await using var command = connection.CreateCommand();
-                command.CommandText = $@"
-                ALTER DATABASE [{_dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                DROP DATABASE [{_dbName}];";
-                await command.ExecuteNonQueryAsync();
-            }
-
-            await _dbContainer.StopAsync();
+            // Базу видаляти не треба
+            return Task.CompletedTask;
         }
     }
+
 }

@@ -73,14 +73,14 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            var user = new User("testuserCart@example.com", "hashedpass", RoleEnum.DefaultUser);
+            var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
 
-            var category = new Category("Test Category For Product");
+            var category = new Category($"Test Category For {Guid.NewGuid():N}");
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Domain.Aggregates.Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
             db.Products.Add(product);
             await db.SaveChangesAsync();
 
@@ -125,14 +125,14 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            var user = new User("testuserProduct@example.com", "hashedpass", RoleEnum.DefaultUser);
+            var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
 
-            var category = new Category("Test Category For Subscription");
+            var category = new Category($"Test Category For {Guid.NewGuid():N}");
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Domain.Aggregates.Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
             db.Products.Add(product);
             await db.SaveChangesAsync();
 
@@ -172,10 +172,10 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            var user = new User("testuserSubscription@example.com", "hashedpass", RoleEnum.DefaultUser);
+            var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
 
-            var category = new Category("Test Category");
+            var category = new Category($"{Guid.NewGuid():N} Category");
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 

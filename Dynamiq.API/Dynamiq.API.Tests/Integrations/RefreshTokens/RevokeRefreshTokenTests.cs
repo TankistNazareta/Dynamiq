@@ -30,11 +30,11 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var user = new User(
-                email: "test@example.com",
+                email: $"test{Guid.NewGuid():N}@example.com",
                 passwordHash: "hashed_password",
                 role: RoleEnum.DefaultUser);
 
-            var oldRefreshToken = "old-refresh-token";
+            var oldRefreshToken = $"old-refresh-token-{Guid.NewGuid():N}";
             user.AddRefreshToken(new RefreshToken(user.Id, oldRefreshToken));
 
             db.Users.Add(user);

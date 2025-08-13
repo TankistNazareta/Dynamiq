@@ -26,7 +26,7 @@ namespace Dynamiq.API.Tests.Integrations.EmailVerifications
         public async Task ConfirmEmailByToken_WithValidToken_ShouldConfirmEmail()
         {
             var registerCommand = new RegisterUserCommand(
-                "testuser@example.com",
+                $"user_{Guid.NewGuid():N}@test.com",
                 "StrongPass123!"
             );
 

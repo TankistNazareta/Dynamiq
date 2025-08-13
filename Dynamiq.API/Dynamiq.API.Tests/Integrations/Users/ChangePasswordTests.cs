@@ -12,8 +12,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
 {
     public class ChangePasswordTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
-        private const string _defaultEmail = "email@test.com";
-
         private readonly CustomWebApplicationFactory<Program> _factory;
         private HttpClient _client;
 
@@ -44,7 +42,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
         public async Task ChangePassword_WithValidData_ShouldReturnOk()
         {
-            var command = new ChangeUserPasswordCommand("newEmail@gmail.com", "OldPassword123!", "NewPassword456!");
+            var command = new ChangeUserPasswordCommand($"newEmail{Guid.NewGuid():N}@gmail.com", "OldPassword123!", "NewPassword456!");
 
             var result = await MakeChangePasswordRequest(command);
             result.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -56,7 +54,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         [Fact]
         public async Task ChangePassword_WithWrongOldPassword_ShouldReturnBadRequest()
         {
-            var command = new ChangeUserPasswordCommand(_defaultEmail, "WrongPassword123!", "NewPassword456!");
+            var command = new ChangeUserPasswordCommand($"email{Guid.NewGuid():N}@email.com", "WrongPassword123!", "NewPassword456!");
 
             var result = await MakeChangePasswordRequest(command);
 

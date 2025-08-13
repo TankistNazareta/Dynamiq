@@ -27,7 +27,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         [Fact]
         public async Task LoginUser_WithValidCredentials_ShouldReturnSuccessAndToken()
         {
-            var email = "login.success@example.com";
+            var email = $"login.success{Guid.NewGuid():N}@example.com";
             var password = "StrongP@ssword1";
             await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
 
@@ -43,7 +43,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         [Fact]
         public async Task LoginUser_WithInvalidPassword_ShouldReturnUnauthorized()
         {
-            var email = "login.invalidpass@example.com";
+            var email = $"login.invalidpass{Guid.NewGuid():N}@example.com";
             var password = "StrongP@ssword1";
             await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
 

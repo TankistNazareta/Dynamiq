@@ -25,11 +25,12 @@ namespace Dynamiq.API.Tests.Integrations.Users
         [Fact]
         public async Task DeleteUser_WithValidData_ShouldReturnOk()
         {
-            var signUpCommand = new RegisterUserCommand("email@test.com", "OldPassword123!");
+            var email = $"test{Guid.NewGuid():N}@exampleee.com";
+
+            var signUpCommand = new RegisterUserCommand(email, "OldPassword123!");
             await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, signUpCommand);
 
-            var logInCommand = new LogInUserCommand("email@test.com", "OldPassword123!");
-
+            var logInCommand = new LogInUserCommand(email, "OldPassword123!");
             var authResponse = await _client.PostAsJsonAsync("/auth/login", logInCommand);
 
             var authResult = await authResponse.Content.ReadFromJsonAsync<AuthResponseDto>();
@@ -38,7 +39,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
             using var scope = _factory.Services.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            var user = await db.Users.Include(x => x.EmailVerification).FirstOrDefaultAsync(x => x.EmailVerification.IsConfirmed);
+            var user = await db.Users.FirstOrDefaultAsync(x => x.Email == email);
 
             var response = await _client.DeleteAsync($"/users/{user.Id}");
 

@@ -3,21 +3,19 @@ using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
-using Moq;
-using System.Net.Http.Json;
-using System.Net;
-using Docker.DotNet.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Products
 {
     public static class ProductServiceForTests
     {
-        public static async Task CreateProductAsync(CustomWebApplicationFactory<Program> factory, IServiceScopeFactory scopeFactory)
+        public static async Task CreateProductAsync(CustomWebApplicationFactory<Program> factory, IServiceScopeFactory scopeFactory, string productName)
         {
             var stripeServiceMock = new Mock<IStripeProductService>();
             stripeServiceMock
@@ -38,7 +36,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = scopeFactory.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var category = new Category("TestCategory");
+                var category = new Category($"Test Category For {Guid.NewGuid():N}");
                 db.Categories.Add(category);
                 await db.SaveChangesAsync();
             }
@@ -51,7 +49,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
             }
 
             var command = new AddProductCommand(
-                "Test Product",
+                productName,
                 "Test Description",
                 1000,
                 IntervalEnum.OneTime,
