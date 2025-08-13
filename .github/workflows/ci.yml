@@ -1,4 +1,4 @@
-name: CI
+name: .NET CI
 
 on:
   push:
@@ -14,11 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Docker
-        run: |
-          docker version
-          docker info
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -32,20 +27,3 @@ jobs:
 
       - name: Run tests
         run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --verbosity normal
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          SA_PASSWORD: "YourStrongPassword123!"
-          ACCEPT_EULA: "Y"
-        ports:
-          - 1433:1433
-        options: >-
-          --health-cmd=" /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrongPassword123!' -Q 'SELECT 1'"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
