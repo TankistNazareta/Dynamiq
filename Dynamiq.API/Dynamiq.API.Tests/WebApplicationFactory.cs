@@ -1,6 +1,7 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Context;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
@@ -21,6 +22,35 @@ namespace Dynamiq.API.Tests
         private const string TestDbName = "DynamiqTestDb";
 
         public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized.");
+
+        public async Task EnsureDatabaseReadyAsync()
+        {
+            var retries = 5;
+            while (retries > 0)
+            {
+                try
+                {
+
+                    var options = new DbContextOptionsBuilder<AppDbContext>()
+                        .UseSqlServer(_connectionString)
+                        .Options;
+
+                    using var scope = Services.CreateScope();
+                    var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
+                    using var db = new AppDbContext(options, dispatcher);
+                    await using var context = new AppDbContext(options, dispatcher);
+                    await context.Database.EnsureCreatedAsync();
+                    return;
+                }
+                catch
+                {
+                    retries--;
+                    await Task.Delay(5000);
+                }
+            }
+
+            throw new Exception("Cannot connect to SQL Server.");
+        }
 
         public async Task InitializeAsync()
         {
