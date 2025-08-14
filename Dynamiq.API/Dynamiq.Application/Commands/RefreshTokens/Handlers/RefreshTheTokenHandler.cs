@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
 using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;

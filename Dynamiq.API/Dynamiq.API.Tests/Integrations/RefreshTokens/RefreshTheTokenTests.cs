@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;

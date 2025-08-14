@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Carts.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AccountDTOs;
 using FluentAssertions;
 using System.Net.Http.Json;
 

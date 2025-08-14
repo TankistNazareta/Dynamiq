@@ -1,6 +1,6 @@
-﻿using Docker.DotNet.Models;
-using Dynamiq.Application.Commands.Products.Commands;
-using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.Commands.Products.Commands;
+using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Interfaces.Repositories;
@@ -79,8 +79,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
             }
 
             stripeServiceMock.Verify(s => s.UpdateProductStripeAsync(
-                It.IsAny<ProductDto>(), 
-                It.IsAny<string>(), 
+                It.IsAny<ProductDto>(),
+                It.IsAny<string>(),
                 It.IsAny<string>()
             ), Times.Once);
         }

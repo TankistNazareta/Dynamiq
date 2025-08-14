@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;

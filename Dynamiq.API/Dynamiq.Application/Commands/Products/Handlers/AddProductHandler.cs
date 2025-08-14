@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Interfaces.Repositories;

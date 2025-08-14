@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.AuthDTOs;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Users.Commands

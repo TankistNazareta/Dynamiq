@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Application.Queries.Categories.Queries;
 using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;

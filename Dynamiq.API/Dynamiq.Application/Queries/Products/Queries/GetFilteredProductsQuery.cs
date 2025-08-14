@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Domain.Common;
 using MediatR;
 

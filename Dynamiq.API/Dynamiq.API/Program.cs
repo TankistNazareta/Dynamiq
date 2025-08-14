@@ -3,6 +3,7 @@ using Dynamiq.API.Middlewares;
 using Dynamiq.Application;
 using Dynamiq.Application.Commands.EmailVerifications.Commands;
 using Dynamiq.Application.Commands.EmailVerifications.Validators;
+using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
@@ -22,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -49,6 +51,11 @@ builder.Services.AddAuthentication(x =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
+});
+
+builder.Services.AddHttpClient("google-oauth", c =>
+{
+    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 });
 
 builder.Services.AddAuthentication();
@@ -111,6 +118,9 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false)
     .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
 
+//AddressOptionsptions
+builder.Services.Configure<GoogleOAuthOptions>(builder.Configuration.GetSection("GoogleOAuth"));
+
 //AddMediatR
 builder.Services.AddMediatR(cfg =>
 {
@@ -126,7 +136,7 @@ builder.Services.AddSingleton(mapper);
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionToLocalDb")));
 }
 
 //Repo
@@ -142,6 +152,7 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddTransient<IPasswordService, PasswordService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
+builder.Services.AddTransient<IGoogleOidcService, GoogleOidcService>();
 
 //UseCases
 builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
@@ -151,6 +162,7 @@ builder.Services.AddTransient<IStripeCheckoutSession, StripeCheckoutSession>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
 
+builder.Services.AddHttpContextAccessor();
 
 //Add background services
 if (!builder.Environment.IsEnvironment("Testing"))

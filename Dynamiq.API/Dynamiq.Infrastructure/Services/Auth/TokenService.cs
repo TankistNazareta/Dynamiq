@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
 using Dynamiq.Domain.Enums;
 using Microsoft.Extensions.Configuration;

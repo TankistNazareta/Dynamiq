@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Domain.Enums;
 
 namespace Dynamiq.Application.Interfaces.Auth

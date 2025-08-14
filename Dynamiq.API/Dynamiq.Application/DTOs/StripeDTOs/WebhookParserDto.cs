@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Domain.Enums;
 
-namespace Dynamiq.Application.DTOs
+namespace Dynamiq.Application.DTOs.StripeDTOs
 {
     public class WebhookParserDto
     {

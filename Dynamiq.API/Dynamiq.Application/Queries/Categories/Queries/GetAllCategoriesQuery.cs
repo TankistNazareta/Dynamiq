@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.ProductDTOs;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Categories.Queries

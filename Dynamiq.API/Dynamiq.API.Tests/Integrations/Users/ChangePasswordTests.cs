@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AuthDTOs;
+using Dynamiq.Application.DTOs.CommonDTOs;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.AccountDTOs;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Carts.Commands

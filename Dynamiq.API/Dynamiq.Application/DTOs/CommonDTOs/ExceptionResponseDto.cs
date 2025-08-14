@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Dynamiq.Application.DTOs
+namespace Dynamiq.Application.DTOs.CommonDTOs
 {
     public class ExceptionResponseDto
     {

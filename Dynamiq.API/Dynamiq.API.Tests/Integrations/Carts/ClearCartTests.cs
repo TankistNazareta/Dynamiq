@@ -27,7 +27,7 @@ namespace Dynamiq.API.Tests.Integrations.Carts
         [Fact]
         public async Task ClearCart_WhenCartExists_ShouldRemoveCart()
         {
-            var email = "ClearCartUserEmail@test.com";
+            var email = $"ClearCartUserEmail{Guid.NewGuid():N}@test.com";
 
             var commandRegisterUser = new RegisterUserCommand(email, "hashPAss");
             using var scope = _factory.Services.CreateScope();
@@ -69,7 +69,7 @@ namespace Dynamiq.API.Tests.Integrations.Carts
         [Fact]
         public async Task ClearCart_WhenCartDoesNotExist_ShouldReturnNotFound()
         {
-            var email = "ClearCartUserEmailReturnNotFound@test.com";
+            var email = $"ClearCartUserEmailReturnNotFound{Guid.NewGuid():N}@test.com";
 
             var commandRegisterUser = new RegisterUserCommand(email, "hashPAss");
             using var scope = _factory.Services.CreateScope();

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AccountDTOs;
+using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.ValueObject;
 

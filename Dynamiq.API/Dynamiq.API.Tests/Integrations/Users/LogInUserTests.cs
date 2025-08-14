@@ -5,8 +5,9 @@ using System.Net;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-using Dynamiq.Application.DTOs;
 using Microsoft.AspNetCore.Http;
+using Dynamiq.Application.DTOs.AuthDTOs;
+using Dynamiq.Application.DTOs.CommonDTOs;
 
 namespace Dynamiq.API.Tests.Integrations.Users
 {

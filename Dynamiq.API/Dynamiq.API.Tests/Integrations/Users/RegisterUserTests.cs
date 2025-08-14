@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.CommonDTOs;
 using FluentAssertions;
 using System.Net;
 using System.Net.Http.Json;

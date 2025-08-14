@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.StripeDTOs;
 
 namespace Dynamiq.Application.Interfaces.Stripe
 {

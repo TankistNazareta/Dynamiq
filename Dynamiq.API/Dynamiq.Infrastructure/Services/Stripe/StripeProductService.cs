@@ -1,4 +1,5 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
 using Microsoft.Extensions.Configuration;

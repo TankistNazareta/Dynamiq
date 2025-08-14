@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.CustomExceptions;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.CommonDTOs;
 using Dynamiq.Domain.Exceptions;
 using System.Net;
 using System.Text.Json;

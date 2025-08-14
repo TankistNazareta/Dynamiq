@@ -1,10 +1,11 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.Common;
 using Dynamiq.Application.CustomExceptions;
-using Dynamiq.Application.DTOs;
+using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Exceptions;
 using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
@@ -35,12 +36,13 @@ namespace Dynamiq.Application.Commands.Users.Handlers
         public async Task<AuthResponseDto> Handle(LogInUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepo.GetByEmailAsync(request.Email, cancellationToken);
+
             if (user == null)
                 throw new KeyNotFoundException("User with this email wasn't found");
-
             if (!user.EmailVerification.IsConfirmed)
                 throw new EmailNotConfirmedException(user.Email);
-
+            if (user.PasswordHash == IPasswordService.DefaultHashForOidc)
+                throw new CannotLinkOidcAccountException(user.Email);
             if (!_passwordService.Check(user.PasswordHash, request.Password))
                 throw new ArgumentException("Your password isn't correct");
 
