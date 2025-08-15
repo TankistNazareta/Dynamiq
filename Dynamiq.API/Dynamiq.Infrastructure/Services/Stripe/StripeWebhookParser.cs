@@ -16,13 +16,15 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             _webhookSecret = config["Stripe:WebhookSecret"];
         }
 
-        public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature)
+        public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature, out string eventType)
         {
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
                 signature,
                 _webhookSecret
             );
+            
+            eventType = stripeEvent.Type;
 
             if (stripeEvent.Type != "checkout.session.completed")
                 return null;
@@ -42,6 +44,31 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             paymentHistoryDto.StripePaymentId = session.PaymentIntentId;
 
             return paymentHistoryDto;
+        }
+
+        public CouponsResultDto? TryGetCoupons(string json, string signature)
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                signature,
+                _webhookSecret
+            );
+
+            var session = stripeEvent.Data.Object as Session;
+
+            string coupons = null;
+            string stripeCouponIds = null;
+
+            session?.Metadata?.TryGetValue("Coupons", out coupons);
+            session?.Metadata?.TryGetValue("CouponStripeIds", out stripeCouponIds);
+
+            if (stripeCouponIds == null || coupons == null)
+                return null;
+
+            var couponsCodeList = JsonSerializer.Deserialize<List<string>>(coupons);
+            var stripeCouponIdList = JsonSerializer.Deserialize<List<string>>(stripeCouponIds);
+
+            return new (couponsCodeList, stripeCouponIdList);
         }
     }
 }

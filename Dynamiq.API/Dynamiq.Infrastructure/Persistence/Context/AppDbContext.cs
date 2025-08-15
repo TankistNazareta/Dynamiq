@@ -27,6 +27,7 @@ namespace Dynamiq.Infrastructure.Persistence.Context
         public DbSet<Category> Categories { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<ProductPaymentHistory> ProductPaymentHistories { get; set; }
+        public DbSet<Coupon> Coupons { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,7 @@ namespace Dynamiq.Infrastructure.Persistence.Context
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CartConfiguration());
             modelBuilder.ApplyConfiguration(new ProductPaymentHistoryConfig());
+            modelBuilder.ApplyConfiguration(new CouponConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

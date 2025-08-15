@@ -146,6 +146,7 @@ builder.Services.AddTransient<IPaymentHistoryRepo, PaymentHistoryRepo>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 builder.Services.AddTransient<ICartRepo, CartRepo>();
+builder.Services.AddTransient<ICouponRepo, CouponRepo>();
 
 //Services
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -153,6 +154,7 @@ builder.Services.AddTransient<IPasswordService, PasswordService>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 builder.Services.AddTransient<IGoogleOidcService, GoogleOidcService>();
+builder.Services.AddTransient<ICouponService, CouponService>();
 
 //UseCases
 builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
@@ -161,6 +163,7 @@ builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
 builder.Services.AddTransient<IStripeCheckoutSession, StripeCheckoutSession>();
 builder.Services.AddTransient<IStripeProductService, StripeProductService>();
 builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
+builder.Services.AddTransient<IStripeCouponService, StripeCouponService>();
 
 builder.Services.AddHttpContextAccessor();
 

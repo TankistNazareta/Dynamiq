@@ -1,8 +1,8 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
+using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.IntegrationEvents;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
 using Dynamiq.Domain.Interfaces.Repositories;
@@ -17,20 +17,46 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IStripeWebhookParser _webhookParser;
         private readonly IMediator _mediator;
+        private readonly IStripeCouponService _stripeCouponService;
+        private readonly ICouponRepo _couponRepo;
 
         public StripeWebhookHandler(IPaymentHistoryRepo repo, IUnitOfWork unitOfWork,
-            IStripeWebhookParser parser, IMediator mediator, ICartRepo cartRepo)
+            IStripeWebhookParser parser, IMediator mediator,
+            ICartRepo cartRepo, IStripeCouponService stripeCouponService,
+            ICouponRepo couponRepo)
         {
             _repo = repo;
             _unitOfWork = unitOfWork;
             _webhookParser = parser;
             _mediator = mediator;
             _cartRepo = cartRepo;
+            _stripeCouponService = stripeCouponService;
+            _couponRepo = couponRepo;
         }
 
         public async Task<bool> Handle(StripeWebhookCommand request, CancellationToken cancellationToken)
         {
-            var parserDto = _webhookParser.ParseCheckoutSessionCompleted(request.Json, request.Signature);
+            var parserDto = _webhookParser.ParseCheckoutSessionCompleted(request.Json, request.Signature, out var eventType);
+            CouponsResultDto? couponsResultDto = null;
+
+            //need to delete stripe discount
+            if (eventType == "checkout.session.completed" ||
+                eventType == "payment_intent.payment_failed" ||
+                eventType == "invoice.payment_failed")
+            {
+                couponsResultDto = _webhookParser.TryGetCoupons(request.Json, request.Signature);
+                if (couponsResultDto != null &&
+                    couponsResultDto.CouponsCodeList != null &&
+                    couponsResultDto.CouponsCodeList.Count != 0 &&
+                    couponsResultDto.StripeCouponIdList != null &&
+                    couponsResultDto.StripeCouponIdList.Count != 0)
+                {
+                    foreach (var id in couponsResultDto.StripeCouponIdList)
+                    {
+                        await _stripeCouponService.DeactivateCoupon(id);
+                    }
+                }
+            }
 
             if (parserDto == null)
                 return false;
@@ -40,6 +66,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
 
             if (parserDto.ProductId != null)
             {
+
                 paymentHistory.AddProduct(new(parserDto.ProductId.Value, paymentHistory.Id));
             }
             else
@@ -49,7 +76,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 if (cart?.Items == null || cart.Items.Count == 0)
                     throw new CartEmptyException();
 
-                foreach(var item in cart.Items)
+                foreach (var item in cart.Items)
                 {
                     paymentHistory.AddProduct(new(item.ProductId, paymentHistory.Id, item.Quantity));
                 }
@@ -58,6 +85,19 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
             }
 
             await _repo.AddAsync(paymentHistory, cancellationToken);
+
+            if (couponsResultDto != null &&
+                couponsResultDto.CouponsCodeList != null &&
+                couponsResultDto.CouponsCodeList.Count != 0 &&
+                couponsResultDto.StripeCouponIdList != null &&
+                couponsResultDto.StripeCouponIdList.Count != 0)
+            {
+                foreach (var id in couponsResultDto.CouponsCodeList)
+                {
+                    var coupon = await _couponRepo.GetByCodeAsync(id, cancellationToken);
+                    coupon.DeactivateCoupon();
+                }
+            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

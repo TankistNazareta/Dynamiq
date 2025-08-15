@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
 using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
@@ -13,12 +14,21 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
         private readonly IStripeCheckoutSession _paymentService;
         private readonly IProductRepo _productRepo;
         private readonly ICartRepo _cartRepo;
+        private readonly ICouponService _couponService;
+        private readonly ICouponRepo _couponRepo;
 
-        public CreateCheckoutSessionHandler(IStripeCheckoutSession paymentService, IProductRepo productRepo, ICartRepo cartRepo)
+        public CreateCheckoutSessionHandler(
+            IStripeCheckoutSession paymentService,
+            IProductRepo productRepo,
+            ICartRepo cartRepo,
+            ICouponService couponService,
+            ICouponRepo couponRepo)
         {
             _productRepo = productRepo;
             _paymentService = paymentService;
             _cartRepo = cartRepo;
+            _couponService = couponService;
+            _couponRepo = couponRepo;
         }
 
         public async Task<string> Handle(CreateCheckoutSessionCommand request, CancellationToken cancellationToken)
@@ -32,7 +42,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                     ?? throw new KeyNotFoundException($"Product with id {request.ProductId} doesn't exist");
 
                 var quantity = request.Quantity ?? 1;
-                stripeCartItems.Add(new StripeCartItemDto(product.Id, quantity, product.StripePriceId));
+                stripeCartItems.Add(new StripeCartItemDto(product.Id, quantity, product.StripePriceId, product.Price));
                 interval = product.Interval;
             }
             else
@@ -47,7 +57,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                     var product = await _productRepo.GetByIdAsync(item.ProductId, cancellationToken)
                         ?? throw new KeyNotFoundException($"Product with id {item.ProductId} wasn't found in database, please remove this item from cart and try again");
 
-                    stripeCartItems.Add(new StripeCartItemDto(product.Id, item.Quantity, product.StripePriceId));
+                    stripeCartItems.Add(new StripeCartItemDto(product.Id, item.Quantity, product.StripePriceId, product.Price));
                 }
 
                 interval = IntervalEnum.OneTime;
@@ -62,7 +72,22 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 ProductId = request.ProductId
             };
 
-            return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems);
+            if(request.CouponCodes != null && request.CouponCodes.Count > 0)
+            {
+                foreach (var couponCode in request.CouponCodes)
+                {
+                    var coupon = await _couponRepo.GetByCodeAsync(couponCode, cancellationToken);
+
+                    if (coupon == null)
+                        throw new KeyNotFoundException("coupon wasn`t found: " + couponCode);
+
+                    if(!coupon.IsActive())
+                        throw new TimeoutException("Verification token expired.");
+                }
+                stripeCartItems = await _couponService.AddAllCouponsAsync(stripeCartItems, request.CouponCodes, cancellationToken);
+            }
+
+            return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems, request.CouponCodes);
         }
     }
 }

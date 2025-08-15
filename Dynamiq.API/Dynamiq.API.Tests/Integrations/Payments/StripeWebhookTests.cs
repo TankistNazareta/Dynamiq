@@ -1,6 +1,7 @@
 ﻿using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
@@ -22,21 +23,31 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             _factory = factory;
         }
 
-        private async Task CreatePaymentHistory(WebhookParserDto parserDto)
+        private async Task CreatePaymentHistory(WebhookParserDto parserDto, CouponsResultDto? coupons = null)
         {
             var mockParser = new Mock<IStripeWebhookParser>();
-            mockParser.Setup(p => p.ParseCheckoutSessionCompleted(It.IsAny<string>(), It.IsAny<string>()))
+            mockParser.Setup(p => p.ParseCheckoutSessionCompleted(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string>.IsAny))
                       .Returns(parserDto);
+            mockParser.Setup(p => p.TryGetCoupons(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(coupons);
+
+            var mockCouponStripeService = new Mock<IStripeCouponService>();
+            mockCouponStripeService.Setup(p => p.DeactivateCoupon(It.IsAny<string>()));
 
             var client = _factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureServices(services =>
                 {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IStripeWebhookParser));
-                    if (descriptor != null)
-                        services.Remove(descriptor);
+                    var descriptorParser = services.SingleOrDefault(d => d.ServiceType == typeof(IStripeWebhookParser));
+                    var descriptorCouponStripe = services.SingleOrDefault(d => d.ServiceType == typeof(IStripeCouponService));
+
+                    if (descriptorParser != null)
+                        services.Remove(descriptorParser);
+                    if (descriptorCouponStripe != null)
+                        services.Remove(descriptorCouponStripe);
 
                     services.AddSingleton(mockParser.Object);
+                    services.AddSingleton(mockCouponStripeService.Object);
                 });
             }).CreateClient();
 
@@ -132,9 +143,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2222, IntervalEnum.OneTime, category.Id);
             db.Products.Add(product);
-            await db.SaveChangesAsync();
 
             await db.SaveChangesAsync();
 
@@ -144,7 +154,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 ProductId = product.Id,
                 Interval = product.Interval,
                 StripePaymentId = "test_stripe_id",
-                Amount = 2000
+                Amount = 2222
             };
 
             await CreatePaymentHistory(parserDto);
@@ -156,7 +166,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
-            paymentHistory[0].Amount.Should().Be(2000);
+            paymentHistory[0].Amount.Should().Be(2222);
 
             var productsPaymentHistory = await db.ProductPaymentHistories
                 .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
@@ -179,9 +189,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Domain.Aggregates.Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.Monthly, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.Monthly, category.Id);
             db.Products.Add(product);
-            await db.SaveChangesAsync();
 
             await db.SaveChangesAsync();
 
@@ -218,7 +227,61 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             userUpdated.Subscriptions.Should().HaveCount(1);
 
             var subscription = userUpdated.Subscriptions.First();
-            subscription.Should().Match<Domain.Entities.Subscription>(s => s.IsActive());
+            subscription.Should().Match<Subscription>(s => s.IsActive());
+        }
+
+        [Fact]
+        public async Task StripeWebhookHandler_ShouldProcessProductCheckoutSessionCompleted_WithCoupon_AndSavePaymentHistory()
+        {
+            using var scope = _factory.Services.CreateScope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+
+            var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
+            db.Users.Add(user);
+
+            var category = new Category($"Test Category For {Guid.NewGuid():N}");
+            db.Categories.Add(category);
+            await db.SaveChangesAsync();
+
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            db.Products.Add(product);
+
+            var coupon = new Coupon($"{Guid.NewGuid():N}_coupon", DiscountTypeEnum.FixedAmount, 200, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
+            db.Coupons.Add(coupon);
+
+            await db.SaveChangesAsync();
+
+            var parserDto = new WebhookParserDto()
+            {
+                UserId = user.Id,
+                ProductId = product.Id,
+                Interval = product.Interval,
+                StripePaymentId = "test_stripe_id",
+                Amount = 1800
+            };
+
+            await CreatePaymentHistory(
+                parserDto, 
+                new(
+                    new() { coupon.Code }, 
+                    new() { "testStipeCouponeId" }
+                ));
+
+            db.ChangeTracker.Clear();
+
+            var paymentHistory = await db.PaymentHistories
+                .Where(ph => ph.UserId == user.Id)
+                .ToListAsync();
+
+            paymentHistory.Should().HaveCount(1);
+            paymentHistory[0].Amount.Should().Be(1800);
+
+            var productsPaymentHistory = await db.ProductPaymentHistories
+                .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
+                .ToListAsync();
+
+            productsPaymentHistory.Should().HaveCount(1);
         }
     }
 }
