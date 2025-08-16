@@ -1,0 +1,43 @@
+@import './node_modules/bootstrap/scss/bootstrap';
+
+:root {
+    --primary: #b88e2f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+button {
+    border: none;
+}
+
+ul {
+    padding: 0;
+    list-style-type: none;
+}
+
+// components
+@import './components/header';
+@import './components/card';
+@import './components/footer';
+
+// pages
+@import './pages/main';

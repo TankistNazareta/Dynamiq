@@ -1,0 +1,194 @@
+.header {
+    height: 100px;
+
+    &__wrapper {
+        height: 100%;
+    }
+
+    &__logo {
+        &-image {
+            width: 50px;
+            height: 32px;
+            margin-right: 5px;
+        }
+
+        &-title {
+            font-family: var(--second-family);
+            font-weight: 700;
+            font-size: 34px;
+            color: #000;
+            text-decoration: none;
+        }
+    }
+
+    &__list {
+        width: 420px;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    &__item {
+        font-weight: 500;
+        font-size: 16px;
+        color: #000;
+    }
+
+    &__social-link {
+        margin-right: 45px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+
+    &__hamburger {
+        display: none;
+    }
+
+    &__sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 1024px) {
+    .header {
+        &__logo {
+            &-title {
+                font-weight: 650;
+                font-size: 26px;
+            }
+        }
+
+        &__wrapper {
+            justify-content: space-between !important;
+            padding: 0 35px;
+        }
+
+        &__nav {
+            display: none;
+        }
+
+        &__sidebar {
+            z-index: 999;
+            width: 50%;
+            position: fixed;
+            top: 0;
+            left: -80%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 48px 16px 0 16px;
+            display: block;
+            transition: 0.7s all;
+            overflow: scroll;
+
+            &-active {
+                left: 0%;
+            }
+
+            &-nav {
+                width: auto;
+                display: block !important;
+            }
+
+            &-list {
+                width: auto;
+            }
+
+            &-item {
+                font-weight: 600;
+                font-size: 20px;
+                color: #ffff;
+                margin: 17px 0;
+                text-align: center;
+            }
+
+            &-line {
+                color: #bbbbbb;
+            }
+        }
+
+        &__hamburger {
+            display: block;
+            width: 28px;
+            padding-left: 7px;
+
+            span {
+                display: block;
+                width: 21px;
+                background-color: #000000;
+                height: 5px;
+                margin: 2px 0;
+                border-radius: 5px;
+                position: relative;
+                transition: 1s all;
+
+                &:first-child {
+                    margin-top: 0;
+                }
+
+                &:last-child {
+                    margin-bottom: 0;
+                }
+
+                &::before,
+                &::after {
+                    content: '';
+                    display: block;
+                    height: 5px;
+                    width: 5px;
+                    background-color: #000000;
+                    border-radius: 100%;
+                    position: absolute;
+                    left: -7px;
+                }
+
+                &::after {
+                    display: none;
+                    right: -7px;
+                    left: auto;
+                }
+            }
+
+            &-active {
+                span::after {
+                    display: block;
+                }
+
+                span:nth-child(1) {
+                    transform: rotate(315deg) translateY(5px);
+                }
+
+                span:nth-child(2) {
+                    display: none;
+                }
+
+                span:nth-child(3) {
+                    transform: rotate(-315deg) translateY(-5px);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 620px) {
+    .header {
+        &__logo {
+            &-title {
+                display: none;
+            }
+        }
+
+        &__social-link {
+            margin-right: 22px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
+
+        &__sidebar {
+            width: 80%;
+        }
+    }
+}

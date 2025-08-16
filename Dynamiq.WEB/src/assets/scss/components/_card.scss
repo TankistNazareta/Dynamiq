@@ -1,0 +1,87 @@
+.card {
+    width: 285px;
+    height: 446px;
+    background: #f4f5f7;
+    position: relative;
+
+    &-img {
+        height: 301px;
+    }
+
+    &__info {
+        margin: 16px 5px 30px 16px;
+        text-align: left;
+
+        &-title {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 120%;
+            color: #3a3a3a;
+        }
+
+        &-descr {
+            font-family: var(--font-family);
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 150%;
+            color: #898989;
+            margin: 8px 0;
+        }
+
+        &-price {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 150%;
+            color: #3a3a3a;
+        }
+    }
+
+    &__popup {
+        background: rgba(58, 58, 58, 0.72);
+
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+
+        * {
+            opacity: 1;
+        }
+
+        &-btn {
+            width: 202px;
+            height: 48px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 150%;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        &-links {
+            width: 80%;
+        }
+
+        &-link {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 150%;
+            color: #fff;
+
+            p {
+                margin-left: 5px;
+            }
+        }
+
+        &__bottom {
+            font-family: var(--font-family);
+            font-weight: 400;
+            font-size: 16px;
+            color: #000;
+        }
+    }
+}
