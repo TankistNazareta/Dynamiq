@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import '../assets/scss/app.scss';
 
@@ -6,6 +6,29 @@ import logo from '../assets/images/loge.png';
 
 const Header = () => {
     const [needSideBar, setNeedSideBar] = useState<boolean>(false);
+    const sidebarRef = useRef<HTMLDivElement>(null);
+    const hamburgerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+            if (
+                sidebarRef.current &&
+                !sidebarRef.current.contains(event.target as Node) &&
+                hamburgerRef.current &&
+                !hamburgerRef.current.contains(event.target as Node)
+            ) {
+                setNeedSideBar(false);
+            }
+        };
+
+        document.body.addEventListener('click', handleClickOutside);
+        document.body.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            document.body.removeEventListener('click', handleClickOutside);
+            document.body.removeEventListener('touchstart', handleClickOutside);
+        };
+    }, []);
 
     return (
         <header className="header">
@@ -51,6 +74,7 @@ const Header = () => {
                     </a>
 
                     <div
+                        ref={hamburgerRef}
                         className={`header__hamburger ${needSideBar ? 'header__hamburger-active' : ''}`}
                         onClick={() => setNeedSideBar((needSideBar) => !needSideBar)}>
                         <span></span>
@@ -59,7 +83,7 @@ const Header = () => {
                     </div>
                 </div>
             </div>
-            <aside className={`header__sidebar ${needSideBar ? 'header__sidebar-active' : ''}`}>
+            <aside ref={sidebarRef} className={`header__sidebar ${needSideBar ? 'header__sidebar-active' : ''}`}>
                 <nav className="header__nav header__sidebar-nav">
                     <ul className="header__list header__sidebar-list d-flex flex-column justify-content-between">
                         <li className="header__item header__sidebar-item">Home</li>

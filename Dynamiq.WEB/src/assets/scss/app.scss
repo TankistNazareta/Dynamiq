@@ -15,6 +15,10 @@ a {
     color: inherit;
 }
 
+hr {
+    margin: 0;
+}
+
 h1,
 h2,
 h3,
@@ -38,6 +42,8 @@ ul {
 @import './components/header';
 @import './components/card';
 @import './components/footer';
+@import './components/subheaderNav';
 
 // pages
 @import './pages/main';
+@import './pages/shop';
