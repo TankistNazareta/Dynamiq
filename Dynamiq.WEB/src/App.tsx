@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Shop from './pages/Shop';
 import SubheaderNav from './components/SubheaderNav';
 import Product from './pages/Product';
+import PopupCart from './components/Header/Cart/PopupCart';
 
 import './assets/scss/app.scss';
 
@@ -20,8 +21,8 @@ function App() {
             {/* <SubheaderNav nameRoute="Shop" /> */}
             {/* <Main /> */}
             {/* <Shop /> */}
-            <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} />
-
+            {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} />
+             */}
             <Footer />
         </>
     );

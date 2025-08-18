@@ -47,11 +47,11 @@ ul {
 }
 
 // components
-@import './components/header';
+@import './components/header/header';
 @import './components/card';
 @import './components/footer';
 @import './components/subheaderNav';
-@import './components//btns';
+@import './components/btns';
 
 // pages
 @import './pages/main';
