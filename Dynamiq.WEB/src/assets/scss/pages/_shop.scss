@@ -56,51 +56,6 @@
             width: 98px;
         }
     }
-
-    &__features {
-        padding: 100px 0;
-        background: #faf3ea;
-    }
-
-    &__feature {
-        &-text {
-            margin-left: 10px;
-
-            p {
-                font-family: var(--font-family);
-                font-weight: 500;
-                font-size: 20px;
-                line-height: 150%;
-                color: #898989;
-            }
-        }
-
-        &-title {
-            font-family: var(--font-family);
-            font-weight: 600;
-            font-size: 25px;
-            line-height: 150%;
-            color: #242424;
-            margin-bottom: 2px;
-        }
-
-        &-hr {
-            display: none;
-        }
-    }
-}
-
-@media (max-width: 1200px) {
-    .shop {
-        &__features {
-            padding: 40px 0;
-        }
-
-        &__feature {
-            width: 50%;
-            margin: 20px 0;
-        }
-    }
 }
 
 @media (max-width: 768px) {

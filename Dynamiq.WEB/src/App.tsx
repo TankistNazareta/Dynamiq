@@ -4,7 +4,7 @@ import Footer from './components/Footer';
 import Shop from './pages/Shop';
 import SubheaderNav from './components/SubheaderNav';
 import Product from './pages/Product';
-import PopupCart from './components/Header/Cart/PopupCart';
+import Cart from './pages/Cart';
 
 import './assets/scss/app.scss';
 
@@ -18,11 +18,12 @@ function App() {
     return (
         <>
             <Header />
-            {/* <SubheaderNav nameRoute="Shop" /> */}
             {/* <Main /> */}
+            {/* <SubheaderNav nameRoute="Shop" /> */}
             {/* <Shop /> */}
-            {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} />
-             */}
+            {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} /> */}
+            <SubheaderNav nameRoute="Cart" />
+            <Cart discount={100} />
             <Footer />
         </>
     );

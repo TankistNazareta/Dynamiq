@@ -1,0 +1,27 @@
+.cart__coupon {
+    width: 100%;
+    justify-content: space-around !important;
+
+    &_value {
+        font-weight: 400;
+        font-size: 16px;
+        color: #9f9f9f;
+    }
+
+    &_title {
+        font-family: var(--font-family);
+        font-weight: 500;
+        font-size: 16px;
+        color: #000;
+    }
+
+    &_remove {
+        background-color: rgba($color: #000000, $alpha: 0);
+    }
+}
+
+@media (max-width: 576px) {
+    .cart__coupon_count {
+        display: none;
+    }
+}

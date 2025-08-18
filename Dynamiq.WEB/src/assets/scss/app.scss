@@ -52,8 +52,10 @@ ul {
 @import './components/footer';
 @import './components/subheaderNav';
 @import './components/btns';
+@import './components/feature';
 
 // pages
 @import './pages/main';
 @import './pages/shop';
 @import './pages/Products/product';
+@import './pages/Cart/cart';
