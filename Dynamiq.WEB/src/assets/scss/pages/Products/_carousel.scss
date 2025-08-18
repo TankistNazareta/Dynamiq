@@ -1,0 +1,119 @@
+.carousel-comp {
+    align-items: flex-start;
+
+    &__inner {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        align-items: center;
+    }
+
+    &__btn {
+        width: 55px;
+        height: 55px;
+        border-radius: 100%;
+        z-index: 10;
+        position: absolute;
+        font-weight: 500;
+        font-size: 16px;
+        background-color: rgba(#000000, 0);
+
+        &-prev {
+            left: 12px;
+        }
+
+        &-next {
+            right: 12px;
+        }
+    }
+
+    &__wrapper_viewport {
+        width: 423px;
+        height: 500px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    &__track {
+        display: flex;
+        position: absolute;
+        transition: 1s all;
+        cursor: grab;
+        height: 100%;
+    }
+
+    &__dot {
+        border-radius: 10px;
+        width: 76px;
+        height: 80px;
+        cursor: pointer;
+        background: #f9f1e7;
+        margin-bottom: 32px;
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        &_wrapper {
+            // position: absolute;
+            display: flex;
+            // bottom: 0;
+            // right: 50%;
+            // transform: translateX(50%);
+            flex-direction: column;
+            margin-right: 31px;
+        }
+
+        &_active {
+            border: 2px solid var(--primary);
+        }
+    }
+
+    &__slide {
+        text-align: center;
+        border-radius: 10px;
+        width: 423px;
+        height: 500px;
+        background: #f9f1e7;
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+@media (max-width: 620px) {
+    .carousel-comp {
+        flex-direction: column-reverse;
+
+        &__wrapper_viewport {
+            width: 310px;
+            height: 365px;
+        }
+
+        &__slide {
+            width: 310px;
+            height: 365px;
+        }
+
+        &__dot {
+            margin: 0;
+            width: 61px;
+            height: 64px;
+
+            &_wrapper {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin: 20px auto 0 auto;
+                width: 100%;
+            }
+        }
+    }
+}

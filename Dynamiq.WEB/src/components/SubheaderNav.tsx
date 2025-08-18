@@ -1,5 +1,3 @@
-import '../assets/scss/app.scss';
-
 interface SubheaderNavProps {
     nameRoute: string;
 }

@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import '../assets/scss/app.scss';
-
 import logo from '../assets/images/loge.png';
 
 const Header = () => {

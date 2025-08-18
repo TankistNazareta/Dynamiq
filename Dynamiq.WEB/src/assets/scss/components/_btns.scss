@@ -1,0 +1,14 @@
+.btn {
+    &-show-more {
+        width: 245px;
+        height: 48px;
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 150%;
+        color: var(--primary);
+        background-color: rgba(#000000, 0);
+        border: 1px solid var(--primary);
+        margin: 0 auto;
+    }
+}

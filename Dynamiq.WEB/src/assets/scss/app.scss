@@ -36,6 +36,14 @@ button {
 ul {
     padding: 0;
     list-style-type: none;
+    margin: 0;
+}
+
+.hr-separator {
+    width: 100%;
+    height: 2px;
+    color: #d9d9d9;
+    background-color: #d9d9d9;
 }
 
 // components
@@ -43,7 +51,9 @@ ul {
 @import './components/card';
 @import './components/footer';
 @import './components/subheaderNav';
+@import './components//btns';
 
 // pages
 @import './pages/main';
 @import './pages/shop';
+@import './pages/Products/product';

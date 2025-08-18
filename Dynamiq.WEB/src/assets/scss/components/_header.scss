@@ -37,7 +37,7 @@
     &__social-link {
         margin-right: 45px;
 
-        &:last-child {
+        &:last-of-type {
             margin-right: 0;
         }
     }
@@ -112,6 +112,7 @@
             display: block;
             width: 28px;
             padding-left: 7px;
+            margin-left: 45px;
 
             span {
                 display: block;
@@ -182,9 +183,13 @@
         &__social-link {
             margin-right: 22px;
 
-            &:last-child {
+            &:last-of-type {
                 margin-right: 0;
             }
+        }
+
+        &__hamburger {
+            margin-left: 22px;
         }
 
         &__sidebar {

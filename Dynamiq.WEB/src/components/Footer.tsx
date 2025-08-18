@@ -1,9 +1,7 @@
-import '../assets/scss/app.scss';
-
 const Footer = () => {
     return (
         <>
-            <hr className="footer__first-line" />
+            <hr className="footer__first-line hr-separetor" />
             <footer className="footer">
                 <div className="footer__wrapper container">
                     <div className="row">

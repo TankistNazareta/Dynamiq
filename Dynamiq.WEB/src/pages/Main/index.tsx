@@ -1,7 +1,5 @@
 import Card from '../../components/Card';
 
-import '../../assets/scss/app.scss';
-
 import range1Card from '../../assets/images/main_range_1card.png';
 import range2Card from '../../assets/images/main_range_2card.png';
 import range3Card from '../../assets/images/main_range_3card.png';
@@ -59,7 +57,7 @@ const Main = () => {
                         <Card additionalClasses="main__card" />
                     </div>
                 </div>
-                <button className="main__show-more">Show more</button>
+                <button className="btn-show-more">Show more</button>
             </section>
             <section className="main__forth-section">
                 <h3 className="main__forth-section-subtitle">Share your setup with</h3>

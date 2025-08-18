@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import '../assets/scss/app.scss';
 
 import testImgForCard from '../assets/images/testImgForCard.png';
 
