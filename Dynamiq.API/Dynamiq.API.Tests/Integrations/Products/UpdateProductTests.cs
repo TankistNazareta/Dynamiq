@@ -53,7 +53,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(CancellationToken.None);
+                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
                 var created = products.Should().ContainSingle(p => p.Name == productName).Subject;
 
                 productId = created.Id;
@@ -70,7 +70,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(CancellationToken.None);
+                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
                 var created = products.Should().ContainSingle(p => p.Name == newName).Subject;
 
                 created.Should().NotBeNull();
