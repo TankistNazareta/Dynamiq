@@ -13,6 +13,7 @@ import testCarousel2 from './assets/images/testCarousel/2.png';
 import testCarousel3 from './assets/images/testCarousel/3.png';
 import testCarousel4 from './assets/images/testCarousel/4.png';
 import testCarousel5 from './assets/images/testCarousel/5.png';
+import Contact from './pages/Contact';
 
 function App() {
     return (
@@ -22,8 +23,10 @@ function App() {
             {/* <SubheaderNav nameRoute="Shop" /> */}
             {/* <Shop /> */}
             {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} /> */}
-            <SubheaderNav nameRoute="Cart" />
-            <Cart discount={100} />
+            {/* <SubheaderNav nameRoute="Cart" />
+            <Cart discount={100} /> */}
+            <SubheaderNav nameRoute="Contact" />
+            <Contact />
             <Footer />
         </>
     );

@@ -1,0 +1,55 @@
+.contact {
+    text-align: center;
+    padding: 63px 0 100px 0;
+
+    &_title {
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 36px;
+        color: #000;
+        margin-bottom: 7px;
+    }
+
+    &_descr {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 16px;
+        color: #9f9f9f;
+    }
+
+    &_btns {
+        gap: 25px;
+        padding-top: 65px;
+    }
+
+    &_btn {
+        width: 175px;
+        height: 50px;
+        border-radius: 10px;
+        border: 1px solid #000;
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 16px;
+        color: #fff;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0 20px;
+
+        &-telegram {
+            background-color: #0088cc;
+        }
+
+        &-email {
+            padding: 0 30px;
+            background-color: #ffff;
+            color: #000;
+        }
+
+        &-x {
+            padding: 0 40px;
+
+            background-color: #000;
+        }
+    }
+}
