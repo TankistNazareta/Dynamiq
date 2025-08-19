@@ -1,0 +1,39 @@
+@import './paymentHistory';
+@import './adminPanel';
+
+.user {
+    &__about {
+        padding: 50px 0;
+        text-align: center;
+
+        &_welcome {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 36px;
+            color: #000;
+            margin-bottom: 9px;
+        }
+
+        &_descr {
+            font-family: var(--font-family);
+            font-weight: 400;
+            font-size: 16px;
+            text-align: center;
+            color: #9f9f9f;
+        }
+    }
+
+    &__payment-history {
+        &__header {
+            width: 100%;
+            height: 55px;
+            background: #faf3ea;
+            padding-left: 30px;
+        }
+
+        &__container {
+            gap: 20px;
+            padding: 50px 0;
+        }
+    }
+}

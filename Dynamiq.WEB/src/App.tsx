@@ -14,6 +14,8 @@ import testCarousel3 from './assets/images/testCarousel/3.png';
 import testCarousel4 from './assets/images/testCarousel/4.png';
 import testCarousel5 from './assets/images/testCarousel/5.png';
 import Contact from './pages/Contact';
+import Account from './pages/Account';
+import roleEnum from './utils/enums/roleEnum';
 
 function App() {
     return (
@@ -25,8 +27,9 @@ function App() {
             {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} /> */}
             {/* <SubheaderNav nameRoute="Cart" />
             <Cart discount={100} /> */}
-            <SubheaderNav nameRoute="Contact" />
-            <Contact />
+            {/* <SubheaderNav nameRoute="Contact" />
+            <Contact /> */}
+            <Account role={roleEnum.Admin} email={'youtopak@gmail.com'} hasSubscription={false} />
             <Footer />
         </>
     );
