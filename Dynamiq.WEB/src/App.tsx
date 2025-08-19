@@ -18,35 +18,56 @@ import Account from './pages/Account';
 import roleEnum from './utils/enums/roleEnum';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import NotFound from './pages/NotFound';
+import AuthPage from './pages/Auth';
 
 function App() {
+    const isAuth = Boolean(localStorage.getItem('token'));
+
     return (
         <>
-            <Header />
-
             <Router>
-                <Routes>
-                    <Route path="/" element={<Main />} />
-                    <Route path="/shop" element={<Shop />} />
-                    <Route
-                        path="/product"
-                        element={
-                            <Product
-                                imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]}
-                            />
-                        }
-                    />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/cart" element={<Cart discount={100} />} />
-                    <Route
-                        path="/account"
-                        element={<Account role={roleEnum.Admin} email={'youtopak@gmail.com'} hasSubscription={false} />}
-                    />
-                    <Route path="*" element={<NotFound />} />
-                </Routes>
-            </Router>
+                {isAuth && <Header />}
 
-            <Footer />
+                <Routes>
+                    {!isAuth ? (
+                        <Route path="*" element={<AuthPage />} />
+                    ) : (
+                        <>
+                            <Route path="/" element={<Main />} />
+                            <Route path="/shop" element={<Shop />} />
+                            <Route
+                                path="/product"
+                                element={
+                                    <Product
+                                        imgUrls={[
+                                            testCarousel1,
+                                            testCarousel2,
+                                            testCarousel3,
+                                            testCarousel4,
+                                            testCarousel5,
+                                        ]}
+                                    />
+                                }
+                            />
+                            <Route path="/contact" element={<Contact />} />
+                            <Route path="/cart" element={<Cart discount={100} />} />
+                            <Route
+                                path="/account"
+                                element={
+                                    <Account
+                                        role={roleEnum.Admin}
+                                        email={'youtopak@gmail.com'}
+                                        hasSubscription={false}
+                                    />
+                                }
+                            />
+                            <Route path="*" element={<NotFound />} />
+                        </>
+                    )}
+                </Routes>
+
+                {isAuth && <Footer />}
+            </Router>
         </>
     );
 }
