@@ -19,7 +19,7 @@ namespace Dynamiq.Application.Queries.Products.Handlers
 
         public async Task<IReadOnlyList<ProductDto>> Handle(GetAllProductBySlugQuery request, CancellationToken cancellationToken)
         {
-            var products = await _repo.GetAllBySlugAsync(request.Slug, cancellationToken);
+            var products = await _repo.GetAllBySlugAsync(request.Slug, request.Limit, request.Offset, cancellationToken);
 
             return _mapper.Map<IReadOnlyList<ProductDto>>(products);
         }

@@ -3,13 +3,10 @@ using FluentValidation;
 
 namespace Dynamiq.Application.Queries.Products.Validators
 {
-    internal class GetAllProductBySlugQueryValidator : AbstractValidator<GetAllProductBySlugQuery>
+    public class GetAllProductsQueryValidator : AbstractValidator<GetAllProductsQuery>
     {
-        public GetAllProductBySlugQueryValidator()
+        public GetAllProductsQueryValidator()
         {
-            RuleFor(x => x.Slug)
-                .NotEmpty().WithMessage("Slug is required.");
-
             RuleFor(x => x.Limit)
                 .GreaterThan(0).WithMessage("Limit must be greater than 0")
                 .LessThanOrEqualTo(100).WithMessage("Limit cannot be greater than 100");

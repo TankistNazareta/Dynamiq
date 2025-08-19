@@ -3,6 +3,7 @@ using Dynamiq.Domain.Common;
 using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace Dynamiq.Infrastructure.Repositories
 {
@@ -28,22 +29,41 @@ namespace Dynamiq.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken ct)
-                => await _db.Products.AsNoTracking().ToListAsync(ct);
+        public async Task<IReadOnlyList<Product>> GetAllAsync(int limit, int offset, CancellationToken ct)
+        {
+            var query = _db.Products.AsNoTracking();
 
-        public async Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, CancellationToken ct)
+            int skip = offset;
+            int take = limit;
+
+            return await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync(ct);
+        }
+
+
+        public async Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, int limit, int offset, CancellationToken ct)
         {
             var category = await _db.Categories
                 .Include(c => c.Products)
                 .FirstOrDefaultAsync(c => c.Slug == slug, ct);
 
-            return category?.Products.ToList() ?? new List<Product>();
+            var products = category?.Products.AsQueryable() ?? Enumerable.Empty<Product>().AsQueryable();
+
+            int skip = offset;
+            int take = limit;
+
+            return await products
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct)
                 => await _db.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
 
-        public async Task<List<Product>> GetFilteredAsync(ProductFilter request, CancellationToken ct)
+        public async Task<List<Product>> GetFilteredAsync(ProductFilter request, int limit, int offset, CancellationToken ct)
         {
             var query = _db.Products.AsQueryable();
 
@@ -64,7 +84,13 @@ namespace Dynamiq.Infrastructure.Repositories
                     p.Description.ToLower().Contains(term));
             }
 
-            return await query.ToListAsync(ct);
+            int skip = offset;
+            int take = limit;
+
+            return await query
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync(ct);
         }
 
         public async Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct)

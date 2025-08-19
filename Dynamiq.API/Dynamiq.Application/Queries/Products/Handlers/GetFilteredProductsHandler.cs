@@ -19,7 +19,7 @@ namespace Dynamiq.Application.Queries.Products.Handlers
 
         public async Task<List<ProductDto>> Handle(GetFilteredProductsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _productRepo.GetFilteredAsync(request.Filter, cancellationToken);
+            var products = await _productRepo.GetFilteredAsync(request.Filter, request.Limit, request.Offset, cancellationToken);
             return _mapper.Map<List<ProductDto>>(products);
         }
     }

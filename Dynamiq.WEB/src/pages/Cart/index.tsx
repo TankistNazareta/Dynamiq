@@ -4,6 +4,7 @@ import img from '../../assets/images/testImgForCard.png';
 import { useState } from 'react';
 import CouponItem from './CouponItem';
 import Feature from '../../components/Feature';
+import SubheaderNav from '../../components/SubheaderNav';
 
 interface CartProps {
     discount: number;
@@ -14,6 +15,7 @@ const Cart: React.FC<CartProps> = ({ discount }) => {
 
     return (
         <>
+            <SubheaderNav nameRoute="Cart" />
             <section className="cart container d-flex flex-wrap justify-content-between">
                 <div className="cart__list">
                     <div className="cart__hat d-flex align-items-center justify-content-between flex-wrap">

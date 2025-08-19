@@ -16,20 +16,36 @@ import testCarousel5 from './assets/images/testCarousel/5.png';
 import Contact from './pages/Contact';
 import Account from './pages/Account';
 import roleEnum from './utils/enums/roleEnum';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import NotFound from './pages/NotFound';
 
 function App() {
     return (
         <>
             <Header />
-            {/* <Main /> */}
-            {/* <SubheaderNav nameRoute="Shop" /> */}
-            {/* <Shop /> */}
-            {/* <Product imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]} /> */}
-            {/* <SubheaderNav nameRoute="Cart" />
-            <Cart discount={100} /> */}
-            {/* <SubheaderNav nameRoute="Contact" />
-            <Contact /> */}
-            <Account role={roleEnum.Admin} email={'youtopak@gmail.com'} hasSubscription={false} />
+
+            <Router>
+                <Routes>
+                    <Route path="/" element={<Main />} />
+                    <Route path="/shop" element={<Shop />} />
+                    <Route
+                        path="/product"
+                        element={
+                            <Product
+                                imgUrls={[testCarousel1, testCarousel2, testCarousel3, testCarousel4, testCarousel5]}
+                            />
+                        }
+                    />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/cart" element={<Cart discount={100} />} />
+                    <Route
+                        path="/account"
+                        element={<Account role={roleEnum.Admin} email={'youtopak@gmail.com'} hasSubscription={false} />}
+                    />
+                    <Route path="*" element={<NotFound />} />
+                </Routes>
+            </Router>
+
             <Footer />
         </>
     );

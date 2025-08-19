@@ -41,7 +41,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var filter = new ProductFilter { CategoryId = categoryId };
 
-            var result = await _repo.GetFilteredAsync(filter, CancellationToken.None);
+            var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.All(result, p => Assert.Equal(categoryId, p.CategoryId));
             Assert.Equal(2, result.Count);
@@ -62,7 +62,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var filter = new ProductFilter { MinPrice = 100 };
 
-            var result = await _repo.GetFilteredAsync(filter, CancellationToken.None);
+            var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.All(result, p => Assert.True(p.Price >= 100));
             Assert.Equal(2, result.Count);
@@ -83,7 +83,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var filter = new ProductFilter { MaxPrice = 200 };
 
-            var result = await _repo.GetFilteredAsync(filter, CancellationToken.None);
+            var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.All(result, p => Assert.True(p.Price <= 200));
             Assert.Equal(2, result.Count);
@@ -104,7 +104,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var filter = new ProductFilter { SearchTerm = "android" };
 
-            var result = await _repo.GetFilteredAsync(filter, CancellationToken.None);
+            var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.All(result, p =>
                 Assert.True(
@@ -129,7 +129,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var filter = new ProductFilter();
 
-            var result = await _repo.GetFilteredAsync(filter, CancellationToken.None);
+            var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.Equal(products.Count, result.Count);
         }

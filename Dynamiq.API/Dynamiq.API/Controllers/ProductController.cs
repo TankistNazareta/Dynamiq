@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.Queries.Products.Queries;
+using Dynamiq.Domain.Common;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,9 +42,9 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int limit, [FromQuery] int offset = 0)
         {
-            var all = await _mediator.Send(new GetAllProductsQuery());
+            var all = await _mediator.Send(new GetAllProductsQuery(limit, offset));
 
             _logger.LogInformation("Retrieved all products, count: {Count}", all?.Count() ?? -1);
 
@@ -80,17 +81,17 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpGet("category/{slug}")]
-        public async Task<IActionResult> GetAllProductByCategory(string slug)
+        public async Task<IActionResult> GetAllProductByCategory(string slug, [FromQuery] int limit, [FromQuery] int offset = 0)
         {
-            var products = await _mediator.Send(new GetAllProductBySlugQuery(slug));
+            var products = await _mediator.Send(new GetAllProductBySlugQuery(slug, limit, offset));
 
             return Ok(products);
         }
 
         [HttpGet("filter")]
-        public async Task<IActionResult> GetFiltered([FromBody] GetFilteredProductsQuery command)
+        public async Task<IActionResult> GetFiltered([FromBody] ProductFilter filter, [FromQuery] int limit, [FromQuery] int offset = 0)
         {
-            var products = await _mediator.Send(command);
+            var products = await _mediator.Send(new GetFilteredProductsQuery(filter, limit, offset));
 
             return Ok(products);
         }

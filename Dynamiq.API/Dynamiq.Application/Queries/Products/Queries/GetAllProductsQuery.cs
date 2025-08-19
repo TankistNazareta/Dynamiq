@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Dynamiq.Application.Queries.Products.Queries
 {
-    public class GetAllProductsQuery : IRequest<IReadOnlyList<ProductDto>>;
+    public record class GetAllProductsQuery(int Limit, int Offset) : IRequest<IReadOnlyList<ProductDto>>;
 }
