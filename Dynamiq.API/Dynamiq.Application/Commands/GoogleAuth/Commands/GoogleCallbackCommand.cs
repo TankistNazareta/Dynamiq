@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Dynamiq.Application.Commands.GoogleAuth.Commands
 {
-    public record GoogleCallbackCommand(string Code, string? State) : IRequest<AuthResponseDto>;
+    public record GoogleCallbackCommand(string Code, string? State) : IRequest<AuthTokensDto>;
 }

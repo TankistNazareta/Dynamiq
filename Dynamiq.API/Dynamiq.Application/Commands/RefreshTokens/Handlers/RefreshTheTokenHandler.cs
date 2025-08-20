@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
 {
-    public class RefreshTheTokenHandler : IRequestHandler<RefreshTheTokenCommand, AuthResponseDto>
+    public class RefreshTheTokenHandler : IRequestHandler<RefreshTheTokenCommand, AuthTokensDto>
     {
         private readonly IUserRepo _userRepo;
         private readonly ITokenService _tokenService;
@@ -22,7 +22,7 @@ namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AuthResponseDto> Handle(RefreshTheTokenCommand request, CancellationToken cancellationToken)
+        public async Task<AuthTokensDto> Handle(RefreshTheTokenCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepo.GetByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 

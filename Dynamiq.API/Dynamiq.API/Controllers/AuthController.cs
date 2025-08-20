@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
+using Dynamiq.Application.DTOs.AuthDTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -35,9 +36,15 @@ namespace Dynamiq.API.Controllers
         {
             var res = await _mediator.Send(command);
 
+            Response.Cookies.Append("refreshToken", res.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict
+            });
+
             _logger.LogInformation($"Log in: {res}");
 
-            return Ok(new { AccessToken = res.AccessToken });
+            return Ok(res.AccessToken);
         }
 
         [HttpPost("log-out")]

@@ -1,15 +1,10 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs;
 using Dynamiq.Application.Interfaces.Auth;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
-using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Users
 {

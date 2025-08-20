@@ -5,6 +5,6 @@ namespace Dynamiq.Application.Interfaces.Auth
 {
     public interface ITokenService
     {
-        AuthResponseDto CreateAuthResponse(string email, RoleEnum role, Guid userId);
+        AuthTokensDto CreateAuthResponse(string email, RoleEnum role, Guid userId);
     }
 }

@@ -11,7 +11,7 @@ using MediatR;
 
 namespace Dynamiq.Application.Commands.Users.Handlers
 {
-    public class LogInUserHandler : IRequestHandler<LogInUserCommand, AuthResponseDto>
+    public class LogInUserHandler : IRequestHandler<LogInUserCommand, AuthTokensDto>
     {
         private readonly IUserRepo _userRepo;
         private readonly IPasswordService _passwordService;
@@ -33,7 +33,7 @@ namespace Dynamiq.Application.Commands.Users.Handlers
             _emailService = emailService;
         }
 
-        public async Task<AuthResponseDto> Handle(LogInUserCommand request, CancellationToken cancellationToken)
+        public async Task<AuthTokensDto> Handle(LogInUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepo.GetByEmailAsync(request.Email, cancellationToken);
 

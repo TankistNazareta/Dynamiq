@@ -68,7 +68,7 @@ namespace Dynamiq.API.Tests.Integrations.GoogleAuth
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = JsonSerializer.Deserialize<AuthResponseDto>(
+            var result = JsonSerializer.Deserialize<AuthTokensDto>(
                 await response.Content.ReadAsStringAsync(),
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );

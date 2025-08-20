@@ -1,7 +1,6 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Context;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
@@ -11,17 +10,21 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Dynamiq.API.Tests
 {
-    public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProgram>, IAsyncLifetime
-    where TProgram : class
+    public class CustomWebApplicationFactory<TProgram>
+        : WebApplicationFactory<TProgram>, IAsyncLifetime
+        where TProgram : class
     {
         private string? _connectionString;
         private const string TestDbName = "DynamiqTestDb";
 
-        public string ConnectionString => _connectionString ?? throw new InvalidOperationException("Connection string is not initialized.");
+        public string ConnectionString => _connectionString ??
+            throw new InvalidOperationException("Connection string is not initialized.");
 
         public async Task EnsureDatabaseReadyAsync()
         {
@@ -30,7 +33,6 @@ namespace Dynamiq.API.Tests
             {
                 try
                 {
-
                     var options = new DbContextOptionsBuilder<AppDbContext>()
                         .UseSqlServer(_connectionString)
                         .Options;
@@ -38,8 +40,7 @@ namespace Dynamiq.API.Tests
                     using var scope = Services.CreateScope();
                     var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
                     using var db = new AppDbContext(options, dispatcher);
-                    await using var context = new AppDbContext(options, dispatcher);
-                    await context.Database.EnsureCreatedAsync();
+                    await db.Database.EnsureCreatedAsync();
                     return;
                 }
                 catch
@@ -61,7 +62,6 @@ namespace Dynamiq.API.Tests
             await using var connection = new SqlConnection(masterConnectionString);
             await connection.OpenAsync();
 
-            // Створюємо БД якщо ще немає
             await using (var command = connection.CreateCommand())
             {
                 command.CommandText = $@"
@@ -77,7 +77,6 @@ namespace Dynamiq.API.Tests
             };
             _connectionString = builder.ToString();
 
-            // Виконуємо міграції один раз
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseSqlServer(_connectionString)
                 .Options;
@@ -94,14 +93,12 @@ namespace Dynamiq.API.Tests
 
             builder.ConfigureServices(services =>
             {
-                // Перевизначаємо DbContext
                 var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
                 if (descriptor != null) services.Remove(descriptor);
 
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(_connectionString!));
 
-                // Mock email service
                 var emailDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
                 if (emailDescriptor != null) services.Remove(emailDescriptor);
 
@@ -109,7 +106,6 @@ namespace Dynamiq.API.Tests
                 mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
-                // Відключаємо hosted services
                 var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
                 foreach (var hs in hostedServices)
                     services.Remove(hs);
@@ -118,9 +114,7 @@ namespace Dynamiq.API.Tests
 
         public Task DisposeAsync()
         {
-            // Базу видаляти не треба
             return Task.CompletedTask;
         }
     }
-
 }

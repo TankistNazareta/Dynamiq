@@ -29,10 +29,10 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
             var logInCommand = new LogInUserCommand(command.Email, "OldPassword123!");
 
-            var authResponse = await _client.PostAsJsonAsync("/auth/login", logInCommand);
+            var logInResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
-            var authResult = await authResponse.Content.ReadFromJsonAsync<AuthResponseDto>();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+            var accessToken = await logInResponse.Content.ReadAsStringAsync();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response = await _client.PutAsJsonAsync("/users/change-password", command);
 

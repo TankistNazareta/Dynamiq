@@ -64,7 +64,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.PaymentHistory", b =>
@@ -96,7 +96,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentHistories");
+                    b.ToTable("PaymentHistories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Product", b =>
@@ -139,7 +139,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.User", b =>
@@ -165,7 +165,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.Coupon", b =>
@@ -231,7 +231,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("EmailVerifications");
+                    b.ToTable("EmailVerifications", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.ProductPaymentHistory", b =>
@@ -256,7 +256,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPaymentHistories");
+                    b.ToTable("ProductPaymentHistories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.RefreshToken", b =>
@@ -284,7 +284,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.Subscription", b =>
@@ -317,7 +317,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions");
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Cart", b =>

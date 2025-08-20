@@ -1,12 +1,13 @@
-﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Application.DTOs.AuthDTOs;
+﻿using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -15,12 +16,10 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
     public class RefreshTheTokenTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
-        private readonly HttpClient _client;
 
         public RefreshTheTokenTests(CustomWebApplicationFactory<Program> factory)
         {
             _factory = factory;
-            _client = factory.CreateClient();
         }
 
         [Fact]
@@ -40,20 +39,39 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
             db.Users.Add(user);
             await db.SaveChangesAsync();
 
-            var command = new RefreshTheTokenCommand(oldRefreshToken);
+            var client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                HandleCookies = true
+            });
 
-            var response = await _client.PutAsJsonAsync("/token/refresh", command);
+            client.DefaultRequestHeaders.Add("Cookie", $"refreshToken={oldRefreshToken}");
+
+            var response = await client.PutAsync("/token/refresh", null);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
-            result.AccessToken.Should().NotBeNull();
-            result.RefreshToken.Should().NotBeNull();
-            result.RefreshToken.Should().NotBeEquivalentTo(oldRefreshToken);
+            var result = await response.Content.ReadAsStringAsync();
+            result.Should().NotBeNull();
 
-            var updatedUser = await db.Users
-                .Include(u => u.RefreshTokens)
-                .FirstOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == result.RefreshToken));
-            updatedUser.Should().NotBeNull();
+            var setCookieHeaders = response.Headers
+                .Where(h => h.Key.Equals("Set-Cookie", StringComparison.OrdinalIgnoreCase))
+                .SelectMany(h => h.Value);
+            var refreshToken = setCookieHeaders
+                .Select(h => h.Split(';')[0])
+                .Select(s => s.Split('='))
+                .Where(parts => parts.Length == 2 && parts[0].Trim() == "refreshToken")
+                .Select(parts => WebUtility.UrlDecode(parts[1])) 
+                .FirstOrDefault();
+
+            refreshToken.Should().NotBeNull();
+
+            using var newScope = _factory.Services.CreateScope();
+            var newDb = newScope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            var updatedRt = newDb.RefreshTokens
+                .FirstOrDefault(rt => rt.Token == refreshToken);
+
+            updatedRt.Should().NotBeNull();
+            updatedRt.UserId.Should().Be(user.Id);
         }
     }
 }

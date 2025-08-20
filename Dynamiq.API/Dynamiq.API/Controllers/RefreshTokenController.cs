@@ -49,7 +49,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation($"Refreshed token with id: {token}");
 
-            return Ok(new { AccessToken = res.AccessToken });
+            return Ok(res.AccessToken);
         }
     }
 }

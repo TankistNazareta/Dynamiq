@@ -23,7 +23,7 @@ namespace Dynamiq.Infrastructure.Services.Auth
             _jwtAudience = config["JwtSettings:Audience"]!;
         }
 
-        public AuthResponseDto CreateAuthResponse(string email, RoleEnum role, Guid userId)
+        public AuthTokensDto CreateAuthResponse(string email, RoleEnum role, Guid userId)
         {
             var accessToken = GenerateJwtToken(email, role, userId);
             var refreshToken = GenerateRefreshToken();

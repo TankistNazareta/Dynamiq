@@ -23,7 +23,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         }
 
         private async Task<HttpResponseMessage> LoginAsync(LogInUserCommand command) =>
-            await _client.PostAsJsonAsync("/auth/login", command);
+            await _client.PostAsJsonAsync("/auth/log-in", command);
 
         [Fact]
         public async Task LoginUser_WithValidCredentials_ShouldReturnSuccessAndToken()
@@ -35,9 +35,9 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var response = await LoginAsync(new(email, password));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var res = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
+            var accessToken = await response.Content.ReadAsStringAsync();
 
-            res.AccessToken.Should().NotBeNull();
+            accessToken.Should().NotBeNull();
         }
 
         [Fact]

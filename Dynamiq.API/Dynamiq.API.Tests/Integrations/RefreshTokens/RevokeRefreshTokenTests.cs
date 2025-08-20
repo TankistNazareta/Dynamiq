@@ -4,11 +4,12 @@ using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Json;
-using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.RefreshTokens
 {
@@ -20,7 +21,10 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
         public RevokeRefreshTokenTests(CustomWebApplicationFactory<Program> factory)
         {
             _factory = factory;
-            _client = factory.CreateClient();
+            _client = _factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                HandleCookies = true
+            });
         }
 
         [Fact]
@@ -40,9 +44,9 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
             db.Users.Add(user);
             await db.SaveChangesAsync();
 
-            var command = new RevokeRefreshTokenCommand(oldRefreshToken);
-
-            var response = await _client.PutAsJsonAsync("/token/revoke", command);
+            _client.DefaultRequestHeaders.Add("Cookie", $"refreshToken={oldRefreshToken}");
+            
+            var response = await _client.PutAsync("/token/revoke", null);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var result = await response.Content.ReadAsStringAsync();

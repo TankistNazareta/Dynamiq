@@ -19,7 +19,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
             new RegisterUserCommand(email, "StrongP@ssword1");
 
         private async Task<HttpResponseMessage> RegisterAsync(RegisterUserCommand command) =>
-            await _client.PostAsJsonAsync("/auth/signup", command);
+            await _client.PostAsJsonAsync("/auth/sign-up", command);
 
         [Fact]
         public async Task RegisterUser_WithValidData_ShouldReturnSuccess()

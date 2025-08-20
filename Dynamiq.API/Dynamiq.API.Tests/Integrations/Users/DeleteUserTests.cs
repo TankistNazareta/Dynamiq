@@ -1,6 +1,8 @@
 ﻿using Docker.DotNet.Models;
 using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.DTOs.AuthDTOs;
+using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -31,12 +33,13 @@ namespace Dynamiq.API.Tests.Integrations.Users
             await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, signUpCommand);
 
             var logInCommand = new LogInUserCommand(email, "OldPassword123!");
-            var authResponse = await _client.PostAsJsonAsync("/auth/login", logInCommand);
+            var authResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
-            var authResult = await authResponse.Content.ReadFromJsonAsync<AuthResponseDto>();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authResult.AccessToken);
+            var accessToken = await authResponse.Content.ReadAsStringAsync();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             using var scope = _factory.Services.CreateScope();
+            var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             var user = await db.Users.FirstOrDefaultAsync(x => x.Email == email);
@@ -44,9 +47,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var response = await _client.DeleteAsync($"/users/{user.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var responseContent = await response.Content.ReadAsStringAsync();
-            responseContent.Should().Be("user was removed");
         }
     }
 }

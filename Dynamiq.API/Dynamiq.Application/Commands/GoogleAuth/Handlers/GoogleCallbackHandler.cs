@@ -18,7 +18,7 @@ using System.Threading;
 
 namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
 {
-    public class GoogleCallbackHandler : IRequestHandler<GoogleCallbackCommand, AuthResponseDto>
+    public class GoogleCallbackHandler : IRequestHandler<GoogleCallbackCommand, AuthTokensDto>
     {
         private readonly IGoogleOidcService _google;
         private readonly IUserRepo _userRepo;
@@ -46,7 +46,7 @@ namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
             _emailService = emailService;
         }
 
-        public async Task<AuthResponseDto> Handle(GoogleCallbackCommand request, CancellationToken ct)
+        public async Task<AuthTokensDto> Handle(GoogleCallbackCommand request, CancellationToken ct)
         {
             var cookies = _httpContext.HttpContext!.Request.Cookies;
 
