@@ -12,6 +12,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         private const string ValidDescription = "Description";
         private const int ValidPrice = 100;
         private static readonly Guid ValidCategoryId = Guid.NewGuid();
+        private const string ValidImgUrl = "https://example.com/image.jpg";
 
         [Theory]
         [InlineData(null, ValidStripePriceId, ValidName, ValidDescription, ValidPrice)]
@@ -24,9 +25,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
             string description,
             int price)
         {
-            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId);
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
-            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId);
+            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             act.Should().Throw<ArgumentException>().WithMessage("*StripeProductId cannot be empty*");
         }
@@ -42,9 +43,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
             string description,
             int price)
         {
-            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId);
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
-            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId);
+            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             act.Should().Throw<ArgumentException>().WithMessage("*StripePriceId cannot be empty*");
         }
@@ -60,9 +61,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
             string description,
             int price)
         {
-            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId);
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
-            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId);
+            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             act.Should().Throw<ArgumentException>().WithMessage("*Name cannot be empty*");
         }
@@ -77,26 +78,43 @@ namespace Dynamiq.Domain.Tests.Aggregates
             string description,
             int price)
         {
-            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId);
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
-            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId);
+            Action act = () => prod.Update(stripeProductId, stripePriceId, name, description, price, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             act.Should().Throw<ArgumentException>().WithMessage("*Price must be greater than zero*");
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        [InlineData("invalid-url")]
+        public void Update_ShouldThrow_When_ImgUrlIsInvalid(string imgUrl)
+        {
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
+
+            Action act = () => prod.Update(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, imgUrl);
+
+            act.Should().Throw<ArgumentException>().WithMessage("*ImgUrl must be a valid URL*");
+        }
+
+        [Fact]
+        public void Update_ShouldSet_ImgUrl_When_Valid()
+        {
+            var prod = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
+
+            var newImgUrl = "https://example.com/new-image.png";
+
+            prod.Update(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, newImgUrl);
+
+            prod.ImgUrl.Should().Be(newImgUrl);
         }
 
         [Fact]
         public void Constructor_ShouldInitializePropertiesCorrectly()
         {
-            var before = DateTime.UtcNow;
-            var product = new Product(
-                ValidStripeProductId,
-                ValidStripePriceId,
-                ValidName,
-                ValidDescription,
-                ValidPrice,
-                IntervalEnum.Monthly,
-                ValidCategoryId);
-            var after = DateTime.UtcNow;
+            var product = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.Monthly, ValidCategoryId, ValidImgUrl);
 
             product.StripeProductId.Should().Be(ValidStripeProductId);
             product.StripePriceId.Should().Be(ValidStripePriceId);
@@ -105,6 +123,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
             product.Price.Should().Be(ValidPrice);
             product.Interval.Should().Be(IntervalEnum.Monthly);
             product.CategoryId.Should().Be(ValidCategoryId);
+            product.ImgUrl.Should().Be(ValidImgUrl);
             product.ProductPaymentHistories.Should().BeEmpty();
         }
 
@@ -113,14 +132,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         [InlineData(-10)]
         public void ChangePrice_ShouldThrow_When_NewPriceIsNotPositive(int newPrice)
         {
-            var product = new Product(
-                ValidStripeProductId,
-                ValidStripePriceId,
-                ValidName,
-                ValidDescription,
-                ValidPrice,
-                IntervalEnum.OneTime,
-                ValidCategoryId);
+            var product = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             Action act = () => product.ChangePrice(newPrice);
 
@@ -130,14 +142,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         [Fact]
         public void ChangePrice_ShouldUpdatePrice_When_NewPriceIsValid()
         {
-            var product = new Product(
-                ValidStripeProductId,
-                ValidStripePriceId,
-                ValidName,
-                ValidDescription,
-                ValidPrice,
-                IntervalEnum.OneTime,
-                ValidCategoryId);
+            var product = new Product(ValidStripeProductId, ValidStripePriceId, ValidName, ValidDescription, ValidPrice, IntervalEnum.OneTime, ValidCategoryId, ValidImgUrl);
 
             product.ChangePrice(250);
 

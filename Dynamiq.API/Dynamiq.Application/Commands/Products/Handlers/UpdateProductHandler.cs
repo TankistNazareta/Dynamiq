@@ -21,7 +21,15 @@ namespace Dynamiq.Application.Commands.Products.Handlers
 
         public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            var productDto = new ProductDto(request.Id, request.Name, request.Description, request.Price, request.Interval);
+            var productDto = new ProductDto(
+                request.Id, 
+                request.Name, 
+                request.Description, 
+                request.Price, 
+                request.Interval,
+                request.ImgUrl
+            );
+
             var product = await _repo.GetByIdAsync(productDto.Id, cancellationToken);
 
             if (product == null)
@@ -36,7 +44,9 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 productDto.Description,
                 productDto.Price,
                 productDto.Interval,
-                request.CategoryId);
+                request.CategoryId, 
+                request.ImgUrl
+            );
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }

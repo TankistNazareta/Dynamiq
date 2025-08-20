@@ -12,28 +12,30 @@ namespace Dynamiq.Domain.Aggregates
         public string Description { get; private set; }
         public int Price { get; private set; }
         public IntervalEnum Interval { get; private set; }
+        public string ImgUrl { get; private set; }
 
         private readonly List<ProductPaymentHistory> _productPaymentHistories = new();
         public IReadOnlyCollection<ProductPaymentHistory> ProductPaymentHistories => _productPaymentHistories.AsReadOnly();
 
         public Guid CategoryId { get; private set; }
 
-        private Product() { }// EF Core
+        private Product() { }
 
         public Product(
             string stripeProductId, string stripePriceId,
             string name, string description,
             int price, IntervalEnum interval,
-            Guid categoryId)
+            Guid categoryId, string imgUrl)
         {
-            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId);
+            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId, imgUrl);
         }
 
         public void Update(
             string stripeProductId,
             string stripePriceId, string name,
             string description, int price,
-            IntervalEnum interval, Guid categoryId)
+            IntervalEnum interval, Guid categoryId,
+            string imgUrl)
         {
             if (string.IsNullOrWhiteSpace(stripeProductId))
                 throw new ArgumentException("StripeProductId cannot be empty");
@@ -47,6 +49,9 @@ namespace Dynamiq.Domain.Aggregates
             if (price <= 0)
                 throw new ArgumentException("Price must be greater than zero");
 
+            if (string.IsNullOrWhiteSpace(imgUrl) || !Uri.TryCreate(imgUrl, UriKind.Absolute, out _))
+                throw new ArgumentException("ImgUrl must be a valid URL");
+
             StripeProductId = stripeProductId;
             StripePriceId = stripePriceId;
             Name = name;
@@ -54,6 +59,7 @@ namespace Dynamiq.Domain.Aggregates
             Price = price;
             Interval = interval;
             CategoryId = categoryId;
+            ImgUrl = imgUrl;
         }
 
         public void ChangePrice(int newPrice)

@@ -91,7 +91,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id, "https://example.com/image.jpg");
             db.Products.Add(product);
             await db.SaveChangesAsync();
 
@@ -143,7 +143,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2222, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2222, IntervalEnum.OneTime, category.Id, "https://example.com/image.jpg");
             db.Products.Add(product);
 
             await db.SaveChangesAsync();
@@ -189,7 +189,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.Monthly, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.Monthly, category.Id, "https://example.com/image.jpg");
             db.Products.Add(product);
 
             await db.SaveChangesAsync();
@@ -244,7 +244,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id);
+            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id, "https://example.com/image.jpg");
             db.Products.Add(product);
 
             var coupon = new Coupon($"{Guid.NewGuid():N}_coupon", DiscountTypeEnum.FixedAmount, 200, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));

@@ -22,6 +22,16 @@ namespace Dynamiq.Application.Commands.Products.Validators
 
             RuleFor(x => x.Interval)
                 .IsInEnum().WithMessage("Interval must be a valid enum value.");
+
+            RuleFor(x => x.ImgUrl)
+                .NotEmpty().WithMessage("Image URL cannot be empty.")
+                .Must(IsValidUrl).WithMessage("Image URL must be a valid URL.");
+        }
+
+        private bool IsValidUrl(string url)
+        {
+            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+                   && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

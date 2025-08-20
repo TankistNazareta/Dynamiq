@@ -54,7 +54,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
                 "Test Description",
                 1000,
                 IntervalEnum.OneTime,
-                categoryId
+                categoryId,
+                "https://example.com/image.jpg"
             );
 
             var response = await client.PostAsJsonAsync("/product", command);

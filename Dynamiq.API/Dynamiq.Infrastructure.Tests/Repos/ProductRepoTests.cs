@@ -31,9 +31,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, categoryId),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 300, IntervalEnum.OneTime, categoryId),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, categoryId, "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 300, IntervalEnum.OneTime, categoryId, "https://example.com/image.jpg"),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -52,9 +52,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid()),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -73,9 +73,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid()),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -94,9 +94,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Apple iPhone", "Smartphone", 999, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Samsung Galaxy", "Android phone", 799, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Google Pixel", "Android phone", 699, IntervalEnum.OneTime, Guid.NewGuid()),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Apple iPhone", "Smartphone", 999, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Samsung Galaxy", "Android phone", 799, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Google Pixel", "Android phone", 699, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -120,8 +120,8 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, Guid.NewGuid()),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid())
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg"),
+                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid(), "https://example.com/image.jpg" )
             };
 
             await _dbContext.Products.AddRangeAsync(products);

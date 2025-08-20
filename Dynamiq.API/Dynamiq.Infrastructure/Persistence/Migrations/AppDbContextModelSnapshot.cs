@@ -64,7 +64,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.PaymentHistory", b =>
@@ -96,7 +96,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentHistories", (string)null);
+                    b.ToTable("PaymentHistories");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Product", b =>
@@ -113,6 +113,10 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Interval")
                         .HasColumnType("int");
@@ -139,7 +143,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products", (string)null);
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.User", b =>
@@ -165,7 +169,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.Coupon", b =>
@@ -231,7 +235,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("EmailVerifications", (string)null);
+                    b.ToTable("EmailVerifications");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.ProductPaymentHistory", b =>
@@ -256,7 +260,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPaymentHistories", (string)null);
+                    b.ToTable("ProductPaymentHistories");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.RefreshToken", b =>
@@ -284,7 +288,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens", (string)null);
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.Subscription", b =>
@@ -317,7 +321,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Cart", b =>
