@@ -27,8 +27,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var command = CreateValidCommand($"test{Guid.NewGuid():N}@example.com");
             var response = await RegisterAsync(command);
 
-            Console.WriteLine(response);
-
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var content = await response.Content.ReadAsStringAsync();
 

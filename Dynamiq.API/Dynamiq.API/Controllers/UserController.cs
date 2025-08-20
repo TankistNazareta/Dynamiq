@@ -59,7 +59,7 @@ namespace Dynamiq.API.Controllers
             var usersId = User.FindFirst(JwtClaims.UserId)?.Value;
             var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
 
-            if (usersId != id.ToString() || usersRole == RoleEnum.Admin.ToString())
+            if (usersId != id.ToString() && usersRole != RoleEnum.Admin.ToString())
                 return Forbid();
 
             await _mediator.Send(new DeleteUserCommand(id));

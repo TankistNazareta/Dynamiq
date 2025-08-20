@@ -38,7 +38,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var res = await response.Content.ReadFromJsonAsync<AuthResponseDto>();
 
             res.AccessToken.Should().NotBeNull();
-            res.RefreshToken.Should().NotBeNull();
         }
 
         [Fact]

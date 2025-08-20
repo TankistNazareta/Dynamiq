@@ -18,7 +18,7 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost("signup")]
+        [HttpPost("sign-up")]
         [EnableRateLimiting("SignUpLimiter")]
         public async Task<IActionResult> Register([FromBody] RegisterUserCommand registeredUser)
         {
@@ -29,7 +29,7 @@ namespace Dynamiq.API.Controllers
             return Ok("You successfully registered");
         }
 
-        [HttpPost("login")]
+        [HttpPost("log-in")]
         [EnableRateLimiting("LogInLimiter")]
         public async Task<IActionResult> LogIn([FromBody] LogInUserCommand command)
         {
@@ -37,7 +37,15 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation($"Log in: {res}");
 
-            return Ok(res);
+            return Ok(new { AccessToken = res.AccessToken });
         }
+
+        [HttpPost("log-out")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok("Logged out");
+        }
+
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("emailVerification")]
+    [Route("email-verification")]
     [ApiController]
     public class EmailVerificationController : ControllerBase
     {

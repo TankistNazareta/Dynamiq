@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
+using Dynamiq.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,23 +19,37 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPut("revoke")]
-        public async Task<IActionResult> Revoke([FromBody] RevokeRefreshTokenCommand command)
+        public async Task<IActionResult> Revoke()
         {
-            await _mediator.Send(command);
+            if (!Request.Cookies.TryGetValue("refreshToken", out var token))
+                return Unauthorized(new { message = "No refresh token" });
 
-            _logger.LogInformation("Refresh token revoked: {Token}", command.Token);
+            await _mediator.Send(new RevokeRefreshTokenCommand(token));
+
+            Response.Cookies.Delete("refreshToken");
+
+            _logger.LogInformation("Refresh token revoked: {Token}", token);
 
             return Ok("Token successfully revoked");
         }
 
         [HttpPut("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTheTokenCommand command)
+        public async Task<IActionResult> Refresh()
         {
-            var res = await _mediator.Send(command);
+            if (!Request.Cookies.TryGetValue("refreshToken", out var token))
+                return Unauthorized(new { message = "No refresh token" });
 
-            _logger.LogInformation($"Refreshed token with id: {command.RefreshToken}");
+            var res = await _mediator.Send(new RefreshTheTokenCommand(token));
 
-            return Ok(res);
+            Response.Cookies.Append("refreshToken", res.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict
+            });
+
+            _logger.LogInformation($"Refreshed token with id: {token}");
+
+            return Ok(new { AccessToken = res.AccessToken });
         }
     }
 }
