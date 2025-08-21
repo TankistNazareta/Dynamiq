@@ -30,7 +30,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Refresh token revoked: {Token}", token);
 
-            return Ok("Token successfully revoked");
+            return Ok(new { Message = "Token successfully revoked" });
         }
 
         [HttpPut("refresh")]
@@ -49,7 +49,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation($"Refreshed token with id: {token}");
 
-            return Ok(res.AccessToken);
+            return Ok(new { AccessToken = res.AccessToken });
         }
     }
 }

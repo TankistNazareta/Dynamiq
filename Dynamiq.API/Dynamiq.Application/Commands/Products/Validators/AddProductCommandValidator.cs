@@ -20,9 +20,11 @@ namespace Dynamiq.Application.Commands.Products.Validators
             RuleFor(x => x.Interval)
                 .IsInEnum().WithMessage("Interval must be a valid enum value.");
 
-            RuleFor(x => x.ImgUrl)
-                .NotEmpty().WithMessage("Image URL cannot be empty.")
-                .Must(IsValidUrl).WithMessage("Image URL must be a valid URL.");
+            RuleFor(x => x.ImgUrls)
+                .NotEmpty().WithMessage("At least one image URL is required.")
+                .ForEach(urlRule => urlRule
+                    .Must(IsValidUrl)
+                    .WithMessage("Each image URL must be a valid URL."));
         }
 
         private bool IsValidUrl(string url)

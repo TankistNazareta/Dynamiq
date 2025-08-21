@@ -42,6 +42,24 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .HasForeignKey(ph => ph.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);
 
+            builder.OwnsMany(p => p.ImgUrls, imgBuilder =>
+            {
+                imgBuilder.ToTable("ProductImgUrls");
+
+                imgBuilder.WithOwner()
+                          .HasForeignKey("ProductId");
+
+                imgBuilder.Property<Guid>("Id")
+                          .ValueGeneratedOnAdd()
+                          .HasDefaultValueSql("NEWID()");
+
+                imgBuilder.HasKey("Id");
+
+                imgBuilder.Property(i => i.ImgUrl)
+                          .IsRequired()
+                          .HasMaxLength(500);
+            });
+
             builder.HasOne<Category>()
                 .WithMany()
                 .HasForeignKey(p => p.CategoryId)

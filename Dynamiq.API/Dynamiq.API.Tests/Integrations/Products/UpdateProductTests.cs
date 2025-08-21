@@ -62,7 +62,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             var newName = $"newName{Guid.NewGuid():N}";
 
-            var command = new UpdateProductCommand(productId, newName, "NewDescr", 11111, IntervalEnum.OneTime, categoryId, "https://example.com/image.jpg");
+            var command = new UpdateProductCommand(productId, newName, "NewDescr", 11111, IntervalEnum.OneTime, categoryId, new() { "https://example.com/image.jpg" });
 
             var response = await client.PutAsJsonAsync("/product", command);
             response.StatusCode.Should().Be(HttpStatusCode.OK);

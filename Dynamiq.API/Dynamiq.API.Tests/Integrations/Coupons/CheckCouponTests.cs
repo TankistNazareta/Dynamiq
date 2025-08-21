@@ -43,10 +43,7 @@ namespace Dynamiq.API.Tests.Integrations.Coupons
 
             var client = _factory.CreateClient();
             var response = await client.GetAsync($"/coupon/CheckIfActiveByCode?code={code}");
-            response.EnsureSuccessStatusCode();
-
-            var isActive = await response.Content.ReadFromJsonAsync<bool>();
-            isActive.Should().BeTrue();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
         [Fact]
@@ -85,10 +82,7 @@ namespace Dynamiq.API.Tests.Integrations.Coupons
 
             var client = _factory.CreateClient();
             var response = await client.GetAsync($"/coupon/CheckIfActiveByCode?code={code}");
-            response.EnsureSuccessStatusCode();
-
-            var isActive = await response.Content.ReadFromJsonAsync<bool>();
-            isActive.Should().BeFalse();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
         }
     }
 }

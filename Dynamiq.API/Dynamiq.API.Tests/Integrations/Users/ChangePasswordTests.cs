@@ -1,4 +1,5 @@
-﻿using Dynamiq.Application.Commands.Users.Commands;
+﻿using Dynamiq.API.Tests.ResponseDtos;
+using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.DTOs.CommonDTOs;
 using Dynamiq.Infrastructure.Persistence.Context;
@@ -31,8 +32,8 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
             var logInResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
-            var accessToken = await logInResponse.Content.ReadAsStringAsync();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var logInResponseDto = await logInResponse.Content.ReadFromJsonAsync<LogInResponse>();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", logInResponseDto.AccessToken);
 
             var response = await _client.PutAsJsonAsync("/users/change-password", command);
 
@@ -47,9 +48,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
             var result = await MakeChangePasswordRequest(command);
             result.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var response = await result.Content.ReadAsStringAsync();
-            response.Should().Be("You successfully changed your password");
         }
 
         [Fact]

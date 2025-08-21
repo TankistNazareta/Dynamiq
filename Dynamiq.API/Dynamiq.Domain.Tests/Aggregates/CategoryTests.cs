@@ -47,7 +47,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void Should_AddProduct()
         {
             var category = new Category("Electronics");
-            var product = new Product("TestStripeProductId", "TestStripePriceId", "name", "descr",  20, IntervalEnum.OneTime, category.Id, "https://test.com/img");
+            var product = new Product("TestStripeProductId", "TestStripePriceId", "name", "descr",  20, IntervalEnum.OneTime, category.Id, new() { "https://test.com/img" });
 
             category.AddProduct(product);
 

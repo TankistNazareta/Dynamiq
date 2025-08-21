@@ -9,6 +9,6 @@ namespace Dynamiq.Application.Commands.Products.Commands
         int Price,
         IntervalEnum Interval, 
         Guid CategoryId,
-        string ImgUrl
+        List<string> ImgUrls
     ) : IRequest;
 }

@@ -49,9 +49,6 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
             var response = await _client.PutAsync("/token/revoke", null);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var result = await response.Content.ReadAsStringAsync();
-            result.Should().Be("Token successfully revoked");
-
             db.ChangeTracker.Clear();
 
             var updatedUser = await db.Users

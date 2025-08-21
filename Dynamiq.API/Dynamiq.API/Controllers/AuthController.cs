@@ -1,4 +1,5 @@
-﻿using Dynamiq.Application.Commands.Users.Commands;
+﻿using Azure.Core;
+using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Created user with email: {Email}", registeredUser.Email);
 
-            return Ok("You successfully registered");
+            return Ok(new { Message = "You successfully registered" });
         }
 
         [HttpPost("log-in")]
@@ -44,14 +45,14 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation($"Log in: {res}");
 
-            return Ok(res.AccessToken);
+            return Ok(new { AccessToken = res.AccessToken });
         }
 
         [HttpPost("log-out")]
         public IActionResult Logout()
         {
             Response.Cookies.Delete("refreshToken");
-            return Ok("Logged out");
+            return Ok(new { Message = "Logged out" });
         }
 
     }

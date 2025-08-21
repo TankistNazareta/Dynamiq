@@ -49,7 +49,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Changed password for user with email: {Email}", command.Email);
 
-            return Ok("You successfully changed your password");
+            return Ok(new { Message = "You successfully changed your password" });
         }
 
         [Authorize]
@@ -66,7 +66,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Deleted user with id: {Id}", id);
 
-            return Ok("user was removed");
+            return Ok(new { Message = "user was removed" });
         }
     }
 }

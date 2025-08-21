@@ -18,12 +18,12 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("login")]
+        [HttpGet("log-in")]
         public async Task<IActionResult> Login([FromQuery] string? returnUrl = null)
         {
             var url = await _mediator.Send(new GetLoginGoogleUrlQuery(returnUrl));
 
-            return Ok(url);
+            return Ok(new { Url = url });
         }
 
         [HttpGet("callback")]
@@ -36,7 +36,7 @@ namespace Dynamiq.API.Controllers
 
             var authResponse = await _mediator.Send(new GoogleCallbackCommand(code, state));
 
-            return Ok(authResponse);
+            return Ok(new { AccssToken = authResponse.AccessToken });
         }
     }
 }

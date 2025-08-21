@@ -24,7 +24,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Email Verification with token: {Token} was confirmed", token);
 
-            return Ok("You confirmed email successfully");
+            return Ok(new { Message = "You confirmed email successfully" });
         }
     }
 }

@@ -26,7 +26,7 @@
                 <p style=""font-size: 16px; color: #555;"">
                     Thank you for signing up. Please confirm your email address by clicking the button below. (You have 1 hour to confirm your email)
                 </p>
-                <a href=""https://yourdomain.com/confirm?token={token}""
+                <a href=""http://localhost:3000/confirm-email/{token}""
                    style=""display: inline-block; padding: 12px 24px; margin-top: 20px; background-color: #007BFF; color: #fff; text-decoration: none; border-radius: 5px;"">
                     Confirm Email
                 </a>

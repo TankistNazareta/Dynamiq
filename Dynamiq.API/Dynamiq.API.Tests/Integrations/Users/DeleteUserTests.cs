@@ -1,4 +1,5 @@
 ﻿using Docker.DotNet.Models;
+using Dynamiq.API.Tests.ResponseDtos;
 using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
@@ -35,8 +36,8 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var logInCommand = new LogInUserCommand(email, "OldPassword123!");
             var authResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
-            var accessToken = await authResponse.Content.ReadAsStringAsync();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var LogInResponseDto = await authResponse.Content.ReadFromJsonAsync<LogInResponse>();
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", LogInResponseDto.AccessToken);
 
             using var scope = _factory.Services.CreateScope();
             var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();

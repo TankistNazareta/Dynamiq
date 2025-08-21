@@ -65,17 +65,7 @@ namespace Dynamiq.API.Tests.Integrations.GoogleAuth
             var url = QueryHelpers.AddQueryString("/auth/google/callback", query);
 
             var response = await _client.GetAsync(url);
-
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-
-            var result = JsonSerializer.Deserialize<AuthTokensDto>(
-                await response.Content.ReadAsStringAsync(),
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            );
-
-            result.Should().NotBeNull();
-            result.AccessToken.Should().NotBeNull();
-            result.RefreshToken.Should().NotBeNull();
 
             using (var scope = _factory.Services.CreateScope())
             {

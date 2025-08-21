@@ -27,7 +27,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("checkout session was created for user: {Id}", request.UserId);
 
-            return Ok(new { url = sessionUrl });
+            return Ok(new { Url = sessionUrl });
         }
 
         [HttpPost("webhook")]
@@ -43,7 +43,7 @@ namespace Dynamiq.API.Controllers
                 
             _logger.LogInformation("payment completed successfully");
 
-            return Ok("completed successfully");
+            return Ok(new { Message = "completed successfully" });
         }
     }
 }

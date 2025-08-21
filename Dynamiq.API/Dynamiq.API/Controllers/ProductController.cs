@@ -28,7 +28,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Product was created");
 
-            return Ok("Product was created");
+            return Ok(new { Message = "Product was created" });
         }
 
         [HttpPut]
@@ -38,7 +38,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Updated product with");
 
-            return Ok("Product updated successfully");
+            return Ok(new { Message = "Product updated successfully" });
         }
 
         [HttpGet]
@@ -69,7 +69,7 @@ namespace Dynamiq.API.Controllers
 
             _logger.LogInformation("Deleted product with ID: {Id}", id);
 
-            return Ok("Product was removed");
+            return Ok(new { Message = "Product was removed" });
         }
 
         [HttpGet("subscription")]

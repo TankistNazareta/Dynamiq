@@ -20,7 +20,7 @@ namespace Dynamiq.API.Controllers
         {
             var isActive = await _mediator.Send(new CheckIfCouponIsActiveQuery(code));
 
-            return Ok(isActive);
+            return Ok(new { Active = isActive });
         }
     }
 }
