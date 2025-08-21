@@ -14,24 +14,33 @@ const logIn = async (email: string, password: string): Promise<ApiResult<AccessT
     return authResponse;
 };
 
-const RefreshTheAccessToken = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        return;
+const refreshTheAccessToken = async (): Promise<ApiResult<AccessTokenReturnType>> => {
+    const res = await apiRequest<AccessTokenReturnType>('/token/refresh', { method: 'PUT' });
+
+    if (res.success) localStorage.setItem('token', await res.data.accessToken);
+
+    return res;
+};
+
+type LogInByGoogleResponse = {
+    Url: string;
+};
+
+const logInByGoogle = async () => {
+    console.log('before request');
+
+    const res = await apiRequest<LogInByGoogleResponse>('auth/google/log-in', {
+        method: 'GET',
+    });
+    console.log('after request', res, 'res');
+
+    if (res.success && res.data) {
+        window.location.href = res.data.Url;
     }
 
-    try {
-        const res = await apiRequest<AccessTokenReturnType>('/token/refresh', { method: 'PUT' });
+    console.log(res, 'logInByGoogle');
 
-        if (res.success) {
-            localStorage.setItem('token', res.data.accessToken);
-        } else {
-            throw res.error;
-        }
-    } catch (err) {
-        console.log(err);
-        await logOut();
-    }
+    return res;
 };
 
 const logOut = async () => {
@@ -40,6 +49,8 @@ const logOut = async () => {
     });
 
     localStorage.removeItem('token');
+
+    console.log('logged out');
 
     return authResponse;
 };
@@ -53,5 +64,5 @@ const signUp = async (email: string, password: string): Promise<ApiResult<Respon
     return authResponse;
 };
 
-export { logIn, signUp, logOut, RefreshTheAccessToken as startToRefreshAccessToken };
-export type { AccessTokenReturnType };
+export { logIn, signUp, logOut, refreshTheAccessToken, logInByGoogle };
+export type { AccessTokenReturnType, LogInByGoogleResponse };

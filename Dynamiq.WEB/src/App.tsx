@@ -21,37 +21,48 @@ import NotFound from './pages/NotFound';
 import AuthPage from './pages/Auth';
 import ConfirmEmail from './pages/ConfirmEmail';
 import OfflinePage from './pages/OfflinePage';
-import { startToRefreshAccessToken } from './services/client/auth';
+import { AccessTokenReturnType, refreshTheAccessToken } from './services/client/auth';
 import { useEffect, useState } from 'react';
+import useHttpHook from './hooks/useHttp';
+import AuthCallBack from './pages/Auth/AuthCallback';
 
 function App() {
     const [isAuth, setIsAuth] = useState(Boolean(localStorage.getItem('token')));
 
+    const { makeRequest } = useHttpHook();
+
     useEffect(() => {
-        if (isAuth) {
-            setTimerForRefreshTheAccessToken();
-        }
+        setTimerForRefreshTheAccessToken();
     }, [isAuth]);
 
-    const setTimerForRefreshTheAccessToken = () => {
+    const setTimerForRefreshTheAccessToken = async () => {
+        if (!isAuth) return;
+
+        let callInMs: number = 0;
+
         const token = localStorage.getItem('token');
 
-        if (!isAuth || token == null) return;
+        if (token != null) {
+            const payloadBase64 = token!.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
 
-        const payloadBase64 = token!.split('.')[1];
-        const payloadJson = atob(payloadBase64);
-        const payload = JSON.parse(payloadJson);
+            const exp = payload.exp;
+            // const expiresInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
+            callInMs = exp ? exp * 1000 - Date.now() : 0;
+        }
 
-        const exp = payload.exp;
-        // const expiresInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
-        const expiresInMs = exp ? exp * 1000 - Date.now() : 0;
+        console.log(token);
 
-        console.log(expiresInMs, 'setTimerForRefreshTheAccessToken.expiresInMs ');
+        console.log(callInMs, 'setTimerForRefreshTheAccessToken.expiresInMs ');
 
         setTimeout(async () => {
-            await startToRefreshAccessToken();
-            setTimerForRefreshTheAccessToken();
-        }, expiresInMs);
+            makeRequest<AccessTokenReturnType>(() => refreshTheAccessToken())
+                .then(() => {
+                    setTimerForRefreshTheAccessToken();
+                })
+                .catch(() => setIsAuth(false));
+        }, callInMs);
     };
 
     const onLogIn = () => {
@@ -59,7 +70,7 @@ function App() {
     };
 
     return (
-        <Router>
+        <>
             {isAuth && <Header />}
             <Routes>
                 {!isAuth ? (
@@ -95,10 +106,11 @@ function App() {
                 )}
                 <Route path="confirm-email/:token" element={<ConfirmEmail />} />
                 <Route path="error" element={<OfflinePage />} />
+                <Route path="auth/callback" element={<AuthCallBack onLogIn={onLogIn} />} />
             </Routes>
 
             {isAuth && <Footer />}
-        </Router>
+        </>
     );
 }
 

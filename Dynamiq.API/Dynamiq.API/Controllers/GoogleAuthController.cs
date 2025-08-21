@@ -23,7 +23,7 @@ namespace Dynamiq.API.Controllers
         {
             var url = await _mediator.Send(new GetLoginGoogleUrlQuery(returnUrl));
 
-            return Ok(new { Url = url });
+            return Redirect(url);
         }
 
         [HttpGet("callback")]
@@ -36,7 +36,14 @@ namespace Dynamiq.API.Controllers
 
             var authResponse = await _mediator.Send(new GoogleCallbackCommand(code, state));
 
-            return Ok(new { AccssToken = authResponse.AccessToken });
+
+            Response.Cookies.Append("refreshToken", authResponse.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                SameSite = SameSiteMode.Strict
+            });
+            var frontendUrl = "http://localhost:3000/auth/callback";
+            return Redirect($"{frontendUrl}?accessToken={authResponse.AccessToken}");
         }
     }
 }

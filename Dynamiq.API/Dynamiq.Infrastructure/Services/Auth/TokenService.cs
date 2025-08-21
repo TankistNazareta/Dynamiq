@@ -48,7 +48,7 @@ namespace Dynamiq.Infrastructure.Services.Auth
                 issuer: _jwtIssuer,
                 audience: _jwtAudience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddSeconds(40),
                 signingCredentials: creds
             );
 

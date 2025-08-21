@@ -22,6 +22,8 @@ const useHttpHook = () => {
 
             return res.data;
         } catch (e: any) {
+            setState('error');
+
             if (!navigator.onLine) {
                 setState('fatal');
                 navigate('/error');
@@ -34,7 +36,6 @@ const useHttpHook = () => {
                 throw new Error('Server is not reachable');
             }
 
-            setState('error');
             throw e;
         }
     };
