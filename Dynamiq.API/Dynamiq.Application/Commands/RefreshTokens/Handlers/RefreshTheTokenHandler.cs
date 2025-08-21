@@ -27,7 +27,7 @@ namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
             var user = await _userRepo.GetByRefreshTokenAsync(request.RefreshToken, cancellationToken);
 
             if (user == null)
-                throw new KeyNotFoundException("User wasn`t found by his user");
+                throw new KeyNotFoundException("User wasn`t found by his refresh token");
 
             var authResponseDto = _tokenService.CreateAuthResponse(user.Email, user.Role, user.Id);
 

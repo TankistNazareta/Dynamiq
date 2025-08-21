@@ -1,0 +1,49 @@
+import { useState } from 'react';
+import { apiRequest } from '../services/api';
+import { useNavigate } from 'react-router-dom';
+import { ApiResult } from '../utils/types/api';
+
+type stateType = 'loading' | 'error' | 'fatal' | 'success' | 'waiting';
+
+const useHttpHook = () => {
+    const [state, setState] = useState<stateType>('waiting');
+    const navigate = useNavigate();
+
+    const makeRequest = async <T>(callMethod: () => Promise<ApiResult<T>>): Promise<T> => {
+        try {
+            setState('loading');
+
+            const res = await callMethod();
+
+            console.log(res, 'res useHttpHook');
+
+            if (!res.success) throw res.error;
+            console.log(res.data, 'res.data useHttpHook');
+
+            return res.data;
+        } catch (e: any) {
+            if (!navigator.onLine) {
+                setState('fatal');
+                navigate('/error');
+                throw new Error('No internet connection');
+            }
+
+            if (e.name === 'TypeError' || e.code === 'ERR_NETWORK') {
+                setState('fatal');
+                navigate('/error');
+                throw new Error('Server is not reachable');
+            }
+
+            setState('error');
+            throw e;
+        }
+    };
+
+    const resetError = () => {
+        setState('loading');
+    };
+
+    return { makeRequest, resetError, state, setState };
+};
+
+export default useHttpHook;

@@ -1,0 +1,34 @@
+import { ApiResult, ErrorMsgType } from '../utils/types/api';
+
+const API_BASE = 'http://localhost:5083';
+
+export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
+    const response = await fetch(`${API_BASE}${endpoint}`, {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
+        },
+        ...options,
+    });
+
+    if (!response.ok) {
+        const json = await response.json();
+
+        const error: ApiResult<T> = {
+            success: false,
+            error: json as ErrorMsgType,
+        };
+
+        return error;
+    }
+
+    const dataJson = (await response.json()) as T;
+
+    const data: ApiResult<T> = {
+        success: true,
+        data: dataJson,
+    };
+
+    return data;
+}

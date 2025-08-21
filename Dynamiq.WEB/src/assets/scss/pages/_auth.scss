@@ -1,9 +1,10 @@
 .auth {
     &__window {
         width: 325px;
+        height: 400px;
         margin: 100px auto;
         box-shadow: 0 0 12px rgba(0, 0, 0, 0.25), 0 0 24px rgba(0, 0, 0, 0.15);
-        padding: 75px 40px;
+        padding: 35px 20px;
         border-radius: 10px;
     }
 
@@ -13,5 +14,16 @@
             color: rgb(43, 100, 255);
             text-decoration: underline;
         }
+    }
+
+    &_error {
+        margin: 8px 0 0 7px;
+        font-size: 17px;
+        color: red;
+    }
+
+    &_success {
+        color: rgb(9, 255, 0);
+        font-size: 17px;
     }
 }

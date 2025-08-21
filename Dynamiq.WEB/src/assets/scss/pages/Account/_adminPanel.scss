@@ -19,7 +19,7 @@
     }
 
     &__form {
-        margin: 20px auto;
+        margin: 20px auto 40px auto;
         gap: 30px;
 
         &_input {
@@ -54,6 +54,10 @@
     &__result {
         text-align: center;
         gap: 30px;
+
+        &_descr {
+            color: #000;
+        }
 
         &_payment-history {
             width: 100%;

@@ -37,8 +37,8 @@ const AdminPanel = () => {
             </form>
             <div className="admin-panel__result d-flex flex-wrap justify-content-around">
                 {data == null || data == undefined || Object.keys(data).length === 0}
-                <p className="user__payment-history_item_descr">{data.email}</p>
-                <p className="user__payment-history_item_descr">
+                <p className="user__payment-history_item_descr admin-panel__result_descr">{data.email}</p>
+                <p className="user__payment-history_item_descr admin-panel__result_descr">
                     {'Created at: '}
                     {data.createdAt.toLocaleString('en-GB', {
                         month: 'short',
@@ -48,8 +48,10 @@ const AdminPanel = () => {
                         hour12: false,
                     })}
                 </p>
-                <p className="user__payment-history_item_descr">email confirmed: {data.emailConfirmed ? '✔' : '❌'}</p>
-                <p className="user__payment-history_item_descr">
+                <p className="user__payment-history_item_descr admin-panel__result_descr">
+                    email confirmed: {data.emailConfirmed ? '✔' : '❌'}
+                </p>
+                <p className="user__payment-history_item_descr admin-panel__result_descr">
                     has subscription: {data.haveSubscription ? '✔' : '❌'}
                 </p>
                 <p className="user__payment-history_item_descr admin-panel__result_payment-history">
