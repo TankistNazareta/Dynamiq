@@ -8,11 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace Dynamiq.API.Tests
 {
@@ -55,20 +50,36 @@ namespace Dynamiq.API.Tests
                 {
                     command.CommandText = $@"
                     IF DB_ID(N'{TestDbName}') IS NULL
-                        CREATE DATABASE [{TestDbName}];";
+                        CREATE DATABASE [{TestDbName}];
+                    ALTER AUTHORIZATION ON DATABASE::[{TestDbName}] TO [sa];";
                     command.ExecuteNonQuery();
                 }
 
-                var options = new DbContextOptionsBuilder<AppDbContext>()
-                    .UseSqlServer(_connectionString)
-                    .Options;
-
-                using var scope = Services.CreateScope();
-                var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-                using var db = new AppDbContext(options, dispatcher);
-                db.Database.Migrate();
-
                 _dbInitialized = true;
+            }
+
+            var retries = 5;
+            while (retries > 0)
+            {
+                try
+                {
+                    var options = new DbContextOptionsBuilder<AppDbContext>()
+                        .UseSqlServer(_connectionString)
+                        .Options;
+
+                    using var scope = Services.CreateScope();
+                    var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
+                    using var db = new AppDbContext(options, dispatcher);
+                    db.Database.Migrate();
+
+                    break;
+                }
+                catch
+                {
+                    retries--;
+                    if (retries == 0) throw;
+                    await Task.Delay(2000);
+                }
             }
         }
 
@@ -88,11 +99,11 @@ namespace Dynamiq.API.Tests
                 var emailDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
                 if (emailDescriptor != null) services.Remove(emailDescriptor);
 
-                var mockEmail = new Moq.Mock<IEmailService>();
+                var mockEmail = new Mock<IEmailService>();
                 mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
-                // Remove hosted services
+                // Remove hosted services (щоб не стартували background job-и)
                 var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
                 foreach (var hs in hostedServices)
                     services.Remove(hs);
