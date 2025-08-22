@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Dynamiq.Infrastructure.Persistence.Migrations
 {
+    /// <inheritdoc />
     public partial class ResetMigrations : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -101,6 +103,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     StripePriceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
+                    CardDescription = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Interval = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -181,6 +184,46 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductImgUrls",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    ImgUrl = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductImgUrls", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductImgUrls_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductParagraphs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Text = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductParagraphs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProductParagraphs_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProductPaymentHistories",
                 columns: table => new
                 {
@@ -240,35 +283,132 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(name: "IX_CartItems_CartId", table: "CartItems", column: "CartId");
-            migrationBuilder.CreateIndex(name: "IX_Categories_ParentCategoryId", table: "Categories", column: "ParentCategoryId");
-            migrationBuilder.CreateIndex(name: "IX_Categories_Slug", table: "Categories", column: "Slug", unique: true);
-            migrationBuilder.CreateIndex(name: "IX_EmailVerifications_Token", table: "EmailVerifications", column: "Token", unique: true);
-            migrationBuilder.CreateIndex(name: "IX_EmailVerifications_UserId", table: "EmailVerifications", column: "UserId", unique: true);
-            migrationBuilder.CreateIndex(name: "IX_PaymentHistories_UserId", table: "PaymentHistories", column: "UserId");
-            migrationBuilder.CreateIndex(name: "IX_ProductPaymentHistories_PaymentHistoryId", table: "ProductPaymentHistories", column: "PaymentHistoryId");
-            migrationBuilder.CreateIndex(name: "IX_ProductPaymentHistories_ProductId", table: "ProductPaymentHistories", column: "ProductId");
-            migrationBuilder.CreateIndex(name: "IX_Products_CategoryId", table: "Products", column: "CategoryId");
-            migrationBuilder.CreateIndex(name: "IX_RefreshTokens_UserId", table: "RefreshTokens", column: "UserId");
-            migrationBuilder.CreateIndex(name: "IX_Subscriptions_PaymentHistoryId", table: "Subscriptions", column: "PaymentHistoryId");
-            migrationBuilder.CreateIndex(name: "IX_Subscriptions_ProductId", table: "Subscriptions", column: "ProductId");
-            migrationBuilder.CreateIndex(name: "IX_Subscriptions_UserId", table: "Subscriptions", column: "UserId");
-            migrationBuilder.CreateIndex(name: "IX_Users_Email", table: "Users", column: "Email", unique: true);
+            migrationBuilder.CreateIndex(
+                name: "IX_CartItems_CartId",
+                table: "CartItems",
+                column: "CartId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_ParentCategoryId",
+                table: "Categories",
+                column: "ParentCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Categories_Slug",
+                table: "Categories",
+                column: "Slug",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerifications_Token",
+                table: "EmailVerifications",
+                column: "Token",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EmailVerifications_UserId",
+                table: "EmailVerifications",
+                column: "UserId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentHistories_UserId",
+                table: "PaymentHistories",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductImgUrls_ProductId",
+                table: "ProductImgUrls",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductParagraphs_ProductId",
+                table: "ProductParagraphs",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPaymentHistories_PaymentHistoryId",
+                table: "ProductPaymentHistories",
+                column: "PaymentHistoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductPaymentHistories_ProductId",
+                table: "ProductPaymentHistories",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_CategoryId",
+                table: "Products",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                table: "RefreshTokens",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_PaymentHistoryId",
+                table: "Subscriptions",
+                column: "PaymentHistoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_ProductId",
+                table: "Subscriptions",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Subscriptions_UserId",
+                table: "Subscriptions",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(name: "CartItems");
-            migrationBuilder.DropTable(name: "Coupons");
-            migrationBuilder.DropTable(name: "EmailVerifications");
-            migrationBuilder.DropTable(name: "ProductPaymentHistories");
-            migrationBuilder.DropTable(name: "RefreshTokens");
-            migrationBuilder.DropTable(name: "Subscriptions");
-            migrationBuilder.DropTable(name: "Carts");
-            migrationBuilder.DropTable(name: "PaymentHistories");
-            migrationBuilder.DropTable(name: "Products");
-            migrationBuilder.DropTable(name: "Users");
-            migrationBuilder.DropTable(name: "Categories");
+            migrationBuilder.DropTable(
+                name: "CartItems");
+
+            migrationBuilder.DropTable(
+                name: "Coupons");
+
+            migrationBuilder.DropTable(
+                name: "EmailVerifications");
+
+            migrationBuilder.DropTable(
+                name: "ProductImgUrls");
+
+            migrationBuilder.DropTable(
+                name: "ProductParagraphs");
+
+            migrationBuilder.DropTable(
+                name: "ProductPaymentHistories");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
+
+            migrationBuilder.DropTable(
+                name: "Subscriptions");
+
+            migrationBuilder.DropTable(
+                name: "Carts");
+
+            migrationBuilder.DropTable(
+                name: "PaymentHistories");
+
+            migrationBuilder.DropTable(
+                name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
         }
     }
 }

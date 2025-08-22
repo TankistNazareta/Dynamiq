@@ -22,69 +22,54 @@ namespace Dynamiq.API.Tests
     {
         private string? _connectionString;
         private const string TestDbName = "DynamiqTestDb";
+        private static bool _dbInitialized;
+        private static readonly object _lock = new();
 
-        public string ConnectionString => _connectionString ??
-            throw new InvalidOperationException("Connection string is not initialized.");
-
-        public async Task EnsureDatabaseReadyAsync()
-        {
-            var retries = 5;
-            while (retries > 0)
-            {
-                try
-                {
-                    var options = new DbContextOptionsBuilder<AppDbContext>()
-                        .UseSqlServer(_connectionString)
-                        .Options;
-
-                    using var scope = Services.CreateScope();
-                    var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-                    using var db = new AppDbContext(options, dispatcher);
-                    await db.Database.EnsureCreatedAsync();
-                    return;
-                }
-                catch
-                {
-                    retries--;
-                    await Task.Delay(5000);
-                }
-            }
-
-            throw new Exception("Cannot connect to SQL Server.");
-        }
-
-        public async Task InitializeAsync()
+        public CustomWebApplicationFactory()
         {
             var masterConnectionString = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true"
                 ? "Server=localhost,1433;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
                 : "Server=DESKTOP-HPNA4RC;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
-
-            await using var connection = new SqlConnection(masterConnectionString);
-            await connection.OpenAsync();
-
-            await using (var command = connection.CreateCommand())
-            {
-                command.CommandText = $@"
-                    IF DB_ID(N'{TestDbName}') IS NULL
-                        CREATE DATABASE [{TestDbName}];";
-                await command.ExecuteNonQueryAsync();
-            }
 
             var builder = new SqlConnectionStringBuilder(masterConnectionString)
             {
                 InitialCatalog = TestDbName,
                 MultipleActiveResultSets = true
             };
+
             _connectionString = builder.ToString();
+        }
 
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseSqlServer(_connectionString)
-                .Options;
+        public async Task InitializeAsync()
+        {
+            if (_dbInitialized) return;
 
-            using var scope = Services.CreateScope();
-            var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-            using var db = new AppDbContext(options, dispatcher);
-            await db.Database.MigrateAsync();
+            lock (_lock)
+            {
+                if (_dbInitialized) return;
+
+                using var connection = new SqlConnection(_connectionString.Replace($"Database={TestDbName}", "Database=master"));
+                connection.Open();
+
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = $@"
+                    IF DB_ID(N'{TestDbName}') IS NULL
+                        CREATE DATABASE [{TestDbName}];";
+                    command.ExecuteNonQuery();
+                }
+
+                var options = new DbContextOptionsBuilder<AppDbContext>()
+                    .UseSqlServer(_connectionString)
+                    .Options;
+
+                using var scope = Services.CreateScope();
+                var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
+                using var db = new AppDbContext(options, dispatcher);
+                db.Database.Migrate();
+
+                _dbInitialized = true;
+            }
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -99,22 +84,21 @@ namespace Dynamiq.API.Tests
                 services.AddDbContext<AppDbContext>(options =>
                     options.UseSqlServer(_connectionString!));
 
+                // Mock Email service
                 var emailDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
                 if (emailDescriptor != null) services.Remove(emailDescriptor);
 
-                var mockEmail = new Mock<IEmailService>();
+                var mockEmail = new Moq.Mock<IEmailService>();
                 mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
 
+                // Remove hosted services
                 var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
                 foreach (var hs in hostedServices)
                     services.Remove(hs);
             });
         }
 
-        public Task DisposeAsync()
-        {
-            return Task.CompletedTask;
-        }
+        public Task DisposeAsync() => Task.CompletedTask;
     }
 }
