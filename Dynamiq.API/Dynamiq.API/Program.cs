@@ -133,11 +133,10 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 //Add dbContext
-if (!builder.Environment.IsEnvironment("Testing"))
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    builder.Services.AddDbContext<AppDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionToLocalDb")));
-}
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionToLocalDb"));
+});
 
 //Repo
 builder.Services.AddTransient<IUserRepo, UserRepo>();

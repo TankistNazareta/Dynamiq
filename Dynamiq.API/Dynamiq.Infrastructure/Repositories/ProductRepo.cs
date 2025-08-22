@@ -39,6 +39,7 @@ namespace Dynamiq.Infrastructure.Repositories
             return await query
                 .Skip(skip)
                 .Take(take)
+                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime)
                 .ToListAsync(ct);
         }
 
@@ -57,6 +58,7 @@ namespace Dynamiq.Infrastructure.Repositories
             return await products
                 .Skip(skip)
                 .Take(take)
+                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime)
                 .ToListAsync();
         }
 

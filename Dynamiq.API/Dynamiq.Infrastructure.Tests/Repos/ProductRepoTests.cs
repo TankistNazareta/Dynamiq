@@ -4,7 +4,11 @@ using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Dynamiq.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace Dynamiq.Infrastructure.Tests.Repos
 {
@@ -20,7 +24,6 @@ namespace Dynamiq.Infrastructure.Tests.Repos
                 .Options;
 
             _dbContext = new AppDbContext(options, dispatcher: null);
-
             _repo = new ProductRepo(_dbContext);
         }
 
@@ -31,9 +34,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, categoryId, new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 300, IntervalEnum.OneTime, categoryId, new() { "https://example.com/image.jpg" }),
+                CreateProduct("Product A", 100, categoryId),
+                CreateProduct("Product B", 200, Guid.NewGuid()),
+                CreateProduct("Product C", 300, categoryId),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -52,9 +55,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
+                CreateProduct("Product A", 50),
+                CreateProduct("Product B", 150),
+                CreateProduct("Product C", 250),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -73,9 +76,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 50, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 150, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product C", "Desc C", 250, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
+                CreateProduct("Product A", 50),
+                CreateProduct("Product B", 150),
+                CreateProduct("Product C", 250),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -94,17 +97,9 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Apple iPhone", "Smartphone", 999, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(
-                    Guid.NewGuid().ToString(), 
-                    Guid.NewGuid().ToString(), 
-                    "Samsung Galaxy", 
-                    "Android phone", 
-                    799, 
-                    IntervalEnum.OneTime, 
-                    Guid.NewGuid(), 
-                    new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Google Pixel", "Android phone", 699, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
+                CreateProduct("Apple iPhone", 999, null, "Smartphone"),
+                CreateProduct("Samsung Galaxy", 799, null,"Android phone"),
+                CreateProduct("Google Pixel", 699, null, "Android phone"),
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -128,8 +123,8 @@ namespace Dynamiq.Infrastructure.Tests.Repos
         {
             var products = new List<Product>
             {
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product A", "Desc A", 100, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" }),
-                new Product(Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), "Product B", "Desc B", 200, IntervalEnum.OneTime, Guid.NewGuid(), new() { "https://example.com/image.jpg" } )
+                CreateProduct("Product A", 100),
+                CreateProduct("Product B", 200)
             };
 
             await _dbContext.Products.AddRangeAsync(products);
@@ -140,6 +135,22 @@ namespace Dynamiq.Infrastructure.Tests.Repos
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
             Assert.Equal(products.Count, result.Count);
+        }
+
+        private Product CreateProduct(string name, int price, Guid? categoryId = null, string description = "Description")
+        {
+            return new Product(
+                stripeProductId: Guid.NewGuid().ToString(),
+                stripePriceId: Guid.NewGuid().ToString(),
+                name: name,
+                description: description,
+                price: price,
+                interval: IntervalEnum.OneTime,
+                categoryId: categoryId ?? Guid.NewGuid(),
+                imgUrls: new List<string> { "https://example.com/image.jpg" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card description"
+            );
         }
 
         public void Dispose()

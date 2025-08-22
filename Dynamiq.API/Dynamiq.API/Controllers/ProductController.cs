@@ -51,12 +51,12 @@ namespace Dynamiq.API.Controllers
             return Ok(all);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             var product = await _mediator.Send(new GetProductByIdQuery(id));
 
-            if (product != null)
+            if (product == null)
                 return NotFound();
 
             return Ok(product);
@@ -88,7 +88,7 @@ namespace Dynamiq.API.Controllers
             return Ok(products);
         }
 
-        [HttpGet("filter")]
+        [HttpPost("filter")]
         public async Task<IActionResult> GetFiltered([FromBody] ProductFilter filter, [FromQuery] int limit, [FromQuery] int offset = 0)
         {
             var products = await _mediator.Send(new GetFilteredProductsQuery(filter, limit, offset));

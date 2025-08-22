@@ -14,9 +14,15 @@ namespace Dynamiq.Domain.Tests.Aggregates
         private const string ValidStripePriceId = "price_456";
         private const string ValidName = "Test Product";
         private const string ValidDescription = "Description";
+        private const string ValidCardDescription = "Card short description";
         private const int ValidPrice = 100;
         private static readonly Guid ValidCategoryId = Guid.NewGuid();
         private readonly List<string> ValidImgUrls = new() { "https://example.com/image.jpg" };
+        private readonly List<string> ValidParagraphs = new()
+        {
+            "First paragraph",
+            "Second paragraph"
+        };
 
         [Theory]
         [InlineData(null)]
@@ -34,7 +40,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                ValidImgUrls);
+                ValidImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
 
             act.Should().Throw<ArgumentException>().WithMessage("*StripeProductId cannot be empty*");
         }
@@ -55,7 +63,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                ValidImgUrls);
+                ValidImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
 
             act.Should().Throw<ArgumentException>().WithMessage("*StripePriceId cannot be empty*");
         }
@@ -76,7 +86,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                ValidImgUrls);
+                ValidImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
 
             act.Should().Throw<ArgumentException>().WithMessage("*Name cannot be empty*");
         }
@@ -96,7 +108,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 price,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                ValidImgUrls);
+                ValidImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
 
             act.Should().Throw<ArgumentException>().WithMessage("*Price must be greater than zero*");
         }
@@ -118,7 +132,9 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                new List<string> { imgUrl });
+                new List<string> { imgUrl },
+                ValidParagraphs,
+                ValidCardDescription);
 
             act.Should().Throw<ArgumentException>().WithMessage("*ImgUrl must be a valid URL*");
         }
@@ -142,9 +158,38 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                newImgUrls);
+                newImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
 
             prod.ImgUrls.Select(i => i.ImgUrl).Should().BeEquivalentTo(newImgUrls);
+        }
+
+        [Fact]
+        public void Update_ShouldSet_Paragraphs_When_Valid()
+        {
+            var prod = CreateValidProduct();
+
+            var newParagraphs = new List<string>
+            {
+                "Paragraph 1",
+                "Paragraph 2",
+                "Paragraph 3"
+            };
+
+            prod.Update(
+                ValidStripeProductId,
+                ValidStripePriceId,
+                ValidName,
+                ValidDescription,
+                ValidPrice,
+                IntervalEnum.OneTime,
+                ValidCategoryId,
+                ValidImgUrls,
+                newParagraphs,
+                ValidCardDescription);
+
+            prod.Paragraphs.Select(p => p.Text).Should().BeEquivalentTo(newParagraphs);
         }
 
         [Fact]
@@ -156,10 +201,12 @@ namespace Dynamiq.Domain.Tests.Aggregates
             product.StripePriceId.Should().Be(ValidStripePriceId);
             product.Name.Should().Be(ValidName);
             product.Description.Should().Be(ValidDescription);
+            product.CardDescription.Should().Be(ValidCardDescription);
             product.Price.Should().Be(ValidPrice);
             product.Interval.Should().Be(IntervalEnum.OneTime);
             product.CategoryId.Should().Be(ValidCategoryId);
             product.ImgUrls.Select(i => i.ImgUrl).Should().BeEquivalentTo(ValidImgUrls);
+            product.Paragraphs.Select(p => p.Text).Should().BeEquivalentTo(ValidParagraphs);
             product.ProductPaymentHistories.Should().BeEmpty();
         }
 
@@ -194,6 +241,8 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidPrice,
                 IntervalEnum.OneTime,
                 ValidCategoryId,
-                ValidImgUrls);
+                ValidImgUrls,
+                ValidParagraphs,
+                ValidCardDescription);
     }
 }

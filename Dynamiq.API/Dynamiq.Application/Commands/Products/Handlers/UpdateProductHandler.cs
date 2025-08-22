@@ -27,7 +27,10 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 request.Description, 
                 request.Price, 
                 request.Interval,
-                request.ImgUrls
+                null, 
+                null, 
+                null,
+                Guid.Empty
             );
 
             var product = await _repo.GetByIdAsync(productDto.Id, cancellationToken);
@@ -45,7 +48,9 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 productDto.Price,
                 productDto.Interval,
                 request.CategoryId, 
-                request.ImgUrls
+                request.ImgUrls,
+                request.Paragraphs, 
+                request.CardDescription
             );
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);

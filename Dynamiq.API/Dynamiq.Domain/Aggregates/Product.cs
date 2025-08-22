@@ -11,10 +11,18 @@ namespace Dynamiq.Domain.Aggregates
         public string StripePriceId { get; private set; }
         public string Name { get; private set; }
         public string Description { get; private set; }
+        public string CardDescription { get; private set; }
         public int Price { get; private set; }
         public IntervalEnum Interval { get; private set; }
-        public IReadOnlyList<ProductImgUrl> ImgUrls => _imgUrls.AsReadOnly();
+
         private List<ProductImgUrl> _imgUrls = new();
+        public IReadOnlyList<ProductImgUrl> ImgUrls => _imgUrls.AsReadOnly();
+
+        private List<ProductParagraph> _paragraphs = new();
+        public IReadOnlyList<ProductParagraph> Paragraphs => _paragraphs
+            .OrderBy(p => p.Order)
+            .ToList()
+            .AsReadOnly();
 
         private readonly List<ProductPaymentHistory> _productPaymentHistories = new();
         public IReadOnlyCollection<ProductPaymentHistory> ProductPaymentHistories => _productPaymentHistories.AsReadOnly();
@@ -24,20 +32,32 @@ namespace Dynamiq.Domain.Aggregates
         private Product() { }
 
         public Product(
-            string stripeProductId, string stripePriceId,
-            string name, string description,
-            int price, IntervalEnum interval,
-            Guid categoryId, List<string> imgUrls)
+            string stripeProductId,
+            string stripePriceId,
+            string name,
+            string description,
+            int price,
+            IntervalEnum interval,
+            Guid categoryId,
+            List<string> imgUrls,
+            List<string> paragraphs,
+            string cardDescription)
         {
-            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId, imgUrls);
+            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId, imgUrls, paragraphs, cardDescription);
+            CardDescription = cardDescription;
         }
 
         public void Update(
             string stripeProductId,
-            string stripePriceId, string name,
-            string description, int price,
-            IntervalEnum interval, Guid categoryId,
-            List<string> imgUrls)
+            string stripePriceId,
+            string name,
+            string description,
+            int price,
+            IntervalEnum interval,
+            Guid categoryId,
+            List<string> imgUrls,
+            List<string> paragraphs,
+            string cardDescr)
         {
             if (string.IsNullOrWhiteSpace(stripeProductId))
                 throw new ArgumentException("StripeProductId cannot be empty");
@@ -58,10 +78,15 @@ namespace Dynamiq.Domain.Aggregates
             Price = price;
             Interval = interval;
             CategoryId = categoryId;
+            CardDescription = cardDescr;
 
             _imgUrls.Clear();
             foreach (var url in imgUrls)
                 AddImgUrl(url);
+
+            _paragraphs.Clear();
+            for (int i = 0; i < paragraphs.Count; i++)
+                AddParagraph(paragraphs[i], i);
         }
 
         private void AddImgUrl(string imgUrl)
@@ -74,6 +99,11 @@ namespace Dynamiq.Domain.Aggregates
             }
 
             _imgUrls.Add(new(imgUrl));
+        }
+
+        private void AddParagraph(string text, int order)
+        {
+            _paragraphs.Add(new ProductParagraph(text, order));
         }
 
         public void ChangePrice(int newPrice)

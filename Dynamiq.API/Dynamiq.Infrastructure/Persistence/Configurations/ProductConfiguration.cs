@@ -9,7 +9,7 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.HasKey(p => p.Id);
-            builder.Property(rt => rt.Id)
+            builder.Property(p => p.Id)
                    .ValueGeneratedOnAdd()
                    .HasDefaultValueSql("NEWID()");
 
@@ -35,7 +35,10 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .IsRequired();
 
             builder.Property(p => p.CategoryId)
-                    .IsRequired();
+                   .IsRequired();
+
+            builder.Property(p => p.CardDescription)
+                   .HasMaxLength(35);
 
             builder.HasMany(p => p.ProductPaymentHistories)
                    .WithOne()
@@ -60,10 +63,30 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                           .HasMaxLength(500);
             });
 
+            builder.OwnsMany(p => p.Paragraphs, paragraphBuilder =>
+            {
+                paragraphBuilder.ToTable("ProductParagraphs");
+
+                paragraphBuilder.WithOwner()
+                                .HasForeignKey("ProductId");
+
+                paragraphBuilder.Property<int>("Id")
+                                .ValueGeneratedOnAdd();
+
+                paragraphBuilder.HasKey("Id");
+
+                paragraphBuilder.Property(p => p.Text)
+                                .IsRequired()
+                                .HasMaxLength(2000);
+
+                paragraphBuilder.Property(p => p.Order)
+                                .IsRequired();
+            });
+
             builder.HasOne<Category>()
-                .WithMany()
-                .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany()
+                   .HasForeignKey(p => p.CategoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

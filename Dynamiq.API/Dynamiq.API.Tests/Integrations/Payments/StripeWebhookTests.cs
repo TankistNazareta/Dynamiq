@@ -88,7 +88,19 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id, new() { "https://example.com/image.jpg" });
+            var product = new Product(
+                stripeProductId: "product_test_123",
+                stripePriceId: "price_test_123",
+                name: "TestProduct",
+                description: "test descr",
+                price: 2000,
+                interval: IntervalEnum.OneTime,
+                categoryId: category.Id,
+                imgUrls: new List<string> { "https://example.com/image.jpg" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card description"
+            );
+
             db.Products.Add(product);
             await db.SaveChangesAsync();
 
@@ -140,7 +152,19 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2222, IntervalEnum.OneTime, category.Id, new() { "https://example.com/image.jpg" });
+            var product = new Product(
+                stripeProductId: "product_test_123",
+                stripePriceId: "price_test_123",
+                name: "TestProduct",
+                description: "test descr",
+                price: 2222,
+                interval: IntervalEnum.OneTime,
+                categoryId: category.Id,
+                imgUrls: new List<string> { "https://example.com/image.jpg" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card description"
+            );
+
             db.Products.Add(product);
 
             await db.SaveChangesAsync();
@@ -186,7 +210,19 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.Monthly, category.Id, new() { "https://example.com/image.jpg" });
+            var product = new Product(
+                stripeProductId: "product_test_123",
+                stripePriceId: "price_test_123",
+                name: "TestProduct",
+                description: "test descr",
+                price: 2000,
+                interval: IntervalEnum.Monthly,
+                categoryId: category.Id,
+                imgUrls: new List<string> { "https://example.com/image.jpg" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card description"
+            );
+
             db.Products.Add(product);
 
             await db.SaveChangesAsync();
@@ -241,7 +277,19 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product("product_test_123", "price_test_123", "TestProduct", "test descr", 2000, IntervalEnum.OneTime, category.Id, new() { "https://example.com/image.jpg" });
+            var product = new Product(
+                stripeProductId: "product_test_123",
+                stripePriceId: "price_test_123",
+                name: "TestProduct",
+                description: "test descr",
+                price: 2000,
+                interval: IntervalEnum.OneTime,
+                categoryId: category.Id,
+                imgUrls: new List<string> { "https://example.com/image.jpg" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card description"
+            );
+
             db.Products.Add(product);
 
             var coupon = new Coupon($"{Guid.NewGuid():N}_coupon", DiscountTypeEnum.FixedAmount, 200, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));

@@ -1,6 +1,9 @@
 ﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using Xunit;
 
 namespace Dynamiq.Domain.Tests.Aggregates
 {
@@ -47,7 +50,19 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void Should_AddProduct()
         {
             var category = new Category("Electronics");
-            var product = new Product("TestStripeProductId", "TestStripePriceId", "name", "descr",  20, IntervalEnum.OneTime, category.Id, new() { "https://test.com/img" });
+
+            var product = new Product(
+                stripeProductId: "TestStripeProductId",
+                stripePriceId: "TestStripePriceId",
+                name: "name",
+                description: "descr",
+                price: 20,
+                interval: IntervalEnum.OneTime,
+                categoryId: category.Id,
+                imgUrls: new List<string> { "https://test.com/img" },
+                paragraphs: new List<string> { "Paragraph 1" },
+                cardDescription: "Card descr"
+            );
 
             category.AddProduct(product);
 

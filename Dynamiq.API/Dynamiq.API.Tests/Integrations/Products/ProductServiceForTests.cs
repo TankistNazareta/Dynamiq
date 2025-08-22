@@ -50,12 +50,14 @@ namespace Dynamiq.API.Tests.Integrations.Products
             }
 
             var command = new AddProductCommand(
-                productName,
-                "Test Description",
-                1000,
-                IntervalEnum.OneTime,
-                categoryId,
-                new() { "https://example.com/image.jpg" }
+                Name: productName,
+                Description: "Test Description",
+                Price: 1000,
+                Interval: IntervalEnum.OneTime,
+                CategoryId: categoryId,
+                ImgUrls: new List<string> { "https://example.com/image.jpg" },
+                Paragraphs: new List<string> { "Paragraph 1", "Paragraph 2" },
+                CardDescription: "Short card description"
             );
 
             var response = await client.PostAsJsonAsync("/product", command);

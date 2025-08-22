@@ -16,6 +16,8 @@ namespace Dynamiq.Application
                 config.CreateMap<Product, ProductDto>().ReverseMap();
                 config.CreateMap<Cart, CartDto>().ReverseMap();
                 config.CreateMap<CartItem, CartItemDto>().ReverseMap();
+                config.CreateMap<ProductImgUrl, ProductImgUrlDto>().ReverseMap();
+                config.CreateMap<ProductParagraph, ProductParagraphDto>().ReverseMap();
             });
         }
     }
