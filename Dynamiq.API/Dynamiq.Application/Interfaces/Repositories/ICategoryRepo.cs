@@ -5,5 +5,6 @@ namespace Dynamiq.Application.Interfaces.Repositories
     public interface ICategoryRepo
     {
         Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken);
+        Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     }
 }

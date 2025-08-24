@@ -22,5 +22,13 @@ namespace Dynamiq.API.Controllers
 
             return Ok(categories);
         }
+
+        [HttpGet("child-and-parents")]
+        public async Task<IActionResult> GetCategoryWithParentById([FromQuery] Guid id)
+        {
+            var categoriesSlug = await _mediator.Send(new GetCategoryWithParentByIdQuery(id));
+
+            return Ok(new { CategoriesSlug = categoriesSlug });
+        }
     }
 }

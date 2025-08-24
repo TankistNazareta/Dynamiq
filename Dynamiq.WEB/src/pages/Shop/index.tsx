@@ -41,8 +41,6 @@ const Shop = () => {
         );
     };
 
-    console.log(totalCount, dotCount, totalCount && dotCount * 16 > totalCount);
-
     return (
         <>
             <SubheaderNav nameRoute="Shop" />

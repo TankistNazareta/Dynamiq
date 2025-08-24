@@ -16,5 +16,8 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<Category>> GetAllAsync(CancellationToken cancellationToken)
                     => await _db.Categories.AsNoTracking().ToListAsync(cancellationToken);
+
+        public async Task<Category?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+                    => await _db.Categories.AsNoTracking().FirstOrDefaultAsync(cate => cate.Id == id);
     }
 }

@@ -13,6 +13,7 @@ import { getByIdProduct, ProductResBody } from '../../services/client/product';
 import useHttpHook from '../../hooks/useHttp';
 import { ErrorMsgType } from '../../utils/types/api';
 import CardList from '../../components/Card/CardList';
+import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../services/client/category';
 
 const Product = () => {
     const { id } = useParams<{ id: string }>();
@@ -22,6 +23,8 @@ const Product = () => {
     const [productData, setProductData] = useState<ProductResBody>();
 
     const { state, setState, makeRequest } = useHttpHook();
+
+    const [categories, setCategories] = useState<string[]>([]);
 
     useEffect(() => {
         if (id === productData?.id) return;
@@ -38,11 +41,19 @@ const Product = () => {
         makeRequest<ProductResBody>(() => getByIdProduct(id))
             .then((res) => {
                 setProductData(res);
+
+                makeRequest<GetCategoryWithParentByIdRes>(() => getCategoryWithParentById(res.categoryId))
+                    .then((res: GetCategoryWithParentByIdRes) => {
+                        setCategories([...res.categoriesSlug]);
+                    })
+                    .catch((err: ErrorMsgType) => {
+                        setError(err);
+                    });
+
                 setState('success');
             })
             .catch((err: ErrorMsgType) => {
                 setError(err);
-                setState('error');
             });
     }, [id]);
 
@@ -51,17 +62,18 @@ const Product = () => {
         return <h3 className="cards_error text-danger">Error: {error?.Message ?? 'Unknown'}</h3>;
     }
     if (state === 'success' && productData) {
-        return <View product={productData} quantity={quantity} setQuantity={setQuantity} />;
+        return <View product={productData} quantity={quantity} setQuantity={setQuantity} categories={categories} />;
     }
 
     return <Loading />;
 };
 
-const View: React.FC<{ product: ProductResBody; quantity: number; setQuantity: (q: number) => void }> = ({
-    product,
-    quantity,
-    setQuantity,
-}) => {
+const View: React.FC<{
+    product: ProductResBody;
+    quantity: number;
+    setQuantity: (q: number) => void;
+    categories: string[];
+}> = ({ product, quantity, setQuantity, categories }) => {
     const imgs = product.imgUrls.map((url) => <img key={url.imgUrl} src={url.imgUrl} alt="" />);
     const sortedDescr = product.paragraphs.sort((a, b) => b.order - a.order);
 
@@ -107,8 +119,8 @@ const View: React.FC<{ product: ProductResBody; quantity: number; setQuantity: (
             </div>
             <section>
                 <div className="container product__container d-flex">
-                    <Carousel showSlides={1} imgs={imgs}>
-                        {imgs.map((img, i) => (
+                    <Carousel showSlides={1} imgs={imgs.length > 5 ? imgs.slice(0, 5) : imgs}>
+                        {imgs.slice(0, 5).map((img, i) => (
                             <div key={i} className="carousel-comp__slide">
                                 {img}
                             </div>
@@ -150,7 +162,7 @@ const View: React.FC<{ product: ProductResBody; quantity: number; setQuantity: (
                             <div className="product__info__additional_item d-flex justify-content-center">
                                 <p className="product__info__additional_item-title">Category</p>
                                 <p className="product__info__additional_item-separator">:</p>
-                                <p className="product__info__additional_item-descr">Sofas</p>
+                                <p className="product__info__additional_item-descr">{categories.join(', ')}</p>
                             </div>
                             <div className="product__info__additional_item d-flex justify-content-center">
                                 <p className="product__info__additional_item-title">Share</p>
@@ -188,7 +200,7 @@ const View: React.FC<{ product: ProductResBody; quantity: number; setQuantity: (
             <section className="product__related">
                 <h2 className="product__related_title">Related Products</h2>
                 <div className="container product__related_cards">
-                    {/* <CardList limit={4} offset={0} productFilter={{ categoryId: product.categoryId }} /> */}
+                    <CardList limit={4} offset={0} productFilter={{ categoryIds: [product.categoryId] }} />
                 </div>
                 <button className="btn-show-more">Show more</button>
             </section>
