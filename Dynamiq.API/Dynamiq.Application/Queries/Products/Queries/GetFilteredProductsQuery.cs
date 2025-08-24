@@ -4,5 +4,5 @@ using MediatR;
 
 namespace Dynamiq.Application.Queries.Products.Queries
 {
-    public record class GetFilteredProductsQuery(ProductFilter Filter, int Limit, int Offset) : IRequest<List<ProductDto>>;
+    public record class GetFilteredProductsQuery(ProductFilter Filter, int Limit, int Offset) : IRequest<ResponseProductsDto>;
 }

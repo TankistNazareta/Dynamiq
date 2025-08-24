@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Domain.Aggregates;
 
-namespace Dynamiq.Domain.Interfaces.Repositories
+namespace Dynamiq.Application.Interfaces.Repositories
 {
     public interface IPaymentHistoryRepo
     {

@@ -63,6 +63,10 @@
         }
 
         &_btn {
+            &s {
+                gap: 15px;
+            }
+
             border: 1px solid #000;
             border-radius: 15px;
             width: 215px;
@@ -167,7 +171,7 @@
         }
     }
 
-    &__realted {
+    &__related {
         padding: 55px 0 92px 0;
         text-align: center;
 
@@ -176,6 +180,7 @@
             font-weight: 500;
             font-size: 36px;
             color: #000;
+            text-align: center;
         }
 
         &_cards {

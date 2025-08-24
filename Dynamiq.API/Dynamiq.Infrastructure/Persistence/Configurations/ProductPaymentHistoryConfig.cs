@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Domain.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Dynamiq.Infrastructure.Persistence.Configurations
 {

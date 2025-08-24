@@ -1,12 +1,16 @@
 import { useState } from 'react';
-
-import testImgForCard from '../assets/images/testImgForCard.png';
+import { Link } from 'react-router-dom';
 
 interface CardProps {
     additionalClasses?: string;
+    name: string;
+    price: number;
+    descr: string;
+    imgUrl: string;
+    id: string;
 }
 
-const Card: React.FC<CardProps> = ({ additionalClasses }) => {
+const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgUrl, id }) => {
     const [needToShowPopUp, setNeedToShowPopUp] = useState<boolean>(false);
 
     return (
@@ -16,11 +20,11 @@ const Card: React.FC<CardProps> = ({ additionalClasses }) => {
             onMouseLeave={() => setNeedToShowPopUp(false)}
             onTouchStart={() => setNeedToShowPopUp(true)}
             onTouchCancel={() => setNeedToShowPopUp(false)}>
-            <img className="card-img" src={testImgForCard} alt="" />
+            <img className="card-img" src={imgUrl} alt="" />
             <div className="card__info">
-                <h3 className="card__info-title">Syltherine</h3>
-                <p className="card__info-descr">Stylish cafe chair</p>
-                <h4 className="card__info-price">Rp 2.500.000</h4>
+                <h3 className="card__info-title">{name}</h3>
+                <p className="card__info-descr">{descr}</p>
+                <h4 className="card__info-price">${price}</h4>
             </div>
             <div
                 className={`card__popup flex-column justify-content-center align-items-center ${
@@ -37,7 +41,7 @@ const Card: React.FC<CardProps> = ({ additionalClasses }) => {
                         </svg>
                         <p>Share</p>
                     </a>
-                    <a href="" className="card__popup-link d-flex align-items-center">
+                    <Link to={'/product/' + id} className="card__popup-link d-flex align-items-center">
                         <svg
                             width="20px"
                             height="20px"
@@ -57,7 +61,7 @@ const Card: React.FC<CardProps> = ({ additionalClasses }) => {
                             </g>
                         </svg>
                         <p>Detail</p>
-                    </a>
+                    </Link>
                 </div>
             </div>
         </div>

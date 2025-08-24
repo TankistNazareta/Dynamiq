@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
-using Dynamiq.Application.Interfaces.Stripe;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -40,7 +39,7 @@ namespace Dynamiq.API.Controllers
 
             if (!needResponse)
                 return Ok();
-                
+
             _logger.LogInformation("payment completed successfully");
 
             return Ok(new { Message = "completed successfully" });

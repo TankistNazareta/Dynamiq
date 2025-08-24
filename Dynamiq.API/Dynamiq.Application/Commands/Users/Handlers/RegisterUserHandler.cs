@@ -1,8 +1,8 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
 using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Users.Handlers

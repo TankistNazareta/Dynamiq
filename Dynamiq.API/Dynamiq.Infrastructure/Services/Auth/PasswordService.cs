@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Application.Interfaces.Auth;
-using Dynamiq.Domain.Entities;
 
 namespace Dynamiq.Infrastructure.Services.Auth
 {

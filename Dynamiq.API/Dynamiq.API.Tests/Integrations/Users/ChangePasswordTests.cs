@@ -1,11 +1,7 @@
 ﻿using Dynamiq.API.Tests.ResponseDtos;
 using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.DTOs.CommonDTOs;
-using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
@@ -59,7 +55,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
             var response = await result.Content.ReadFromJsonAsync<ExceptionResponseDto>();
             response.Should().BeEquivalentTo(new ExceptionResponseDto(
-                HttpStatusCode.BadRequest, 
+                HttpStatusCode.BadRequest,
                 "your old password isn't correct"
             ));
         }

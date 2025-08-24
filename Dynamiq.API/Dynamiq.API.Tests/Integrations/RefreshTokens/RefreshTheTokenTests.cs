@@ -1,15 +1,11 @@
-﻿using Dynamiq.Application.DTOs.AuthDTOs;
-using Dynamiq.Domain.Aggregates;
+﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.RefreshTokens
 {
@@ -59,7 +55,7 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
                 .Select(h => h.Split(';')[0])
                 .Select(s => s.Split('='))
                 .Where(parts => parts.Length == 2 && parts[0].Trim() == "refreshToken")
-                .Select(parts => WebUtility.UrlDecode(parts[1])) 
+                .Select(parts => WebUtility.UrlDecode(parts[1]))
                 .FirstOrDefault();
 
             refreshToken.Should().NotBeNull();

@@ -1,11 +1,8 @@
-﻿using Docker.DotNet.Models;
-using Dynamiq.API.Tests.Integrations.Users;
+﻿using Dynamiq.API.Tests.Integrations.Users;
 using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Domain.Aggregates;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
@@ -59,8 +56,8 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 Method = HttpMethod.Get,
                 RequestUri = new Uri("/cart", UriKind.Relative),
                 Content = JsonContent.Create(user.Id)
-            }; 
-            
+            };
+
             var responseGet = await _client.SendAsync(requestGet);
 
             responseGet.StatusCode.Should().Be(HttpStatusCode.NotFound);

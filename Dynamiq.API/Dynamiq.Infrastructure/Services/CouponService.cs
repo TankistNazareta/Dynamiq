@@ -1,7 +1,7 @@
 ﻿using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Interfaces.Repositories;
 
 namespace Dynamiq.Infrastructure.Services
 {
@@ -26,7 +26,7 @@ namespace Dynamiq.Infrastructure.Services
                 if (coupon == null)
                     throw new KeyNotFoundException($"coupon with code {code}, wasn't found");
 
-                switch(coupon.DiscountType)
+                switch (coupon.DiscountType)
                 {
                     case DiscountTypeEnum.Percentage:
                         couponsWithPercentage.Add(coupon.DiscountValue);

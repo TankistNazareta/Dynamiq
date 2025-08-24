@@ -1,10 +1,47 @@
-import { useState } from 'react';
-import Card from '../../components/Card';
+import { ReactElement, useEffect, useState } from 'react';
+import Card from '../../components/Card/Card';
 import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
+import useHttpHook from '../../hooks/useHttp';
+import { getRangeProduct, ProductFilter, ProductResBody } from '../../services/client/product';
+import Loading from '../../components/Loading';
+import CardList from '../../components/Card/CardList';
+import SortEnum from '../../utils/enums/sortByEnum';
+import FilterMenu from './components/FilterMenu';
+import { CloseButton } from 'react-bootstrap';
 
 const Shop = () => {
     const [dotCount, setDotCount] = useState(1);
+    const [cards, setCards] = useState<ReactElement>();
+    const [needShowFilterMenu, setNeedShowFilterMenu] = useState(false);
+    const [filter, setFilter] = useState<ProductFilter>();
+    const [totalCount, setTotalCount] = useState<number | null>(null);
+
+    useEffect(() => {
+        setCards(
+            <CardList
+                limit={16}
+                offset={dotCount * 16 - 16}
+                productFilter={filter}
+                setTotalCount={(count) => setTotalCount(count)}
+            />
+        );
+    }, [dotCount]);
+
+    const onFilter = (filterPorp: ProductFilter) => {
+        setFilter(filterPorp);
+
+        setCards(
+            <CardList
+                limit={16}
+                offset={dotCount * 16 - 16}
+                productFilter={filterPorp}
+                setTotalCount={(count) => setTotalCount(count)}
+            />
+        );
+    };
+
+    console.log(totalCount, dotCount, totalCount && dotCount * 16 > totalCount);
 
     return (
         <>
@@ -12,7 +49,9 @@ const Shop = () => {
             <div className="shop">
                 <div className="shop__subheader">
                     <div className="container d-flex align-items-center">
-                        <button className="shop__subheader-item d-flex align-items-center">
+                        <button
+                            className="shop__subheader-item d-flex align-items-center"
+                            onClick={(e) => setNeedShowFilterMenu((prev) => !prev)}>
                             <svg
                                 width="21"
                                 height="18"
@@ -26,72 +65,61 @@ const Shop = () => {
                                     stroke-linejoin="round"
                                 />
                             </svg>
-                            <p>Filter</p>
+                            <p className="shop__subheader_p">Filter</p>
                         </button>
+                        <hr className="hr-separator shop__subheader_hr-separator" />
+                        <p className="shop__subheader_p">
+                            Total found: {totalCount !== null ? totalCount : 'Loading...'}
+                        </p>
                     </div>
                 </div>
-
                 <section className="shop__first-section">
-                    <div className="container shop__cards">
-                        <div className="d-flex flex-wrap justify-content-between gx-4 gy-4">
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                            <Card additionalClasses="shop__card" />
-                        </div>
-                    </div>
+                    <div className="container shop__cards">{cards}</div>
                     <div className="shop__dots d-flex justify-content-center align-items-center">
-                        {dotCount > 1 ? (
+                        {dotCount > 1 && (
                             <button
                                 onClick={() => setDotCount(dotCount - 1)}
                                 className="shop__dot shop__dot-additional shop__dot-prev">
                                 Previos
                             </button>
-                        ) : (
-                            ''
                         )}
-                        {dotCount > 2 ? (
+                        {dotCount > 2 && (
                             <button onClick={() => setDotCount(dotCount - 2)} className="shop__dot">
                                 {dotCount - 2}
                             </button>
-                        ) : (
-                            ''
                         )}
-                        {dotCount > 1 ? (
+                        {dotCount > 1 && (
                             <button onClick={() => setDotCount(dotCount - 1)} className="shop__dot">
                                 {dotCount - 1}
                             </button>
-                        ) : (
-                            ''
                         )}
                         <button className="shop__dot shop__dot-active">{dotCount}</button>
-                        <button onClick={() => setDotCount(dotCount + 1)} className="shop__dot">
-                            {dotCount + 1}
-                        </button>
-                        <button onClick={() => setDotCount(dotCount + 2)} className="shop__dot">
-                            {dotCount + 2}
-                        </button>
-                        <button
-                            onClick={() => setDotCount(dotCount + 1)}
-                            className="shop__dot shop__dot-additional shop__dot-next">
-                            Next
-                        </button>
+                        {totalCount && dotCount * 16 < totalCount && (
+                            <button onClick={() => setDotCount(dotCount + 1)} className="shop__dot">
+                                {dotCount + 1}
+                            </button>
+                        )}
+                        {totalCount && dotCount * 16 + 16 < totalCount && (
+                            <button onClick={() => setDotCount(dotCount + 2)} className="shop__dot">
+                                {dotCount + 2}
+                            </button>
+                        )}
+                        {totalCount && dotCount * 16 < totalCount && (
+                            <button
+                                onClick={() => setDotCount(dotCount + 1)}
+                                className="shop__dot shop__dot-additional shop__dot-next">
+                                Next
+                            </button>
+                        )}
                     </div>
                 </section>
                 <Feature />
             </div>
+            <FilterMenu
+                isActive={needShowFilterMenu}
+                onFilterProp={onFilter}
+                setNeedShowFilterMenu={setNeedShowFilterMenu}
+            />
         </>
     );
 };

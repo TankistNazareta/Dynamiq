@@ -46,7 +46,7 @@ namespace Dynamiq.API.Controllers
         {
             var all = await _mediator.Send(new GetAllProductsQuery(limit, offset));
 
-            _logger.LogInformation("Retrieved all products, count: {Count}", all?.Count() ?? -1);
+            _logger.LogInformation("Retrieved all products, count: {Count}", all.TotalCount);
 
             return Ok(all);
         }

@@ -15,10 +15,7 @@ const useHttpHook = () => {
 
             const res = await callMethod();
 
-            console.log(res, 'res useHttpHook');
-
             if (!res.success) throw res.error;
-            console.log(res.data, 'res.data useHttpHook');
 
             return res.data;
         } catch (e: any) {
@@ -30,7 +27,7 @@ const useHttpHook = () => {
                 throw new Error('No internet connection');
             }
 
-            if (e.name === 'TypeError' || e.code === 'ERR_NETWORK') {
+            if (e.code === 'ERR_NETWORK') {
                 setState('fatal');
                 navigate('/error');
                 throw new Error('Server is not reachable');

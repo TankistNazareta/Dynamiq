@@ -1,9 +1,9 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,8 +53,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == productName).Subject;
+                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
+                var created = response.Products.Should().ContainSingle(p => p.Name == productName).Subject;
 
                 productId = created.Id;
                 categoryId = created.CategoryId;
@@ -74,18 +74,18 @@ namespace Dynamiq.API.Tests.Integrations.Products
                 CardDescription: "Updated card description"
             );
 
-            var response = await client.PutAsJsonAsync("/product", command);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseHttp = await client.PutAsJsonAsync("/product", command);
+            responseHttp.StatusCode.Should().Be(HttpStatusCode.OK);
 
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == newName).Subject;
+                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
+                var updated = response.Products.Should().ContainSingle(p => p.Name == newName).Subject;
 
-                created.Should().NotBeNull();
-                created.Description.Should().Be("NewDescr");
-                created.Price.Should().Be(11111);
+                updated.Should().NotBeNull();
+                updated.Description.Should().Be("NewDescr");
+                updated.Price.Should().Be(11111);
             }
 
             stripeServiceMock.Verify(s => s.UpdateProductStripeAsync(

@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Application.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.RefreshTokens.Handlers

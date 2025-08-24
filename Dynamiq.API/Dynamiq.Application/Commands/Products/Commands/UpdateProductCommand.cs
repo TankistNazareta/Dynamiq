@@ -4,14 +4,14 @@ using MediatR;
 namespace Dynamiq.Application.Commands.Products.Commands
 {
     public record class UpdateProductCommand(
-        Guid Id, 
+        Guid Id,
         string Name,
-        string Description, 
+        string Description,
         int Price,
-        IntervalEnum Interval, 
+        IntervalEnum Interval,
         Guid CategoryId,
         List<string> ImgUrls,
-        List<string> Paragraphs, 
+        List<string> Paragraphs,
         string CardDescription
     ) : IRequest;
 }

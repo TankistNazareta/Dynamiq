@@ -1,6 +1,10 @@
-﻿using Dynamiq.Domain.Interfaces.Repositories;
+﻿using Dynamiq.Application.Interfaces.Repositories;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace Dynamiq.API.Tests.Integrations.Products
 {
@@ -25,8 +29,9 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == productName).Subject;
+                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
+
+                var created = response.Products.Should().ContainSingle(p => p.Name == productName).Subject;
 
                 created.StripeProductId.Should().Be("stripe_product_123");
                 created.StripePriceId.Should().Be("stripe_price_123");

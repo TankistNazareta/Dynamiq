@@ -307,9 +307,9 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             };
 
             await CreatePaymentHistory(
-                parserDto, 
+                parserDto,
                 new(
-                    new() { coupon.Code }, 
+                    new() { coupon.Code },
                     new() { "testStipeCouponeId" }
                 ));
 

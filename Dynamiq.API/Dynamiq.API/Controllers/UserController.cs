@@ -28,7 +28,7 @@ namespace Dynamiq.API.Controllers
         {
             var user = await _mediator.Send(new GetUserByIdQuery(id));
 
-            if(user == null) 
+            if (user == null)
                 return NotFound();
 
             _logger.LogInformation("Retrieved user with id: {Id}", id);

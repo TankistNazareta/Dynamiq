@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Queries.Products.Queries;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Products.Handlers

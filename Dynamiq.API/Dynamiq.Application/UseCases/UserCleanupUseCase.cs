@@ -1,5 +1,5 @@
-﻿using Dynamiq.Application.Interfaces.UseCases;
-using Dynamiq.Domain.Interfaces.Repositories;
+﻿using Dynamiq.Application.Interfaces.Repositories;
+using Dynamiq.Application.Interfaces.UseCases;
 
 namespace Dynamiq.Application.UseCases
 {

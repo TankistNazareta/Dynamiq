@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs.AuthDTOs;
+﻿using Dynamiq.Application.Commands.Users.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;

@@ -1,10 +1,10 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
 using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Payment.Handlers
@@ -72,7 +72,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 ProductId = request.ProductId
             };
 
-            if(request.CouponCodes != null && request.CouponCodes.Count > 0)
+            if (request.CouponCodes != null && request.CouponCodes.Count > 0)
             {
                 foreach (var couponCode in request.CouponCodes)
                 {
@@ -81,7 +81,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                     if (coupon == null)
                         throw new KeyNotFoundException("coupon wasn`t found: " + couponCode);
 
-                    if(!coupon.IsActive())
+                    if (!coupon.IsActive())
                         throw new TimeoutException("Verification token expired.");
                 }
                 stripeCartItems = await _couponService.AddAllCouponsAsync(stripeCartItems, request.CouponCodes, cancellationToken);

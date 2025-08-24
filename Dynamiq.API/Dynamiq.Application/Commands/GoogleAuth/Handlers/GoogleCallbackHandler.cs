@@ -1,20 +1,18 @@
 ﻿using Dynamiq.Application.Commands.GoogleAuth.Commands;
-using Dynamiq.Application.Commands.RefreshTokens.Commands;
 using Dynamiq.Application.Common;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 
 namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
 {
@@ -80,7 +78,7 @@ namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
 
                 user.EmailVerification.Confirm(email);
             }
-            else if(user.PasswordHash != IPasswordService.DefaultHashForOidc)
+            else if (user.PasswordHash != IPasswordService.DefaultHashForOidc)
             {
                 throw new CannotLinkOidcAccountException(email);
             }

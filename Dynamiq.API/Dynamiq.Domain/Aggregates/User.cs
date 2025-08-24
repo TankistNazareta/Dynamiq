@@ -2,7 +2,6 @@
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Events;
-using Microsoft.Extensions.Primitives;
 
 namespace Dynamiq.Domain.Aggregates
 {
@@ -63,7 +62,7 @@ namespace Dynamiq.Domain.Aggregates
         {
             var token = _refreshTokens.FirstOrDefault(rt => rt.Token == oldToken);
 
-            if(token == null)
+            if (token == null)
                 throw new KeyNotFoundException($"users token with this id wasn't found: {token}");
 
             token.UpdateToken(newToken);

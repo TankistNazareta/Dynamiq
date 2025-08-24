@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.Domain.Interfaces.Repositories
+﻿namespace Dynamiq.Application.Interfaces.Repositories
 {
     public interface IUnitOfWork
     {

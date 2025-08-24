@@ -1,5 +1,5 @@
-﻿using Dynamiq.Application.Queries.Coupons.Queries;
-using Dynamiq.Domain.Interfaces.Repositories;
+﻿using Dynamiq.Application.Interfaces.Repositories;
+using Dynamiq.Application.Queries.Coupons.Queries;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Coupons.Handlers

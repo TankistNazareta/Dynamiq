@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Application.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Users.Handlers

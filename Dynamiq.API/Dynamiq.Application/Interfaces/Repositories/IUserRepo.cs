@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Domain.Aggregates;
 
-namespace Dynamiq.Domain.Interfaces.Repositories
+namespace Dynamiq.Application.Interfaces.Repositories
 {
     public interface IUserRepo
     {
@@ -9,7 +9,7 @@ namespace Dynamiq.Domain.Interfaces.Repositories
         Task AddAsync(User user, CancellationToken ct);
         void Delete(User user);
         Task<List<User>> GetAllExpiredUsersAsync(CancellationToken ct);
-        Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct); 
-        Task<User?> GetByRefreshTokenAsync(string token, CancellationToken ct); 
+        Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct);
+        Task<User?> GetByRefreshTokenAsync(string token, CancellationToken ct);
     }
 }

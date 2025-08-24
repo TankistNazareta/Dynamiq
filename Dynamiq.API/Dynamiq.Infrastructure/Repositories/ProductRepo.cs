@@ -1,9 +1,10 @@
-﻿using Dynamiq.Domain.Aggregates;
+﻿using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Common;
-using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Dynamiq.Infrastructure.Repositories
 {
@@ -28,23 +29,24 @@ namespace Dynamiq.Infrastructure.Repositories
 
             return Task.CompletedTask;
         }
-
-        public async Task<IReadOnlyList<Product>> GetAllAsync(int limit, int offset, CancellationToken ct)
+        public async Task<ResponseProducts> GetAllAsync(int limit, int offset, CancellationToken ct)
         {
-            var query = _db.Products.AsNoTracking();
+            var query = _db.Products
+                .AsNoTracking()
+                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime);
 
-            int skip = offset;
-            int take = limit;
+            var totalCount = await query.CountAsync(ct);
 
-            return await query
-                .Skip(skip)
-                .Take(take)
-                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime)
+            var items = await query
+                .Skip(offset)
+                .Take(limit)
                 .ToListAsync(ct);
+
+            return new ResponseProducts(totalCount, items);
         }
 
 
-        public async Task<IReadOnlyList<Product>> GetAllBySlugAsync(string slug, int limit, int offset, CancellationToken ct)
+        public async Task<ResponseProducts> GetAllBySlugAsync(string slug, int limit, int offset, CancellationToken ct)
         {
             var category = await _db.Categories
                 .Include(c => c.Products)
@@ -52,25 +54,28 @@ namespace Dynamiq.Infrastructure.Repositories
 
             var products = category?.Products.AsQueryable() ?? Enumerable.Empty<Product>().AsQueryable();
 
-            int skip = offset;
-            int take = limit;
+            var query = products.AsNoTracking()
+                .Where(p => p.Interval == IntervalEnum.OneTime);
 
-            return await products
-                .Skip(skip)
-                .Take(take)
-                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime)
-                .ToListAsync();
+            var items = await query
+                .Skip(offset)
+                .Take(limit)
+                .ToListAsync(ct);
+
+            return new(await query.CountAsync(), items);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken ct)
                 => await _db.Products.FirstOrDefaultAsync(p => p.Id == id, ct);
 
-        public async Task<List<Product>> GetFilteredAsync(ProductFilter request, int limit, int offset, CancellationToken ct)
+        public async Task<ResponseProducts> GetFilteredAsync(ProductFilter request, int limit, int offset, CancellationToken ct)
         {
             var query = _db.Products.AsQueryable();
 
-            if (request.CategoryId.HasValue)
-                query = query.Where(p => p.CategoryId == request.CategoryId.Value);
+            if (request.CategoryIds != null && request.CategoryIds.Count != 0)
+            {
+                query = query.Where(p => request.CategoryIds.Contains(p.CategoryId));
+            }
 
             if (request.MinPrice.HasValue)
                 query = query.Where(p => p.Price >= request.MinPrice.Value);
@@ -86,13 +91,22 @@ namespace Dynamiq.Infrastructure.Repositories
                     p.Description.ToLower().Contains(term));
             }
 
-            int skip = offset;
-            int take = limit;
+            if (request.SortBy != null && request.SortBy != SortEnum.Default)
+            {
+                if (request.SortBy == SortEnum.FromLowest)
+                    query = query.OrderBy(p => p.Price);
 
-            return await query
-                .Skip(skip)
-                .Take(take)
+                if (request.SortBy == SortEnum.FromHighest)
+                    query = query.OrderByDescending(p => p.Price);
+            }
+
+
+            var items = await query
+                .Skip(offset)
+                .Take(limit)
                 .ToListAsync(ct);
+
+            return new(await query.CountAsync(), items);
         }
 
         public async Task<IReadOnlyList<Product>> GetOnlySubscriptions(CancellationToken ct)

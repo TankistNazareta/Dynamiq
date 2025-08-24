@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Queries.Products.Queries;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Products.Handlers
 {
-    internal class GetFilteredProductsHandler : IRequestHandler<GetFilteredProductsQuery, List<ProductDto>>
+    internal class GetFilteredProductsHandler : IRequestHandler<GetFilteredProductsQuery, ResponseProductsDto>
     {
         private readonly IProductRepo _productRepo;
         private readonly IMapper _mapper;
@@ -17,10 +17,10 @@ namespace Dynamiq.Application.Queries.Products.Handlers
             _mapper = mapper;
         }
 
-        public async Task<List<ProductDto>> Handle(GetFilteredProductsQuery request, CancellationToken cancellationToken)
+        public async Task<ResponseProductsDto> Handle(GetFilteredProductsQuery request, CancellationToken cancellationToken)
         {
             var products = await _productRepo.GetFilteredAsync(request.Filter, request.Limit, request.Offset, cancellationToken);
-            return _mapper.Map<List<ProductDto>>(products);
+            return _mapper.Map<ResponseProductsDto>(products);
         }
     }
 }

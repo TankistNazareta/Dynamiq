@@ -3,10 +3,10 @@ using Dynamiq.Application.Common;
 using Dynamiq.Application.CustomExceptions;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Exceptions;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Users.Handlers

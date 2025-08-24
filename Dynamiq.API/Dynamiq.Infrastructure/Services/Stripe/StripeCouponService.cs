@@ -1,5 +1,4 @@
-﻿using Dynamiq.Application.Interfaces.Services;
-using Dynamiq.Application.Interfaces.Stripe;
+﻿using Dynamiq.Application.Interfaces.Stripe;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using StripeSdk = Stripe;

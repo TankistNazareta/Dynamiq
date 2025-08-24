@@ -1,6 +1,4 @@
-﻿using Dynamiq.Domain.Enums;
-
-namespace Dynamiq.Domain.Entities
+﻿namespace Dynamiq.Domain.Entities
 {
     public class ProductPaymentHistory
     {

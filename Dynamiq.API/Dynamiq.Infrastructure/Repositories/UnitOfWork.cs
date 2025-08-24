@@ -1,4 +1,4 @@
-﻿using Dynamiq.Domain.Interfaces.Repositories;
+﻿using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 
 namespace Dynamiq.Infrastructure.Repositories

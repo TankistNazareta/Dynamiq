@@ -1,7 +1,7 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Products.Handlers
@@ -22,13 +22,13 @@ namespace Dynamiq.Application.Commands.Products.Handlers
         public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             var productDto = new ProductDto(
-                request.Id, 
-                request.Name, 
-                request.Description, 
-                request.Price, 
+                request.Id,
+                request.Name,
+                request.Description,
+                request.Price,
                 request.Interval,
-                null, 
-                null, 
+                null,
+                null,
                 null,
                 Guid.Empty
             );
@@ -47,9 +47,9 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 productDto.Description,
                 productDto.Price,
                 productDto.Interval,
-                request.CategoryId, 
+                request.CategoryId,
                 request.ImgUrls,
-                request.Paragraphs, 
+                request.Paragraphs,
                 request.CardDescription
             );
 

@@ -1,9 +1,6 @@
 ﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
 using FluentAssertions;
-using System;
-using System.Collections.Generic;
-using Xunit;
 
 namespace Dynamiq.Domain.Tests.Aggregates
 {

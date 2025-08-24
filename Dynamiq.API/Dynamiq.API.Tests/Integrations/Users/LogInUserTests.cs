@@ -1,13 +1,9 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
-using FluentAssertions;
-using System.Net.Http.Json;
-using System.Net;
-using Dynamiq.Infrastructure.Persistence.Context;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
-using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.DTOs.CommonDTOs;
+using FluentAssertions;
+using Microsoft.AspNetCore.Http;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Users
 {

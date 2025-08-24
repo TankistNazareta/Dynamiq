@@ -1,49 +1,103 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 import Carousel from './Carousel';
+import Card from '../../components/Card/Card';
+import NotFound from '../NotFound';
+import Loading from '../../components/Loading';
 
 import descr1 from '../../assets/images/testCarousel/descrProduct1.png';
 import descr2 from '../../assets/images/testCarousel/descrProduct2.png';
-import Card from '../../components/Card';
 
-interface ProductProps {
-    imgUrls: string[];
-}
+import { getByIdProduct, ProductResBody } from '../../services/client/product';
+import useHttpHook from '../../hooks/useHttp';
+import { ErrorMsgType } from '../../utils/types/api';
+import CardList from '../../components/Card/CardList';
 
-const Product: React.FC<ProductProps> = ({ imgUrls }) => {
+const Product = () => {
+    const { id } = useParams<{ id: string }>();
+
+    const [error, setError] = useState<ErrorMsgType>();
     const [quantity, setQuantity] = useState(1);
+    const [productData, setProductData] = useState<ProductResBody>();
 
-    var imgs = imgUrls.map((url) => {
-        return <img src={url} alt="" />;
-    });
+    const { state, setState, makeRequest } = useHttpHook();
+
+    useEffect(() => {
+        if (id === productData?.id) return;
+        if (!id) {
+            setError({
+                StatusCode: 404,
+                Message: "Product wasn't found by his id (please write id)",
+            });
+
+            setState('error');
+            return;
+        }
+
+        makeRequest<ProductResBody>(() => getByIdProduct(id))
+            .then((res) => {
+                setProductData(res);
+                setState('success');
+            })
+            .catch((err: ErrorMsgType) => {
+                setError(err);
+                setState('error');
+            });
+    }, [id]);
+
+    if (state === 'error') {
+        if (error?.StatusCode === 404) return <NotFound />;
+        return <h3 className="cards_error text-danger">Error: {error?.Message ?? 'Unknown'}</h3>;
+    }
+    if (state === 'success' && productData) {
+        return <View product={productData} quantity={quantity} setQuantity={setQuantity} />;
+    }
+
+    return <Loading />;
+};
+
+const View: React.FC<{ product: ProductResBody; quantity: number; setQuantity: (q: number) => void }> = ({
+    product,
+    quantity,
+    setQuantity,
+}) => {
+    const imgs = product.imgUrls.map((url) => <img key={url.imgUrl} src={url.imgUrl} alt="" />);
+    const sortedDescr = product.paragraphs.sort((a, b) => b.order - a.order);
 
     return (
         <>
             <div className="product__subheader">
                 <nav className="d-flex align-items-center container">
                     <ul className="d-flex">
-                        <li className="product__subheader__item">Home</li>
-                        <li className="product__subheader__item product__subheader__item-arrow">
-                            <svg
-                                width="8"
-                                height="14"
-                                viewBox="0 0 8 14"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="black" />
-                            </svg>
-                        </li>
-                        <li className="product__subheader__item">Shop</li>
-                        <li className="product__subheader__item product__subheader__item-arrow">
-                            <svg
-                                width="8"
-                                height="14"
-                                viewBox="0 0 8 14"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="black" />
-                            </svg>
-                        </li>
+                        <Link to={'/home'} className="d-flex align-items-center">
+                            <li className="product__subheader__item">Home</li>
+                            <li className="product__subheader__item product__subheader__item-arrow">
+                                <svg
+                                    width="8"
+                                    height="14"
+                                    viewBox="0 0 8 14"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="black" />
+                                </svg>
+                            </li>
+                        </Link>
+
+                        <Link to={'/shop'} className="d-flex align-items-center">
+                            <li className="product__subheader__item">Shop</li>
+                            <li className="product__subheader__item product__subheader__item-arrow">
+                                <svg
+                                    width="8"
+                                    height="14"
+                                    viewBox="0 0 8 14"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 12L5 7L0 2L1 0L8 7L1 14L0 12Z" fill="black" />
+                                </svg>
+                            </li>
+                        </Link>
+
                         <hr className="hr-separetor product__subheader__hr" />
                         <li className="product__subheader__item product__subheader__item-product-name">
                             Name of product
@@ -54,18 +108,16 @@ const Product: React.FC<ProductProps> = ({ imgUrls }) => {
             <section>
                 <div className="container product__container d-flex">
                     <Carousel showSlides={1} imgs={imgs}>
-                        {imgs.map((img) => (
-                            <div className="carousel-comp__slide">{img}</div>
+                        {imgs.map((img, i) => (
+                            <div key={i} className="carousel-comp__slide">
+                                {img}
+                            </div>
                         ))}
                     </Carousel>
                     <div className="product__info">
-                        <h2 className="product__info_title">Asgaard sofa</h2>
-                        <h4 className="product__info_price">Rs. 250,000.00</h4>
-                        <p className="product__info_descr">
-                            Setting the bar as one of the loudest speakers in its class, the Kilburn is a compact,
-                            stout-hearted hero with a well-balanced audio which boasts a clear midrange and extended
-                            highs for a sound.
-                        </p>
+                        <h2 className="product__info_title">{product.name}</h2>
+                        <h4 className="product__info_price">${product.price}</h4>
+                        <p className="product__info_descr">{product.description}</p>
                         <div className="product__info_btns d-flex flex-wrap justify-content-between align-items-center">
                             <div className="product__info_counter d-flex">
                                 <button
@@ -115,40 +167,28 @@ const Product: React.FC<ProductProps> = ({ imgUrls }) => {
             <section className="product__description container">
                 <h2 className="product__description_title">Description</h2>
                 <div className="product__description__paragraphs">
-                    <p>
-                        Embodying the raw, wayward spirit of rock ‘n’ roll, the Kilburn portable active stereo speaker
-                        takes the unmistakable look and sound of Marshall, unplugs the chords, and takes the show on the
-                        road.
-                    </p>
-                    <p>
-                        Weighing in under 7 pounds, the Kilburn is a lightweight piece of vintage styled engineering.
-                        Setting the bar as one of the loudest speakers in its class, the Kilburn is a compact,
-                        stout-hearted hero with a well-balanced audio which boasts a clear midrange and extended highs
-                        for a sound that is both articulate and pronounced. The analogue knobs allow you to fine tune
-                        the controls to your personal preferences while the guitar-influenced leather strap enables easy
-                        and stylish travel.
-                    </p>
+                    {sortedDescr.map((item, i) => (
+                        <p key={i}>{item.text}</p>
+                    ))}
                     <div className="product__description_photo_wrapper d-flex flex-wrap justify-content-center">
-                        <div className="product__description_photo">
-                            <img src={descr1} alt="" />
-                        </div>
-                        <div className="product__description_photo">
-                            <img src={descr2} alt="" />
-                        </div>
+                        {product.imgUrls.length > 5 && (
+                            <div className="product__description_photo_wrapper d-flex flex-wrap justify-content-center">
+                                {product.imgUrls.slice(5).map((imgUrl, index) => (
+                                    <div key={index} className="product__description_photo">
+                                        <img src={imgUrl.imgUrl} alt="" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="product__description_photos d-flex flex-wrap"></div>
             </section>
             <hr className="hr-separator" />
-            <section className="product__realted">
-                <h2 className="product__realted_title">Related Products</h2>
-                <div className="container product__realted_cards">
-                    <div className="d-flex flex-wrap justify-content-between gx-4 gy-4">
-                        <Card additionalClasses="main__card" />
-                        <Card additionalClasses="main__card" />
-                        <Card additionalClasses="main__card" />
-                        <Card additionalClasses="main__card" />
-                    </div>
+            <section className="product__related">
+                <h2 className="product__related_title">Related Products</h2>
+                <div className="container product__related_cards">
+                    {/* <CardList limit={4} offset={0} productFilter={{ categoryId: product.categoryId }} /> */}
                 </div>
                 <button className="btn-show-more">Show more</button>
             </section>

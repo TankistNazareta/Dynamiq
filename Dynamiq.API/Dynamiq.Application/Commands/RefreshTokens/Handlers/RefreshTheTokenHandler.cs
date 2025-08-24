@@ -1,7 +1,7 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
 using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
-using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Application.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
@@ -13,7 +13,7 @@ namespace Dynamiq.Application.Commands.RefreshTokens.Handlers
         private readonly IUnitOfWork _unitOfWork;
 
         public RefreshTheTokenHandler(
-            IUserRepo userRepo, 
+            IUserRepo userRepo,
             ITokenService tokenService,
             IUnitOfWork unitOfWork)
         {

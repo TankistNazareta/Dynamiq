@@ -1,8 +1,8 @@
 ﻿using Dynamiq.Application.Commands.Carts.Commands;
-using System.Net.Http.Json;
-using System.Net;
-using FluentAssertions;
 using Dynamiq.Application.DTOs.AccountDTOs;
+using FluentAssertions;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Carts
 {

@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

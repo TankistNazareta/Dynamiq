@@ -1,8 +1,8 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Products.Handlers
@@ -37,7 +37,7 @@ namespace Dynamiq.Application.Commands.Products.Handlers
                 productDto.Interval,
                 request.CategoryId,
                 request.ImgUrls,
-                request.Paragraphs, 
+                request.Paragraphs,
                 request.CardDescription
             );
 

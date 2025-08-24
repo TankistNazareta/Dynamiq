@@ -1,9 +1,6 @@
-﻿using Docker.DotNet.Models;
-using Dynamiq.API.Tests.ResponseDtos;
+﻿using Dynamiq.API.Tests.ResponseDtos;
 using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Application.DTOs.AuthDTOs;
 using Dynamiq.Application.Interfaces.Auth;
-using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

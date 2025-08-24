@@ -23,7 +23,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 signature,
                 _webhookSecret
             );
-            
+
             eventType = stripeEvent.Type;
 
             if (stripeEvent.Type != "checkout.session.completed")
@@ -68,7 +68,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             var couponsCodeList = JsonSerializer.Deserialize<List<string>>(coupons);
             var stripeCouponIdList = JsonSerializer.Deserialize<List<string>>(stripeCouponIds);
 
-            return new (couponsCodeList, stripeCouponIdList);
+            return new(couponsCodeList, stripeCouponIdList);
         }
     }
 }

@@ -5,9 +5,9 @@ namespace Dynamiq.Application.Commands.Products.Commands
 {
     public record class AddProductCommand(
         string Name,
-        string Description, 
+        string Description,
         int Price,
-        IntervalEnum Interval, 
+        IntervalEnum Interval,
         Guid CategoryId,
         List<string> ImgUrls,
         List<string> Paragraphs,

@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Domain.Enums;
-using Dynamiq.Domain.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Services;
 using FluentAssertions;
 using Moq;

@@ -1,5 +1,4 @@
-﻿using Dynamiq.Application.DTOs;
-using MediatR;
+﻿using MediatR;
 
 namespace Dynamiq.Application.Commands.Carts.Commands
 {

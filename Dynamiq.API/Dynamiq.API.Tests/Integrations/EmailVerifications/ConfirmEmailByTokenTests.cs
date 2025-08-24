@@ -1,7 +1,7 @@
 ﻿using Dynamiq.API.Tests.Integrations.Users;
 using Dynamiq.Application.Commands.EmailVerifications.Commands;
 using Dynamiq.Application.Commands.Users.Commands;
-using Dynamiq.Domain.Interfaces.Repositories;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;

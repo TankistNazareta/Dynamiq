@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.DTOs.AccountDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Carts.Handlers

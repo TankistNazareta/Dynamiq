@@ -1,6 +1,4 @@
-﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
-using Dynamiq.Application.DTOs;
-using Dynamiq.Domain.Aggregates;
+﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
@@ -9,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.RefreshTokens
 {
@@ -45,7 +42,7 @@ namespace Dynamiq.API.Tests.Integrations.RefreshTokens
             await db.SaveChangesAsync();
 
             _client.DefaultRequestHeaders.Add("Cookie", $"refreshToken={oldRefreshToken}");
-            
+
             var response = await _client.PutAsync("/token/revoke", null);
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 

@@ -4,11 +4,6 @@ using Dynamiq.Domain.Enums;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Dynamiq.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace Dynamiq.Infrastructure.Tests.Repos
 {
@@ -42,12 +37,12 @@ namespace Dynamiq.Infrastructure.Tests.Repos
             await _dbContext.Products.AddRangeAsync(products);
             await _dbContext.SaveChangesAsync();
 
-            var filter = new ProductFilter { CategoryId = categoryId };
+            var filter = new ProductFilter { CategoryIds = new() { categoryId } };
 
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
-            Assert.All(result, p => Assert.Equal(categoryId, p.CategoryId));
-            Assert.Equal(2, result.Count);
+            Assert.All(result.Products, p => Assert.Contains(p.CategoryId, filter.CategoryIds));
+            Assert.Equal(2, result.Products.Count);
         }
 
         [Fact]
@@ -67,8 +62,8 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
-            Assert.All(result, p => Assert.True(p.Price >= 100));
-            Assert.Equal(2, result.Count);
+            Assert.All(result.Products, p => Assert.True(p.Price >= 100));
+            Assert.Equal(2, result.Products.Count);
         }
 
         [Fact]
@@ -88,8 +83,8 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
-            Assert.All(result, p => Assert.True(p.Price <= 200));
-            Assert.Equal(2, result.Count);
+            Assert.All(result.Products, p => Assert.True(p.Price <= 200));
+            Assert.Equal(2, result.Products.Count);
         }
 
         [Fact]
@@ -109,13 +104,13 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
-            Assert.All(result, p =>
+            Assert.All(result.Products, p =>
                 Assert.True(
                     p.Name.Contains("Samsung", StringComparison.OrdinalIgnoreCase) ||
                     p.Description.Contains("Android", StringComparison.OrdinalIgnoreCase)
                 )
             );
-            Assert.Equal(2, result.Count);
+            Assert.Equal(2, result.Products.Count);
         }
 
         [Fact]
@@ -134,7 +129,7 @@ namespace Dynamiq.Infrastructure.Tests.Repos
 
             var result = await _repo.GetFilteredAsync(filter, 100, 0, CancellationToken.None);
 
-            Assert.Equal(products.Count, result.Count);
+            Assert.Equal(products.Count, result.Products.Count);
         }
 
         private Product CreateProduct(string name, int price, Guid? categoryId = null, string description = "Description")

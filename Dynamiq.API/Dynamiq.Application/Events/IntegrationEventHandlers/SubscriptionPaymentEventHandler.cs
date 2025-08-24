@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Application.IntegrationEvents;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Domain.Entities;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Events.IntegrationEventHandlers

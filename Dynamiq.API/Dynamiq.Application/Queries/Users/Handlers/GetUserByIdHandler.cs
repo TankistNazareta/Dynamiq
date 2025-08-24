@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs.AccountDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Queries.Users.Queries;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Users.Handlers

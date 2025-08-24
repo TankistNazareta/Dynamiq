@@ -1,11 +1,11 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
 using Dynamiq.Application.DTOs.StripeDTOs;
 using Dynamiq.Application.IntegrationEvents;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Payment.Handlers

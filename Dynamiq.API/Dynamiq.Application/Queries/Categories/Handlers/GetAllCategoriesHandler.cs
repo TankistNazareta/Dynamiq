@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs.ProductDTOs;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Queries.Categories.Queries;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Queries.Categories.Handlers
@@ -21,7 +21,7 @@ namespace Dynamiq.Application.Queries.Categories.Handlers
         {
             var allCategories = await _categoryRepo.GetAllAsync(cancellationToken);
 
-            var categoryDict = allCategories.ToDictionary(c => c.Id, 
+            var categoryDict = allCategories.ToDictionary(c => c.Id,
                 c => new CategoryDto(c.Id, c.Name, c.Slug, new()));
 
             List<CategoryDto> rootCategories = new();

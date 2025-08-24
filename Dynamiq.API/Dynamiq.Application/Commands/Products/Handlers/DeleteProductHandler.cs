@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
+using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
-using Dynamiq.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Products.Handlers

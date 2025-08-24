@@ -12,10 +12,10 @@ namespace Dynamiq.Domain.Entities
         public DateTime EndTime { get; private set; }
         public bool IsActiveCoupon { get; private set; }
 
-        private Coupon() {} // For EF
+        private Coupon() { } // For EF
 
         public Coupon(
-            string code, 
+            string code,
             DiscountTypeEnum discountType,
             int discountValue,
             DateTime startTime,

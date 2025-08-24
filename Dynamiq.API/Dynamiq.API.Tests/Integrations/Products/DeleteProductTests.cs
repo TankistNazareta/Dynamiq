@@ -1,6 +1,5 @@
-﻿using Dynamiq.Application.DTOs;
+﻿using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;
-using Dynamiq.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,13 +12,11 @@ namespace Dynamiq.API.Tests.Integrations.Products
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly CustomWebApplicationFactory<Program> _factory;
-        private readonly HttpClient _client;
 
         public DeleteProductTests(CustomWebApplicationFactory<Program> factory)
         {
             _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
             _factory = factory;
-            _client = factory.CreateClient();
         }
 
         [Fact]
@@ -49,8 +46,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
             using (var scope = _scopeFactory.CreateScope())
             {
                 var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var products = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var created = products.Should().ContainSingle(p => p.Name == productName).Subject;
+                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
+                var created = response.Products.Should().ContainSingle(p => p.Name == productName).Subject;
 
                 productId = created.Id;
             }

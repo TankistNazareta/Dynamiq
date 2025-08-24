@@ -4,7 +4,6 @@ using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Coupons
 {
