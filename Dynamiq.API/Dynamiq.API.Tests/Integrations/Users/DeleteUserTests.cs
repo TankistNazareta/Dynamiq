@@ -42,7 +42,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
             var user = await db.Users.FirstOrDefaultAsync(x => x.Email == email);
 
-            var response = await _client.DeleteAsync($"/users/{user.Id}");
+            var response = await _client.DeleteAsync($"/user/{user.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
         }

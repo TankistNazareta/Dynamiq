@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.DTOs.ProductDTOs;
-using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.DTOs.PaymentDTOs;
 
 namespace Dynamiq.Application.Interfaces.Stripe
 {

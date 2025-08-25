@@ -31,7 +31,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var logInResponseDto = await logInResponse.Content.ReadFromJsonAsync<LogInResponse>();
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", logInResponseDto.AccessToken);
 
-            var response = await _client.PutAsJsonAsync("/users/change-password", command);
+            var response = await _client.PutAsJsonAsync("/user/change-password", command);
 
             return response;
         }

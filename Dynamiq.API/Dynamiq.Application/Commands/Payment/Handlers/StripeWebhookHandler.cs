@@ -1,5 +1,5 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
-using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.IntegrationEvents;
 using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Stripe;

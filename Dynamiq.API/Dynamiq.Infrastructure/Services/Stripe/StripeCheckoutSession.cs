@@ -1,4 +1,4 @@
-﻿using Dynamiq.Application.DTOs.StripeDTOs;
+﻿using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Enums;
 using Microsoft.Extensions.Configuration;

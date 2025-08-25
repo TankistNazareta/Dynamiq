@@ -1,4 +1,4 @@
-﻿namespace Dynamiq.Application.DTOs.StripeDTOs
+﻿namespace Dynamiq.Application.DTOs.PaymentDTOs
 {
     public class StripeCartItemDto
     {

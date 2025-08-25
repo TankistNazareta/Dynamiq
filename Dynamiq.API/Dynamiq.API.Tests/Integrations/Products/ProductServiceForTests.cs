@@ -1,6 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Products.Commands;
 using Dynamiq.Application.DTOs.ProductDTOs;
-using Dynamiq.Application.DTOs.StripeDTOs;
+using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
