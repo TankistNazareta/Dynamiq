@@ -1,4 +1,4 @@
-import intervalEnum from '../../utils/enums/intervalEnum';
+import IntervalEnum from '../../utils/enums/intervalEnum';
 import SortEnum from '../../utils/enums/sortByEnum';
 import { ApiResult } from '../../utils/types/api';
 import { apiRequest } from '../api';
@@ -8,7 +8,7 @@ export interface ProductResBody {
     name: string;
     description: string;
     price: number;
-    interval: intervalEnum;
+    interval: IntervalEnum;
     imgUrls: { imgUrl: string }[];
     paragraphs: { order: number; text: string }[];
     cardDescription: string;

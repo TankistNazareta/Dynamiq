@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("users")]
+    [Route("user")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -23,9 +23,15 @@ namespace Dynamiq.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpGet]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
+            var usersId = User.FindFirst(JwtClaims.UserId)?.Value;
+            var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (usersId != id.ToString() && usersRole != RoleEnum.Admin.ToString())
+                return Forbid();
+
             var user = await _mediator.Send(new GetUserByIdQuery(id));
 
             if (user == null)
@@ -67,6 +73,21 @@ namespace Dynamiq.API.Controllers
             _logger.LogInformation("Deleted user with id: {Id}", id);
 
             return Ok(new { Message = "user was removed" });
+        }
+
+        [Authorize]
+        [HttpGet("email")]
+        public async Task<IActionResult> GetByEmail([FromQuery] string email)
+        {
+            var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (usersRole != RoleEnum.Admin.ToString())
+                return Forbid();
+
+            var user = await _mediator.Send(new GetUserByEmailQuery(email));
+
+            return Ok(user);
+
         }
     }
 }

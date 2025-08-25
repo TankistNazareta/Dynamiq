@@ -60,5 +60,11 @@ namespace Dynamiq.Infrastructure.Repositories
                                                     u.RefreshTokens.Any(rt => rt.Token == token &&
                                                     !rt.IsRevoked &&
                                                     rt.ExpiresAt > DateTime.UtcNow), ct);
+
+        public Task<Guid?> GetUserIdByHisEmailAsync(string email, CancellationToken ct)
+                    => _db.Users
+                            .Where(u => u.Email == email)
+                            .Select(u => (Guid?)u.Id)
+                            .FirstOrDefaultAsync(ct);
     }
 }

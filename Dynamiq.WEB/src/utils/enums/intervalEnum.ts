@@ -1,7 +1,7 @@
-enum intervalEnum {
+enum IntervalEnum {
     OneTime,
     Monthly,
     Yearly,
 }
 
-export default intervalEnum;
+export default IntervalEnum;

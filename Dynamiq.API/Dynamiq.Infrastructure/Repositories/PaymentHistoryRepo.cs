@@ -19,6 +19,7 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<PaymentHistory>> GetListByUserIdAsync(Guid userId, CancellationToken ct)
                 => await _db.PaymentHistories
+                        .Include(ph => ph.Products)
                         .AsNoTracking()
                         .Where(ph => ph.UserId == userId)
                         .ToListAsync(ct);

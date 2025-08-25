@@ -3,7 +3,7 @@ import { apiRequest } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { ApiResult } from '../utils/types/api';
 
-type stateType = 'loading' | 'error' | 'fatal' | 'success' | 'waiting';
+export type stateType = 'loading' | 'error' | 'fatal' | 'success' | 'waiting';
 
 const useHttpHook = () => {
     const [state, setState] = useState<stateType>('waiting');

@@ -3,10 +3,13 @@ import { ApiResult, ErrorMsgType } from '../utils/types/api';
 const API_BASE = 'http://localhost:5083';
 
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
+    const token = localStorage.getItem('token');
+
     const response = await fetch(`${API_BASE}${endpoint}`, {
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
             ...(options.headers || {}),
         },
         ...options,

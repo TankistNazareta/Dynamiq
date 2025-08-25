@@ -11,5 +11,6 @@ namespace Dynamiq.Application.Interfaces.Repositories
         Task<List<User>> GetAllExpiredUsersAsync(CancellationToken ct);
         Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct);
         Task<User?> GetByRefreshTokenAsync(string token, CancellationToken ct);
+        Task<Guid?> GetUserIdByHisEmailAsync(string email, CancellationToken ct);
     }
 }
