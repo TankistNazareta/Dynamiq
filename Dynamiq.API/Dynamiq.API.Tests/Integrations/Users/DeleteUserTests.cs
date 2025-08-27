@@ -28,7 +28,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var email = $"test{Guid.NewGuid():N}@exampleee.com";
 
             var signUpCommand = new RegisterUserCommand(email, "OldPassword123!");
-            await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, signUpCommand);
+            await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, signUpCommand);
 
             var logInCommand = new LogInUserCommand(email, "OldPassword123!");
             var authResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);

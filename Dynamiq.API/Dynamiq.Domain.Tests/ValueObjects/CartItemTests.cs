@@ -1,4 +1,5 @@
-﻿using Dynamiq.Domain.ValueObject;
+﻿using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.ValueObject;
 using FluentAssertions;
 
 namespace Dynamiq.Domain.Tests.ValueObjects
@@ -11,7 +12,7 @@ namespace Dynamiq.Domain.Tests.ValueObjects
             var productId = Guid.NewGuid();
             var quantity = 4;
 
-            var item = new CartItem(productId, quantity);
+            var item = new CartItem(productId, quantity, productId);
 
             item.ProductId.Should().Be(productId);
             item.Quantity.Should().Be(quantity);
@@ -20,7 +21,7 @@ namespace Dynamiq.Domain.Tests.ValueObjects
         [Fact]
         public void IncreaseQuantity_ShouldAddAmount()
         {
-            var item = new CartItem(Guid.NewGuid(), 2);
+            var item = new CartItem(Guid.NewGuid(), 2, Guid.NewGuid());
 
             item.IncreaseQuantity(3);
 
@@ -30,7 +31,7 @@ namespace Dynamiq.Domain.Tests.ValueObjects
         [Fact]
         public void SetQuantity_ShouldOverrideQuantity()
         {
-            var item = new CartItem(Guid.NewGuid(), 5);
+            var item = new CartItem(Guid.NewGuid(), 5, Guid.NewGuid());
 
             item.SetQuantity(1);
 

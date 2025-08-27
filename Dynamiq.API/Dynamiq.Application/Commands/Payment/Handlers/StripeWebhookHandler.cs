@@ -67,7 +67,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
             if (parserDto.ProductId != null)
             {
 
-                paymentHistory.AddProduct(new(parserDto.ProductId.Value, paymentHistory.Id));
+                paymentHistory.AddProduct(parserDto.ProductId.Value);
             }
             else
             {
@@ -78,7 +78,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
 
                 foreach (var item in cart.Items)
                 {
-                    paymentHistory.AddProduct(new(item.ProductId, paymentHistory.Id, item.Quantity));
+                    paymentHistory.AddProduct(item.ProductId, item.Quantity);
                 }
 
                 _cartRepo.Remove(cart);

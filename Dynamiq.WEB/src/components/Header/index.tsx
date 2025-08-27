@@ -93,7 +93,12 @@ const Header = () => {
                                 />
                             </svg>
                         </button>
-                        <PopupCart needToShow={needToShowCart} setNeedToShowToFalse={() => setNeedToShowCart(false)} />
+                        {needToShowCart && (
+                            <PopupCart
+                                needToShow={needToShowCart}
+                                setNeedToShowToFalse={() => setNeedToShowCart(false)}
+                            />
+                        )}
                     </div>
 
                     <div

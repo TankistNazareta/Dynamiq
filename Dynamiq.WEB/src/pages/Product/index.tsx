@@ -14,6 +14,8 @@ import useHttpHook from '../../hooks/useHttp';
 import { ErrorMsgType } from '../../utils/types/api';
 import CardList from '../../components/Card/CardList';
 import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../services/client/category';
+import { addItemToCart } from '../../services/client/cart';
+import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 
 const Product = () => {
     const { id } = useParams<{ id: string }>();
@@ -57,12 +59,31 @@ const Product = () => {
             });
     }, [id]);
 
+    const onAddToCart = () => {
+        const resOfToken = getUserIdFromAccessToken();
+
+        if (resOfToken.error !== undefined) {
+            setError({ Message: resOfToken.error, StatusCode: 500 });
+            return;
+        }
+
+        addItemToCart(resOfToken.userId, productData!.id, quantity);
+    };
+
     if (state === 'error') {
         if (error?.StatusCode === 404) return <NotFound />;
         return <h3 className="cards_error text-danger">Error: {error?.Message ?? 'Unknown'}</h3>;
     }
     if (state === 'success' && productData) {
-        return <View product={productData} quantity={quantity} setQuantity={setQuantity} categories={categories} />;
+        return (
+            <View
+                product={productData}
+                quantity={quantity}
+                setQuantity={setQuantity}
+                categories={categories}
+                onAddToCart={onAddToCart}
+            />
+        );
     }
 
     return <Loading />;
@@ -73,7 +94,8 @@ const View: React.FC<{
     quantity: number;
     setQuantity: (q: number) => void;
     categories: string[];
-}> = ({ product, quantity, setQuantity, categories }) => {
+    onAddToCart: () => void;
+}> = ({ product, quantity, setQuantity, categories, onAddToCart }) => {
     const imgs = product.imgUrls.map((url) => <img key={url.imgUrl} src={url.imgUrl} alt="" />);
     const sortedDescr = product.paragraphs.sort((a, b) => b.order - a.order);
 
@@ -154,8 +176,10 @@ const View: React.FC<{
                                     +
                                 </button>
                             </div>
-                            <button className="product__info_btn">Add To Cart</button>
-                            <button className="product__info_btn">purshade immidiatly</button>
+                            <button className="product__info_btn" onClick={() => onAddToCart()}>
+                                Add To Cart
+                            </button>
+                            <button className="product__info_btn">purchase immediately</button>
                         </div>
                         <hr className="hr-separetor product__info_hr" />
                         <div className="product__info__additional">

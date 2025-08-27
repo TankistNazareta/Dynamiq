@@ -16,23 +16,12 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .HasDefaultValueSql("NEWID()");
 
             builder.Property(c => c.UserId)
-                .IsRequired();
+                   .IsRequired();
 
-            builder.OwnsMany(c => c.Items, items =>
-            {
-                items.WithOwner().HasForeignKey("CartId");
-
-                items.ToTable("CartItems");
-
-                items.Property<Guid>("Id");
-                items.HasKey("Id");
-
-                items.Property(i => i.ProductId)
-                    .IsRequired();
-
-                items.Property(i => i.Quantity)
-                    .IsRequired();
-            });
+            builder.HasMany(c => c.Items)
+                   .WithOne()
+                   .HasForeignKey(ci => ci.CartId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

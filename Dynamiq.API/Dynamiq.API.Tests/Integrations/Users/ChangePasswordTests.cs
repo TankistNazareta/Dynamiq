@@ -22,7 +22,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         private async Task<HttpResponseMessage> MakeChangePasswordRequest(ChangeUserPasswordCommand command)
         {
             var signUpCommand = new RegisterUserCommand(command.Email, "OldPassword123!");
-            await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, signUpCommand);
+            await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, signUpCommand);
 
             var logInCommand = new LogInUserCommand(command.Email, "OldPassword123!");
 

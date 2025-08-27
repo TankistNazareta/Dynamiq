@@ -75,7 +75,7 @@ function App() {
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/product/:id" element={<Product />} />
                         <Route path="/contact" element={<Contact />} />
-                        <Route path="/cart" element={<Cart discount={100} />} />
+                        <Route path="/cart" element={<Cart />} />
                         <Route
                             path="/account"
                             element={

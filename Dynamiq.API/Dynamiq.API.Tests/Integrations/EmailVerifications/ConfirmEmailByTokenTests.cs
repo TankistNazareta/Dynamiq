@@ -30,7 +30,7 @@ namespace Dynamiq.API.Tests.Integrations.EmailVerifications
                 "StrongPass123!"
             );
 
-            await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, registerCommand);
+            await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, registerCommand);
             using var scope = _factory.Services.CreateScope();
 
             var userRepo = scope.ServiceProvider.GetRequiredService<IUserRepo>();

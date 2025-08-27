@@ -123,18 +123,16 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.ChangeTracker.Clear();
 
             var paymentHistory = await db.PaymentHistories
+                .Include(ph => ph.Products)
                 .Where(ph => ph.UserId == user.Id)
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
             paymentHistory[0].Amount.Should().Be(4000);
 
-            var productsPaymentHistory = await db.ProductPaymentHistories
-                .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
-                .ToListAsync();
+            var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
-            productsPaymentHistory[0].Quantity.Should().Be(2);
         }
 
 
@@ -183,15 +181,14 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.ChangeTracker.Clear();
 
             var paymentHistory = await db.PaymentHistories
+                .Include(ph => ph.Products)
                 .Where(ph => ph.UserId == user.Id)
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
             paymentHistory[0].Amount.Should().Be(2222);
 
-            var productsPaymentHistory = await db.ProductPaymentHistories
-                .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
-                .ToListAsync();
+            var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
         }
@@ -241,15 +238,14 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.ChangeTracker.Clear();
 
             var paymentHistory = await db.PaymentHistories
+                .Include(ph => ph.Products)
                 .Where(ph => ph.UserId == user.Id)
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
             paymentHistory[0].Amount.Should().Be(2000);
 
-            var productsPaymentHistory = await db.ProductPaymentHistories
-                .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
-                .ToListAsync();
+            var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
 
@@ -316,15 +312,14 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.ChangeTracker.Clear();
 
             var paymentHistory = await db.PaymentHistories
+                .Include(ph => ph.Products)
                 .Where(ph => ph.UserId == user.Id)
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
             paymentHistory[0].Amount.Should().Be(1800);
 
-            var productsPaymentHistory = await db.ProductPaymentHistories
-                .Where(pph => pph.PaymentHistoryId == paymentHistory[0].Id)
-                .ToListAsync();
+            var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
         }

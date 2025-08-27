@@ -8,6 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import { ErrorMsgType } from '../../utils/types/api';
 import Loading from '../../components/Loading';
 import { getPaymentHistoryByUserId, PaymentHistoryRes } from '../../services/client/paymentHistory';
+import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 
 interface AccountProps {
     role: roleEnum;
@@ -24,27 +25,17 @@ const Account: React.FC<AccountProps> = ({ role, email, hasSubscription }) => {
     useEffect(() => {
         if (user !== undefined) return;
 
-        const token = localStorage.getItem('token');
+        const resOfToken = getUserIdFromAccessToken();
 
-        if (!token) {
-            setError('plese logIn before go to your account');
+        if (resOfToken.error !== undefined) {
+            setError(resOfToken.error);
             return;
         }
 
-        type Payload = { sub?: string; id?: string; userId?: string; [k: string]: any };
-
-        const payload = jwtDecode<Payload>(token!);
-        const userId = payload.sub ?? payload.id ?? payload.userId;
-
-        if (!userId) {
-            setError('plese re-logIn, because your token have problems');
-            return;
-        }
-
-        makeRequest<UserRes>(() => getUserById(userId))
+        makeRequest<UserRes>(() => getUserById(resOfToken.userId))
             .then(async (userRes: UserRes) => {
                 const paymentHistoryRes = await makeRequest<PaymentHistoryRes[]>(() =>
-                    getPaymentHistoryByUserId(userId)
+                    getPaymentHistoryByUserId(resOfToken.userId)
                 );
                 setUser({ ...userRes, paymnetHistories: paymentHistoryRes });
             })

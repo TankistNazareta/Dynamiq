@@ -1,6 +1,8 @@
 import CartItem from './CartItem';
 
-import img from '../../../assets/images/testImgForCard.png';
+import Loading from '../../Loading';
+import { Link } from 'react-router-dom';
+import useCart from '../../../hooks/useCart';
 import { useState } from 'react';
 
 interface PopupCartProps {
@@ -9,9 +11,9 @@ interface PopupCartProps {
 }
 
 const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse }) => {
-    const [testQuantity, setTestQuantity] = useState(1);
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    if (needToShow === false) return null;
+    const { onChangeQuantityInput, onClearItem, cartData, state, error } = useCart(() => setIsLoaded(true), isLoaded);
 
     return (
         <>
@@ -40,66 +42,52 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                         </button>
                     </div>
                     <hr className="hr-separator popup-cart_hr-separator" />
-                    <div className="popup-cart__inner d-flex flex-column">
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                        <CartItem
-                            imgUrl={img}
-                            name="Product name"
-                            quantity={testQuantity || 0}
-                            priceTotal={2000 * (testQuantity || 1)}
-                            setQuantity={(num: number) => setTestQuantity(num)}
-                            onDelete={() => console.log('onDelete')}
-                        />
-                    </div>
-                    <div className="popup-cart__total_wrapper d-flex">
-                        <h4 className="popup-cart__total_title">Subtotal</h4>
-                        <h4 className="popup-cart__total_amount">Rs. 520,000.00</h4>
-                    </div>
+                    {state === 'error' ? (
+                        <h3 className="title-error text-danger">{error}</h3>
+                    ) : !isLoaded ? (
+                        <Loading />
+                    ) : (
+                        <>
+                            <div className="popup-cart__inner d-flex flex-column">
+                                {cartData.length ? (
+                                    cartData.map((data) => (
+                                        <CartItem
+                                            key={data.productId}
+                                            productId={data.productId}
+                                            imgUrl={data.img}
+                                            name={data.name}
+                                            quantity={data.quantity}
+                                            priceTotal={data.price * data.quantity}
+                                            onChangeQuantity={(num: number) =>
+                                                onChangeQuantityInput(data.productId, num)
+                                            }
+                                            onDelete={() => onClearItem(data.productId)}
+                                        />
+                                    ))
+                                ) : (
+                                    <h3 className="popup-cart__inner_title">Your cart is empty</h3>
+                                )}
+                            </div>
+                            <div className="popup-cart__total_wrapper d-flex">
+                                <h4 className="popup-cart__total_title">Subtotal</h4>
+                                <h4 className="popup-cart__total_amount">
+                                    ${cartData.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0}
+                                </h4>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <hr className="hr-sepparator popup-cart__hr-separator" />
                 <div className="popup-cart__wrapper-btn d-flex justify-content-around flex-wrap">
-                    <button className="popup-cart__btn-bottom popup-cart__btn-bottom-cart">Cart</button>
-                    <button className="popup-cart__btn-bottom">Checkout</button>
-                    <button className="popup-cart__btn-bottom">Coupons</button>
+                    <Link to="/cart">
+                        <button className="popup-cart__btn-bottom popup-cart__btn-bottom-cart">Cart</button>
+                    </Link>
+                    <Link to="">
+                        <button className="popup-cart__btn-bottom">Checkout</button>
+                    </Link>
+                    <Link to="/cart">
+                        <button className="popup-cart__btn-bottom">Coupons</button>
+                    </Link>
                 </div>
             </div>
             <div

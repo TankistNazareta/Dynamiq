@@ -7,6 +7,7 @@ import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { ProductPaymentHistory } from '../../../services/client/paymentHistory';
 import parseDateTime from '../../../utils/services/parseDateTime';
+import { Link } from 'react-router-dom';
 
 interface PaymentHistoryProps {
     amount: number;
@@ -81,21 +82,23 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ amount, createdAt, prod
                             <h3 className="title-error text-danger">{error}</h3>
                         ) : state === 'success' ? (
                             productPaymentHistoryData.map((obj) => (
-                                <div
-                                    key={obj.productId}
-                                    className="cart__item d-flex align-items-center user__payment-history_item_product">
-                                    <div className="cart__item_img user__payment-history_item_product_img">
-                                        <img src={obj.img} alt="" />
+                                <Link to={`/product/${obj.productId}`}>
+                                    <div
+                                        key={obj.productId}
+                                        className="cart__item d-flex align-items-center user__payment-history_item_product">
+                                        <div className="cart__item_img user__payment-history_item_product_img">
+                                            <img src={obj.img} alt="" />
+                                        </div>
+                                        <h5 className="cart__item_title cart__item_title-name">{obj.name}</h5>
+                                        <input
+                                            type="text"
+                                            value={obj.quantity || 0}
+                                            onChange={() => {}}
+                                            className="cart__item_quantity"
+                                            disabled
+                                        />
                                     </div>
-                                    <h5 className="cart__item_title cart__item_title-name">{obj.name}</h5>
-                                    <input
-                                        type="text"
-                                        value={obj.quantity || 0}
-                                        onChange={() => {}}
-                                        className="cart__item_quantity"
-                                        disabled
-                                    />
-                                </div>
+                                </Link>
                             ))
                         ) : (
                             <Loading />

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
+import { addItemToCart } from '../../services/client/cart';
 
 interface CardProps {
     additionalClasses?: string;
@@ -13,6 +15,16 @@ interface CardProps {
 const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgUrl, id }) => {
     const [needToShowPopUp, setNeedToShowPopUp] = useState<boolean>(false);
 
+    const onAddToCart = () => {
+        const resOfToken = getUserIdFromAccessToken();
+
+        if (resOfToken.userId === undefined) {
+            console.error('plese, log out and try again');
+            return;
+        }
+
+        addItemToCart(resOfToken.userId, id, 1);
+    };
     return (
         <div
             className={`card ${additionalClasses || ''}`}
@@ -30,7 +42,9 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
                 className={`card__popup flex-column justify-content-center align-items-center ${
                     needToShowPopUp ? ' card__popup-active' : ''
                 }`}>
-                <button className="card__popup-btn">Add to cart</button>
+                <button className="card__popup-btn" onClick={() => onAddToCart()}>
+                    Add to cart
+                </button>
                 <div className="card__popup-links d-flex justify-content-between">
                     <a href="" className="card__popup-link d-flex align-items-center">
                         <svg width="12" height="14" viewBox="0 0 12 14" fill="none" xmlns="http://www.w3.org/2000/svg">

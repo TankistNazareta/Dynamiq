@@ -1,4 +1,4 @@
 ﻿namespace Dynamiq.Application.DTOs.AccountDTOs
 {
-    public record class CartDto(Guid Id, List<CartItemDto> Items);
+    public record class CartDto(List<CartItemDto> Items);
 }

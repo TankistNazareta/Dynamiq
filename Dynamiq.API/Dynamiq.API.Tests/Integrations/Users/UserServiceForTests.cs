@@ -10,7 +10,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
 {
     public static class UserServiceForTests
     {
-        public static async Task CreateuserAndConfirmHisEmail(
+        public static async Task CreateUserAndConfirmHisEmail(
             CustomWebApplicationFactory<Program> factory,
             HttpClient client,
             RegisterUserCommand command)

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { apiRequest } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { ApiResult } from '../utils/types/api';
 

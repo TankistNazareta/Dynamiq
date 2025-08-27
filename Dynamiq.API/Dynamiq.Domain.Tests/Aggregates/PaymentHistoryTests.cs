@@ -1,6 +1,7 @@
 ﻿using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
+using Dynamiq.Domain.ValueObject;
 using FluentAssertions;
 
 namespace Dynamiq.Domain.Tests.Aggregates
@@ -54,12 +55,12 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void AddProduct_ShouldAddProductToCollection()
         {
             var ph = new PaymentHistory(_userId, ValidStripeId, ValidAmount, IntervalEnum.OneTime);
-            var productHistory = new ProductPaymentHistory(Guid.NewGuid(), ph.Id);
+            var productId = Guid.NewGuid();
 
-            ph.AddProduct(productHistory);
+            ph.AddProduct(productId);
 
             ph.Products.Should().ContainSingle()
-                .Which.Should().Be(productHistory);
+                .Which.ProductId.Should().Be(productId);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         {
             var email = $"login.success{Guid.NewGuid():N}@example.com";
             var password = "StrongP@ssword1";
-            await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
+            await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
 
             var response = await LoginAsync(new(email, password));
 
@@ -41,7 +41,7 @@ namespace Dynamiq.API.Tests.Integrations.Users
         {
             var email = $"login.invalidpass{Guid.NewGuid():N}@example.com";
             var password = "StrongP@ssword1";
-            await UserServiceForTests.CreateuserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
+            await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, new RegisterUserCommand(email, password));
 
             var response = await LoginAsync(new(email, "WrongPassword!"));
 

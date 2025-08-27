@@ -82,7 +82,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                         throw new KeyNotFoundException("coupon wasn`t found: " + couponCode);
 
                     if (!coupon.IsActive())
-                        throw new TimeoutException("Verification token expired.");
+                        throw new TimeoutException("coupon has expired.");
                 }
                 stripeCartItems = await _couponService.AddAllCouponsAsync(stripeCartItems, request.CouponCodes, cancellationToken);
             }

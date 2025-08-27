@@ -74,6 +74,10 @@
         &::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+
+        &_title {
+            margin: 15px 0;
+        }
     }
 
     &__total {

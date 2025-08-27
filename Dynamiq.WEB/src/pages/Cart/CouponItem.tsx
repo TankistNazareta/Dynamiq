@@ -1,7 +1,9 @@
+import parseDateTime from '../../utils/services/parseDateTime';
+
 interface CouponeProps {
     code: string;
     endTime: Date;
-    amount: number;
+    amount: string;
     onDelete: Function;
 }
 
@@ -10,16 +12,8 @@ const Coupon: React.FC<CouponeProps> = ({ code, endTime, amount, onDelete }) => 
         <div className="cart__coupon d-flex justify-content-between">
             <p className="cart__coupon_value cart__coupon_count">1-st coupon</p>
             <p className="cart__coupon_value cart__coupon_title">{code}</p>
-            <p className="cart__coupon_value cart__coupon_end-date">
-                {endTime.toLocaleString('en-GB', {
-                    month: 'short',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                })}
-            </p>
-            <p className="cart__coupon_value cart__coupon_amount">${amount}</p>
+            <p className="cart__coupon_value cart__coupon_end-date">{parseDateTime(endTime)}</p>
+            <p className="cart__coupon_value cart__coupon_amount">{amount}</p>
             <button className="cart__coupon_remove" onClick={() => onDelete()}>
                 <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path

@@ -1,8 +1,10 @@
-﻿using Dynamiq.Domain.ValueObject;
+﻿using Dynamiq.Domain.Common;
+using Dynamiq.Domain.Entities;
+using Dynamiq.Domain.Events;
 
 namespace Dynamiq.Domain.Aggregates
 {
-    public class Cart
+    public class Cart : BaseEntity
     {
         public Guid Id { get; private set; }
         public Guid UserId { get; private set; }
@@ -15,6 +17,7 @@ namespace Dynamiq.Domain.Aggregates
         public Cart(Guid userId)
         {
             UserId = userId;
+
         }
 
         public void AddItem(Guid productId, int quantity)
@@ -23,7 +26,12 @@ namespace Dynamiq.Domain.Aggregates
             if (existing != null)
                 existing.IncreaseQuantity(quantity);
             else
-                _items.Add(new CartItem(productId, quantity));
+            {
+                var cartItem = new CartItem(productId, quantity, Id);
+
+                _items.Add(cartItem);
+                AddDomainEvent(new CartItemAddedEvent(cartItem));
+            }
         }
 
         public void RemoveItem(Guid productId, int quantity)
@@ -32,11 +40,21 @@ namespace Dynamiq.Domain.Aggregates
             if (item == null) return;
 
             if (item.Quantity > quantity)
+            {
                 item.SetQuantity(item.Quantity - quantity);
+                AddDomainEvent(new CartItemRemovedEvent(item));
+            }
             else
+            {
                 _items.Remove(item);
+                AddDomainEvent(new CartItemClearEvent(item));
+            }
         }
 
-        public void Clear() => _items.Clear();
+        public void Clear()
+        {
+            _items.Clear();
+            AddDomainEvent(new CartClearedEvent(Id));
+        }
     }
 }

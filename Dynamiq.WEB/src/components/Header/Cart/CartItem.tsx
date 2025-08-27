@@ -1,32 +1,40 @@
-interface CartItemProps {
-    imgUrl: string;
-    name: string;
-    quantity: number;
-    priceTotal: number;
-    setQuantity: Function;
-    onDelete: Function;
-}
+import { Link } from 'react-router-dom';
+import CartItemProps from '../../../utils/types/components/CartItemProps';
+import { useState } from 'react';
 
-const CartItem: React.FC<CartItemProps> = ({ imgUrl, name, quantity, priceTotal, setQuantity, onDelete }) => {
+const CartItem: React.FC<CartItemProps> = ({
+    imgUrl,
+    name,
+    quantity,
+    priceTotal,
+    onChangeQuantity: setQuantity,
+    onDelete,
+    productId,
+}) => {
+    const [customQuantity, setCustomQuantity] = useState(quantity);
+
     return (
         <div className="header__cart_item d-flex align-items-center">
-            <div className="header__cart_item_img">
-                <img src={imgUrl} alt="" />
-            </div>
+            <Link to={`/product/${productId}`}>
+                <div className="header__cart_item_img">
+                    <img src={imgUrl} alt="" />
+                </div>
+            </Link>
             <div className="header__cart_item__descr">
                 <h4 className="header__cart_item_name">{name}</h4>
                 <div className="header__cart_item__price align-items-center">
                     <input
                         type="string"
-                        value={quantity}
+                        value={customQuantity || 0}
                         onChange={(e) => {
                             const onlyNums = e.target.value.replace(/\D/g, '');
-                            setQuantity(Number.parseInt(onlyNums));
+                            setCustomQuantity(Number.parseInt(onlyNums));
                         }}
+                        onBlur={(e) => setQuantity(customQuantity || 0)}
                         className="header__cart_item__price_count"
                     />
                     <p>X</p>
-                    <h5 className="header__cart_item__price_total">{priceTotal}</h5>
+                    <h5 className="header__cart_item__price_total">{priceTotal}$</h5>
                 </div>
             </div>
             <button className="header__cart_item_btn" onClick={() => onDelete()}>

@@ -1,6 +1,8 @@
 ﻿using Dynamiq.Domain.Common;
 using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
+using Dynamiq.Domain.Events;
+using Dynamiq.Domain.ValueObject;
 
 namespace Dynamiq.Domain.Aggregates
 {
@@ -31,9 +33,11 @@ namespace Dynamiq.Domain.Aggregates
             Amount = amount;
             Interval = interval;
             CreatedAt = DateTime.UtcNow;
+
+            AddDomainEvent(new PaymentHistoryCreatedEvent(this));
         }
 
-        public void AddProduct(ProductPaymentHistory productPaymentHistory)
-            => _products.Add(productPaymentHistory);
+        public void AddProduct(Guid productId, int quantity = 1)
+            => _products.Add(new(productId, Id, quantity));
     }
 }

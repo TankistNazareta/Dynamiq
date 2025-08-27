@@ -15,12 +15,12 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("CheckIfActiveByCode")]
-        public async Task<IActionResult> CheckIfActiveByCode(string code)
+        [HttpGet]
+        public async Task<IActionResult> GetCouponByCode([FromQuery] string code)
         {
-            var isActive = await _mediator.Send(new CheckIfCouponIsActiveQuery(code));
+            var coupon = await _mediator.Send(new GetCouponByCodeQuery(code));
 
-            return Ok(new { Active = isActive });
+            return Ok(coupon);
         }
     }
 }

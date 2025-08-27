@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Dynamiq.Application.Queries.Coupons.Validators
 {
-    public class CheckIfCouponIsActiveQueryValidator : AbstractValidator<CheckIfCouponIsActiveQuery>
+    public class GetCouponByCodeQueryValidator : AbstractValidator<GetCouponByCodeQuery>
     {
-        public CheckIfCouponIsActiveQueryValidator()
+        public GetCouponByCodeQueryValidator()
         {
             RuleFor(x => x.Code)
                 .NotEmpty().WithMessage("Coupon code is required.")

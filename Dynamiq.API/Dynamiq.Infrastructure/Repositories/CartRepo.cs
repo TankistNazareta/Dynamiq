@@ -18,7 +18,7 @@ namespace Dynamiq.Infrastructure.Repositories
                 => await _db.Carts.AddAsync(cart, ct);
 
         public async Task<Cart?> GetByUserIdAsync(Guid userId, CancellationToken ct)
-                => await _db.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
+                => await _db.Carts.Include(c => c.Items).FirstOrDefaultAsync(c => c.UserId == userId);
 
         public void Remove(Cart cart)
                 => _db.Carts.Remove(cart);

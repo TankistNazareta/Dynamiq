@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dynamiq.Application.DTOs.AccountDTOs;
+using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.DTOs.ProductDTOs;
 using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Entities;
@@ -36,6 +37,7 @@ namespace Dynamiq.Application
                                 src.EmailVerification.IsConfirmed)));
                 config.CreateMap<PaymentHistory, PaymentHistoryDto>();
                 config.CreateMap<ProductPaymentHistory, ProductPaymentHistoryDto>();
+                config.CreateMap<Coupon, CouponDto>();
             });
         }
     }

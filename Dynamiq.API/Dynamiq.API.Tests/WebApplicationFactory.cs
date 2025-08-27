@@ -16,37 +16,10 @@ namespace Dynamiq.API.Tests
         where TProgram : class
     {
         private string? _connectionString;
-        private const string TestDbName = "DynamiqTestDb";
+        private const string TestDbName = "DynamiqIntegrationTests";
 
         public string ConnectionString => _connectionString ??
             throw new InvalidOperationException("Connection string is not initialized.");
-
-        public async Task EnsureDatabaseReadyAsync()
-        {
-            var retries = 5;
-            while (retries > 0)
-            {
-                try
-                {
-                    var options = new DbContextOptionsBuilder<AppDbContext>()
-                        .UseSqlServer(_connectionString)
-                        .Options;
-
-                    using var scope = Services.CreateScope();
-                    var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-                    using var db = new AppDbContext(options, dispatcher);
-                    await db.Database.EnsureCreatedAsync();
-                    return;
-                }
-                catch
-                {
-                    retries--;
-                    await Task.Delay(10000);
-                }
-            }
-
-            throw new Exception("Cannot connect to SQL Server.");
-        }
 
         public async Task InitializeAsync()
         {
@@ -60,8 +33,10 @@ namespace Dynamiq.API.Tests
             await using (var command = connection.CreateCommand())
             {
                 command.CommandText = $@"
-                    IF DB_ID(N'{TestDbName}') IS NULL
-                        CREATE DATABASE [{TestDbName}];";
+                    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{TestDbName}')
+                    BEGIN
+                        CREATE DATABASE [{TestDbName}];
+                    END";
                 await command.ExecuteNonQueryAsync();
             }
 

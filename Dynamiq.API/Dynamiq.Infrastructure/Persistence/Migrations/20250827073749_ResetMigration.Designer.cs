@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dynamiq.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250822200229_ResetMigrations")]
-    partial class ResetMigrations
+    [Migration("20250827073749_ResetMigration")]
+    partial class ResetMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -176,6 +176,31 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Dynamiq.Domain.Entities.CartItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<Guid>("CartId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems", (string)null);
+                });
+
             modelBuilder.Entity("Dynamiq.Domain.Entities.Coupon", b =>
                 {
                     b.Property<Guid>("Id")
@@ -328,36 +353,6 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.ToTable("Subscriptions");
                 });
 
-            modelBuilder.Entity("Dynamiq.Domain.Aggregates.Cart", b =>
-                {
-                    b.OwnsMany("Dynamiq.Domain.ValueObject.CartItem", "Items", b1 =>
-                        {
-                            b1.Property<Guid>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("CartId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Quantity")
-                                .HasColumnType("int");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("CartId");
-
-                            b1.ToTable("CartItems", (string)null);
-
-                            b1.WithOwner()
-                                .HasForeignKey("CartId");
-                        });
-
-                    b.Navigation("Items");
-                });
-
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Category", b =>
                 {
                     b.HasOne("Dynamiq.Domain.Aggregates.Category", "ParentCategory")
@@ -444,6 +439,21 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.Navigation("Paragraphs");
                 });
 
+            modelBuilder.Entity("Dynamiq.Domain.Entities.CartItem", b =>
+                {
+                    b.HasOne("Dynamiq.Domain.Aggregates.Cart", null)
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Dynamiq.Domain.Aggregates.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Dynamiq.Domain.Entities.EmailVerification", b =>
                 {
                     b.HasOne("Dynamiq.Domain.Aggregates.User", null)
@@ -462,7 +472,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Dynamiq.Domain.Aggregates.Product", null)
-                        .WithMany("ProductPaymentHistories")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -498,6 +508,11 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Dynamiq.Domain.Aggregates.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Category", b =>
                 {
                     b.Navigation("Products");
@@ -508,11 +523,6 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.PaymentHistory", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("Dynamiq.Domain.Aggregates.Product", b =>
-                {
-                    b.Navigation("ProductPaymentHistories");
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.User", b =>

@@ -2,6 +2,7 @@
 using Dynamiq.Application.Queries.Carts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Dynamiq.API.Controllers
 {
@@ -17,31 +18,31 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddItemToCart(AddItemToCartCommand command)
+        public async Task<IActionResult> AddItemToCart([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(command);
+            var cart = await _mediator.Send(new AddItemToCartCommand(userId, productId, quantity));
 
             return Ok(cart);
         }
 
         [HttpPut]
-        public async Task<IActionResult> RemoveItem(RemoveItemFromCartCommand command)
+        public async Task<IActionResult> RemoveItem([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(command);
+            var cart = await _mediator.Send(new RemoveItemFromCartCommand(userId, productId, quantity));
 
             return Ok(cart);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Clear(ClearCartCommand command)
+        public async Task<IActionResult> Clear([FromQuery] Guid userId)
         {
-            await _mediator.Send(command);
+            await _mediator.Send(new ClearCartCommand(userId));
 
             return Ok();
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetByUserId([FromBody] Guid userId)
+        public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
         {
             var cart = await _mediator.Send(new GetCartByUserIdQuery(userId));
 

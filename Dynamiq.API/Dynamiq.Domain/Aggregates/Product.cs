@@ -1,5 +1,4 @@
-﻿using Dynamiq.Domain.Entities;
-using Dynamiq.Domain.Enums;
+﻿using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.ValueObject;
 
 namespace Dynamiq.Domain.Aggregates
@@ -23,9 +22,6 @@ namespace Dynamiq.Domain.Aggregates
             .OrderBy(p => p.Order)
             .ToList()
             .AsReadOnly();
-
-        private readonly List<ProductPaymentHistory> _productPaymentHistories = new();
-        public IReadOnlyCollection<ProductPaymentHistory> ProductPaymentHistories => _productPaymentHistories.AsReadOnly();
 
         public Guid CategoryId { get; private set; }
 

@@ -203,7 +203,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
             product.CategoryId.Should().Be(ValidCategoryId);
             product.ImgUrls.Select(i => i.ImgUrl).Should().BeEquivalentTo(ValidImgUrls);
             product.Paragraphs.Select(p => p.Text).Should().BeEquivalentTo(ValidParagraphs);
-            product.ProductPaymentHistories.Should().BeEmpty();
         }
 
         [Theory]

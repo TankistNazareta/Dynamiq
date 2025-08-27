@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -40,10 +41,16 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.Property(p => p.CardDescription)
                    .HasMaxLength(35);
 
-            builder.HasMany(p => p.ProductPaymentHistories)
+            builder.HasMany<ProductPaymentHistory>()
                    .WithOne()
                    .HasForeignKey(ph => ph.ProductId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany<CartItem>()
+                .WithOne()
+                .HasForeignKey(ci => ci.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
 
             builder.OwnsMany(p => p.ImgUrls, imgBuilder =>
             {
