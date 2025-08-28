@@ -5,7 +5,6 @@ namespace Dynamiq.Application.DTOs.PaymentDTOs
     public class CheckoutSessionDto
     {
         public Guid? ProductId { get; set; }
-        public Guid? CartId { get; set; }
         public string SuccessUrl { get; set; }
         public string CancelUrl { get; set; }
         public IntervalEnum Interval { get; set; }

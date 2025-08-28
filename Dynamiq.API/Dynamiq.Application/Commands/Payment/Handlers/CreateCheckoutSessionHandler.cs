@@ -72,22 +72,8 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 ProductId = request.ProductId
             };
 
-            if (request.CouponCodes != null && request.CouponCodes.Count > 0)
-            {
-                foreach (var couponCode in request.CouponCodes)
-                {
-                    var coupon = await _couponRepo.GetByCodeAsync(couponCode, cancellationToken);
 
-                    if (coupon == null)
-                        throw new KeyNotFoundException("coupon wasn`t found: " + couponCode);
-
-                    if (!coupon.IsActive())
-                        throw new TimeoutException("coupon has expired.");
-                }
-                stripeCartItems = await _couponService.AddAllCouponsAsync(stripeCartItems, request.CouponCodes, cancellationToken);
-            }
-
-            return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems, request.CouponCodes);
+            return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems, request.CouponCodes, cancellationToken);
         }
     }
 }

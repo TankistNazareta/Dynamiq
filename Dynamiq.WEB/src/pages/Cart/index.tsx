@@ -23,6 +23,7 @@ const Cart = () => {
         cartData,
         state: stateCart,
         error: errorCart,
+        onPurchase,
     } = useCart(() => setIsLoaded(true), isLoaded);
 
     const onApplyCoupon = (coupon: CouponRes) => {
@@ -34,15 +35,16 @@ const Cart = () => {
     const countTotalDiscount = () => {
         let totalDiscount: number = 0;
 
-        couponList.forEach((coupon) => {
-            if (coupon.discountType === DiscountTypeEnum.Percentage) {
-                cartData.forEach((cartItem) => {
-                    totalDiscount += cartItem.price * (coupon.discountValue / 100);
-                });
-            } else {
-                totalDiscount += coupon.discountValue;
-            }
+        const percentageCoupon = couponList.filter((coupon) => coupon.discountType === DiscountTypeEnum.Percentage);
+        const fixedCoupon = couponList.filter((coupon) => coupon.discountType === DiscountTypeEnum.FixedAmount);
+
+        percentageCoupon.forEach((coupon) => {
+            cartData.forEach(
+                (cartItem) => (totalDiscount += cartItem.price * (coupon.discountValue / 100) * cartItem.quantity)
+            );
         });
+
+        fixedCoupon.forEach((coupon) => (totalDiscount += coupon.discountValue));
 
         return totalDiscount;
     };
@@ -139,7 +141,16 @@ const Cart = () => {
                         <h4 className="cart__checkout__text_title">Total:</h4>
                         <h5 className="cart__checkout__text-price">${subTotal - totalDiscount}</h5>
                     </div>
-                    <button className="cart__checkout__btn">Check Out</button>
+                    <button
+                        className="cart__checkout__btn"
+                        onClick={() =>
+                            onPurchase(
+                                () => setIsLoaded(false),
+                                couponList.map((coupon) => coupon.code)
+                            )
+                        }>
+                        Check Out
+                    </button>
                 </div>
             </section>
             <Feature />

@@ -32,13 +32,10 @@ const logInByGoogle = async () => {
     const res = await apiRequest<LogInByGoogleResponse>('auth/google/log-in', {
         method: 'GET',
     });
-    console.log('after request', res, 'res');
 
     if (res.success && res.data) {
         window.location.href = res.data.Url;
     }
-
-    console.log(res, 'logInByGoogle');
 
     return res;
 };

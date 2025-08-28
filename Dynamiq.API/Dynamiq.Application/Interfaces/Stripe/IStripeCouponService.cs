@@ -2,7 +2,7 @@
 {
     public interface IStripeCouponService
     {
-        Task<string> CreateStripeCouponAsync(int discountAmount);
+        Task<string> CreateStripeCouponAsync(double discountAmount);
         Task DeactivateCoupon(string stripeCouponId);
     }
 }

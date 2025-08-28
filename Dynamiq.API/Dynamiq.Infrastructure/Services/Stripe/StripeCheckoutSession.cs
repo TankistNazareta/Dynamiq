@@ -1,23 +1,28 @@
 ﻿using Dynamiq.Application.DTOs.PaymentDTOs;
+using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
+using Dynamiq.Domain.Entities;
 using Dynamiq.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using Stripe.Checkout;
 using System.Text.Json;
+using System.Threading;
 
 namespace Dynamiq.Infrastructure.Services.Stripe
 {
     public class StripeCheckoutSession : IStripeCheckoutSession
     {
-        private readonly IStripeCouponService _couponService;
+        private readonly IStripeCouponService _couponServiceStripe;
+        private readonly ICouponService _couponService;
 
         private readonly StripeClient _client;
 
         private readonly string _stripeSecretKey;
 
-        public StripeCheckoutSession(IConfiguration config, IStripeCouponService couponService)
+        public StripeCheckoutSession(IConfiguration config, IStripeCouponService couponServiceStripe, ICouponService couponService)
         {
+            _couponServiceStripe = couponServiceStripe;
             _couponService = couponService;
 
             _stripeSecretKey = config["Stripe:SecretKey"]!;
@@ -25,7 +30,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             _client = new StripeClient(_stripeSecretKey);
         }
 
-        public async Task<string> CreateCheckoutSessionAsync(CheckoutSessionDto request, List<StripeCartItemDto> cartItems, List<string>? couponCodes)
+        public async Task<string> CreateCheckoutSessionAsync(CheckoutSessionDto request, List<StripeCartItemDto> cartItems, List<string> coupons, CancellationToken ct)
         {
             string ModeType = "subscription";
 
@@ -38,23 +43,25 @@ namespace Dynamiq.Infrastructure.Services.Stripe
 
             foreach (var cartItem in cartItems)
             {
-                if (cartItem.StartPrice != cartItem.Price && request.Interval == IntervalEnum.OneTime)
-                {
-                    var stripeCouponId = await _couponService.CreateStripeCouponAsync(cartItem.StartPrice - cartItem.Price);
-
-                    stripeCoupons.Add(new SessionDiscountOptions()
-                    {
-                        Coupon = stripeCouponId,
-                    });
-
-                    stripeCouponIds.Add(stripeCouponId);
-                }
-
                 optionsItems.Add(new SessionLineItemOptions()
                 {
                     Price = cartItem.StripePriceId,
                     Quantity = cartItem.Quantity
                 });
+            }
+
+            if (coupons.Count != 0)
+            {
+                var totalDiscount = await _couponService.CalculateTotalDiscount(cartItems, coupons, ct);
+
+                var stripeCouponId = await _couponServiceStripe.CreateStripeCouponAsync((double)totalDiscount);
+
+                stripeCoupons.Add(new SessionDiscountOptions()
+                {
+                    Coupon = stripeCouponId,
+                });
+
+                stripeCouponIds.Add(stripeCouponId);
             }
 
             var metaData = new WebhookParserDto()
@@ -77,7 +84,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 Metadata = new Dictionary<string, string>
                 {
                     { "WebhookParserDto",  metaDataJson},
-                    { "Coupons", JsonSerializer.Serialize(couponCodes) },
+                    { "Coupons", JsonSerializer.Serialize(coupons) },
                     { "CouponStripeIds", JsonSerializer.Serialize(stripeCouponIds) }
                 },
             };

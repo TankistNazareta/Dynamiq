@@ -13,7 +13,10 @@ interface PopupCartProps {
 const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const { onChangeQuantityInput, onClearItem, cartData, state, error } = useCart(() => setIsLoaded(true), isLoaded);
+    const { onChangeQuantityInput, onClearItem, cartData, state, error, onPurchase } = useCart(
+        () => setIsLoaded(true),
+        isLoaded
+    );
 
     return (
         <>
@@ -49,7 +52,7 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                     ) : (
                         <>
                             <div className="popup-cart__inner d-flex flex-column">
-                                {cartData.length ? (
+                                {cartData.length !== 0 ? (
                                     cartData.map((data) => (
                                         <CartItem
                                             key={data.productId}
@@ -83,7 +86,9 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                         <button className="popup-cart__btn-bottom popup-cart__btn-bottom-cart">Cart</button>
                     </Link>
                     <Link to="">
-                        <button className="popup-cart__btn-bottom">Checkout</button>
+                        <button onClick={() => onPurchase(() => setIsLoaded(false))} className="popup-cart__btn-bottom">
+                            Checkout
+                        </button>
                     </Link>
                     <Link to="/cart">
                         <button className="popup-cart__btn-bottom">Coupons</button>

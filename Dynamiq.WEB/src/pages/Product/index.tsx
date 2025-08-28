@@ -16,6 +16,7 @@ import CardList from '../../components/Card/CardList';
 import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../services/client/category';
 import { addItemToCart } from '../../services/client/cart';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
+import { createCheckout, CreateCheckoutType } from '../../services/client/payment';
 
 const Product = () => {
     const { id } = useParams<{ id: string }>();
@@ -59,6 +60,26 @@ const Product = () => {
             });
     }, [id]);
 
+    const onPurchase = () => {
+        const resOfToken = getUserIdFromAccessToken();
+
+        if (resOfToken.error !== undefined) {
+            setError({ Message: resOfToken.error, StatusCode: 401 });
+            return;
+        }
+
+        makeRequest<CreateCheckoutType>(() =>
+            createCheckout({
+                intervalEnum: productData!.interval,
+                userId: resOfToken.userId,
+                productId: productData!.id,
+                quantity: quantity,
+            })
+        ).catch((err: ErrorMsgType) => {
+            setError(err);
+        });
+    };
+
     const onAddToCart = () => {
         const resOfToken = getUserIdFromAccessToken();
 
@@ -82,6 +103,7 @@ const Product = () => {
                 setQuantity={setQuantity}
                 categories={categories}
                 onAddToCart={onAddToCart}
+                onPurchase={onPurchase}
             />
         );
     }
@@ -95,7 +117,8 @@ const View: React.FC<{
     setQuantity: (q: number) => void;
     categories: string[];
     onAddToCart: () => void;
-}> = ({ product, quantity, setQuantity, categories, onAddToCart }) => {
+    onPurchase: () => void;
+}> = ({ product, quantity, setQuantity, categories, onAddToCart, onPurchase }) => {
     const imgs = product.imgUrls.map((url) => <img key={url.imgUrl} src={url.imgUrl} alt="" />);
     const sortedDescr = product.paragraphs.sort((a, b) => b.order - a.order);
 
@@ -179,7 +202,9 @@ const View: React.FC<{
                             <button className="product__info_btn" onClick={() => onAddToCart()}>
                                 Add To Cart
                             </button>
-                            <button className="product__info_btn">purchase immediately</button>
+                            <button className="product__info_btn" onClick={() => onPurchase()}>
+                                purchase immediately
+                            </button>
                         </div>
                         <hr className="hr-separetor product__info_hr" />
                         <div className="product__info__additional">

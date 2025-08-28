@@ -17,13 +17,13 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             StripeConfiguration.ApiKey = _stripeSecretKey;
         }
 
-        public async Task<string> CreateStripeCouponAsync(int discountAmount)
+        public async Task<string> CreateStripeCouponAsync(double discountAmount)
         {
             var service = new StripeSdk.CouponService();
 
             var options = new CouponCreateOptions
             {
-                AmountOff = discountAmount * 100,
+                AmountOff = (long?)(discountAmount * 100),
                 Currency = "usd",
                 Duration = "once"
             };

@@ -5,6 +5,8 @@ import { ApiResult, ErrorMsgType } from '../utils/types/api';
 import useHttpHook, { stateType } from './useHttp';
 import { getByIdProduct, ProductResBody } from '../services/client/product';
 import { useNavigate } from 'react-router-dom';
+import { createCheckout, CreateCheckoutType } from '../services/client/payment';
+import intervalEnum from '../utils/enums/intervalEnum';
 
 export type CartItemData = {
     productId: string;
@@ -71,7 +73,37 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
                 setCartData(products);
                 setState('success');
             })
-            .catch((error: ErrorMsgType) => setError(error.Message));
+            .catch((error) => {
+                if (error.status === 404) {
+                    setState('success');
+                    return;
+                }
+                setError(error.Message);
+            });
+    };
+
+    const onPurchase = (setUnloaded: Function, coupons?: string[]) => {
+        const resOfToken = getUserIdFromAccessToken();
+
+        if (resOfToken.error !== undefined) {
+            setError(resOfToken.error);
+            return;
+        }
+
+        setState('loading');
+        setUnloaded();
+
+        console.log(coupons);
+
+        makeRequest<CreateCheckoutType>(() =>
+            createCheckout({
+                intervalEnum: intervalEnum.OneTime,
+                userId: resOfToken.userId,
+                couponCodes: coupons,
+            })
+        ).catch((err: ErrorMsgType) => {
+            setError(err.Message);
+        });
     };
 
     const onRemoveItem = async (productId: string, removeQuantity: number) => {
@@ -140,7 +172,16 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
         else if (quantity < notChangedItemQuantity) onRemoveItem(productId, notChangedItemQuantity - quantity);
     };
 
-    return { onChangeQuantityInput, onClearItem, onAddItem, onRemoveItem, cartData, state, error };
+    return {
+        onChangeQuantityInput,
+        onClearItem,
+        onAddItem,
+        onRemoveItem,
+        cartData,
+        state,
+        error,
+        onPurchase,
+    };
 };
 
 export default useCart;

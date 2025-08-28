@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import logo from '../../assets/images/loge.png';
 import PopupCart from './Cart/PopupCart';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
     const [needSideBar, setNeedSideBar] = useState<boolean>(false);
@@ -40,21 +41,21 @@ const Header = () => {
                 <nav className="header__nav">
                     <ul className="header__list d-flex justify-content-between">
                         <li className="header__item">
-                            <a href="/">Home</a>
+                            <Link to="/">Home</Link>
                         </li>
                         <li className="header__item">
-                            <a href="Shop">Shop</a>
+                            <Link to="/shop">Shop</Link>
                         </li>
                         <li className="header__item">
-                            <a href="/about">About</a>
+                            <Link to="/about">About</Link>
                         </li>
                         <li className="header__item">
-                            <a href="/contact">Contact</a>
+                            <Link to="/contact">Contact</Link>
                         </li>
                     </ul>
                 </nav>
                 <div className="d-flex justify-content-between align-items-center header__socials">
-                    <a href="/account">
+                    <Link to="/account">
                         <button className="header__social-link">
                             <svg
                                 width="28"
@@ -68,7 +69,7 @@ const Header = () => {
                                 />
                             </svg>
                         </button>
-                    </a>
+                    </Link>
                     <button className="header__social-link">
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
