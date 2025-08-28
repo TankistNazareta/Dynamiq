@@ -37,9 +37,9 @@ namespace Dynamiq.Infrastructure.Tests.Services
             _repoMock.Setup(r => r.GetByCodeAsync("PERC10", It.IsAny<CancellationToken>()))
                      .ReturnsAsync(coupon);
 
-            var result = await _service.AddAllCouponsAsync(cartItems, new List<string> { "PERC10" }, CancellationToken.None);
+            var result = await _service.CalculateTotalDiscount(cartItems, new List<string> { "PERC10" }, CancellationToken.None);
 
-            result[0].Price.Should().Be(900); // 10% знижки
+            result.Should().Be(100); // 10% discount
         }
 
         [Fact]
@@ -61,9 +61,9 @@ namespace Dynamiq.Infrastructure.Tests.Services
             _repoMock.Setup(r => r.GetByCodeAsync("FIX500", It.IsAny<CancellationToken>()))
                      .ReturnsAsync(coupon);
 
-            var result = await _service.AddAllCouponsAsync(cartItems, new List<string> { "FIX500" }, CancellationToken.None);
+            var result = await _service.CalculateTotalDiscount(cartItems, new List<string> { "FIX500" }, CancellationToken.None);
 
-            result[0].Price.Should().Be(500);
+            result.Should().Be(500);
         }
 
         [Fact]
@@ -96,26 +96,21 @@ namespace Dynamiq.Infrastructure.Tests.Services
             _repoMock.Setup(r => r.GetByCodeAsync("FIX200", It.IsAny<CancellationToken>()))
                      .ReturnsAsync(fixedCoupon);
 
-            var result = await _service.AddAllCouponsAsync(cartItems, new List<string> { "PERC10", "FIX200" }, CancellationToken.None);
+            var result = await _service.CalculateTotalDiscount(cartItems, new List<string> { "PERC10", "FIX200" }, CancellationToken.None);
 
-            // Спочатку 10% => 1000 - 100 = 900
-            // Потім fixed 200 => 900 - 200 = 700
-            result[0].Price.Should().Be(700);
+            result.Should().Be(300);
         }
 
         [Fact]
         public async Task AddAllCouponsAsync_ShouldThrow_WhenCouponNotFound()
         {
-            _repoMock.Setup(r => r.GetByCodeAsync("UNKNOWN", It.IsAny<CancellationToken>()))
-                     .ReturnsAsync((Domain.Entities.Coupon)null);
-
             var cartItems = new List<StripeCartItemDto>
-        {
-            new StripeCartItemDto(Guid.NewGuid(), 1, "price_1", 1000)
-        };
+            {
+                new StripeCartItemDto(Guid.NewGuid(), 1, "price_1", 1000)
+            };
 
             await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-                _service.AddAllCouponsAsync(cartItems, new List<string> { "UNKNOWN" }, CancellationToken.None));
+                _service.CalculateTotalDiscount(cartItems, new List<string> { "UNKNOWN" }, CancellationToken.None));
         }
 
         [Fact]
@@ -137,9 +132,9 @@ namespace Dynamiq.Infrastructure.Tests.Services
             _repoMock.Setup(r => r.GetByCodeAsync("FIX200", It.IsAny<CancellationToken>()))
                      .ReturnsAsync(coupon);
 
-            var result = await _service.AddAllCouponsAsync(cartItems, new List<string> { "FIX200" }, CancellationToken.None);
+            var result = await _service.CalculateTotalDiscount(cartItems, new List<string> { "FIX200" }, CancellationToken.None);
 
-            result[0].Price.Should().Be(0);
+            result.Should().Be(200);
         }
     }
 }

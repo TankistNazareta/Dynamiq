@@ -25,11 +25,11 @@ namespace Dynamiq.Infrastructure.Services
             {
                 var coupon = await _rpeo.GetByCodeAsync(code, ct);
 
-                if (!coupon.IsActive())
-                    throw new TimeoutException("coupon has expired.");
-
                 if (coupon == null)
                     throw new KeyNotFoundException($"coupon with code {code}, wasn't found");
+
+                if (!coupon.IsActive())
+                    throw new TimeoutException("coupon has expired.");
 
                 switch (coupon.DiscountType)
                 {
