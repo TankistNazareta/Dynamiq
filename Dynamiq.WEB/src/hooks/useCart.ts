@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { addItemToCart, CartRes, getCart, removeItemFromCart } from '../services/client/cart';
+import { CartRes, getCart, setQuantityCartItem } from '../services/client/cart';
 import getUserIdFromAccessToken from '../utils/services/getUserIdFromAccessToken';
 import { ApiResult, ErrorMsgType } from '../utils/types/api';
 import useHttpHook, { stateType } from './useHttp';
@@ -58,7 +58,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
                             const err = error as ErrorMsgType;
                             if (err.StatusCode === 404) {
                                 setState('loading');
-                                await removeItemFromCart(userId, item.productId, item.quantity);
+                                await setQuantityCartItem(userId, item.productId, 0);
                             } else {
                                 setError(err.Message);
                             }
@@ -106,7 +106,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
         });
     };
 
-    const onRemoveItem = async (productId: string, removeQuantity: number) => {
+    const onSetQuantity = async (productId: string, quantity: number) => {
         const resOfToken = getUserIdFromAccessToken();
 
         if (resOfToken.error !== undefined) {
@@ -117,66 +117,43 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
 
         const item = cartData.find((prod) => prod.productId === productId)!;
 
-        if (item.quantity - removeQuantity === 0) {
-            setCartData(cartData.filter((item) => item.productId !== productId));
-        } else {
-            setCartData([
-                ...cartData.filter((item) => item.productId !== productId),
-                { ...item, quantity: item.quantity - removeQuantity },
-            ]);
+        if (quantity <= 0) {
+            setCartData((prev) => prev.filter((cartItem) => cartItem !== item));
+            quantity = 0;
+        } else if (quantity > 0) {
+            setCartData((prev) => [...prev.filter((cartItem) => cartItem !== item), { ...item, quantity: quantity }]);
         }
 
         try {
-            await makeRequest<CartRes>(() => removeItemFromCart(resOfToken.userId, productId, removeQuantity));
+            await makeRequest<CartRes>(() => setQuantityCartItem(resOfToken.userId, productId, quantity));
         } catch (ex) {
-            if (item.quantity - removeQuantity === 0) {
+            if (quantity === 0) {
                 setCartData([...cartData, item]);
             } else {
-                setCartData([
-                    ...cartData.filter((item) => item.productId !== productId),
+                setCartData((prev) => [
+                    ...prev.filter((item) => item.productId !== productId),
                     { ...item, quantity: item.quantity },
                 ]);
             }
         }
     };
 
-    const onAddItem = async (productId: string, addQuantity: number) => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setState('error');
-            setError(resOfToken.error);
-            return;
-        }
-
-        const item = cartData.find((prod) => prod.productId === productId)!;
-
-        try {
-            await makeRequest<CartRes>(() => addItemToCart(resOfToken.userId, productId, addQuantity));
-        } catch (ex) {
-            setCartData([
-                ...cartData.filter((item) => item.productId !== productId),
-                { ...item, quantity: item.quantity },
-            ]);
-        }
-    };
-
     const onClearItem = (productId: string) => {
-        onRemoveItem(productId, cartData.find((prod) => prod.productId === productId)!.quantity);
+        onSetQuantity(productId, 0);
     };
 
     const onChangeQuantityInput = (productId: string, quantity: number) => {
-        const notChangedItemQuantity = cartData.find((prod) => prod.productId === productId)!.quantity;
+        const notChangedItem = JSON.parse(JSON.stringify(cartData.find((prod) => prod.productId === productId)!));
 
-        if (quantity > notChangedItemQuantity) onAddItem(productId, quantity - notChangedItemQuantity);
-        else if (quantity < notChangedItemQuantity) onRemoveItem(productId, notChangedItemQuantity - quantity);
+        console.log(notChangedItem, quantity, productId);
+
+        onSetQuantity(productId, quantity);
     };
 
     return {
         onChangeQuantityInput,
         onClearItem,
-        onAddItem,
-        onRemoveItem,
+        onSetQuantity,
         cartData,
         state,
         error,

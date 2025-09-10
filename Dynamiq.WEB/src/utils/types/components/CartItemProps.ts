@@ -3,8 +3,9 @@ interface CartItemProps {
     name: string;
     quantity: number;
     priceTotal: number;
-    onChangeQuantity: Function;
-    onDelete: Function;
+    onChangeQuantity: (quantity: number) => void;
+    onDelete: () => void;
+    onSetQuantity: (quantity: number) => void;
     productId: string;
 }
 

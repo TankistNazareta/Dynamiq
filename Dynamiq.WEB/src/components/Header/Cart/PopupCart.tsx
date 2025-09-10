@@ -3,7 +3,7 @@ import CartItem from './CartItem';
 import Loading from '../../Loading';
 import { Link } from 'react-router-dom';
 import useCart from '../../../hooks/useCart';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface PopupCartProps {
     needToShow: boolean;
@@ -12,11 +12,27 @@ interface PopupCartProps {
 
 const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse }) => {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [subTotal, setSubTotal] = useState(0);
 
     const { onChangeQuantityInput, onClearItem, cartData, state, error, onPurchase } = useCart(
         () => setIsLoaded(true),
         isLoaded
     );
+
+    useEffect(() => {
+        if (subTotal !== 0) return;
+
+        setSubTotal(cartData.reduce((acc, item) => acc + item.price * item.quantity, 0));
+    }, [cartData]);
+
+    const onChangeQuantity = (productId: string, quantity: number) => {
+        const prevItem = cartData.find((item) => item.productId === productId)!;
+        prevItem.quantity = quantity;
+
+        const newCart = [...cartData.filter((data) => data.productId !== productId), prevItem];
+
+        setSubTotal(newCart.reduce((acc, item) => acc + item.price * item.quantity, 0));
+    };
 
     return (
         <>
@@ -61,10 +77,13 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                                             name={data.name}
                                             quantity={data.quantity}
                                             priceTotal={data.price * data.quantity}
-                                            onChangeQuantity={(num: number) =>
-                                                onChangeQuantityInput(data.productId, num)
+                                            onChangeQuantity={(quantity: number) =>
+                                                onChangeQuantity(data.productId, quantity)
                                             }
                                             onDelete={() => onClearItem(data.productId)}
+                                            onSetQuantity={(quantity: number) =>
+                                                onChangeQuantityInput(data.productId, quantity)
+                                            }
                                         />
                                     ))
                                 ) : (

@@ -31,7 +31,7 @@ namespace Dynamiq.Domain.Entities
 
             IsConfirmed = true;
 
-            AddDomainEvent(new UserConfirmedEmailEvent(email));
+            AddDomainEvent(new UserConfirmedEmailEvent(email, UserId));
         }
     }
 }

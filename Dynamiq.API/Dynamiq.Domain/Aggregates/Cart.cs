@@ -4,7 +4,7 @@ using Dynamiq.Domain.Events;
 
 namespace Dynamiq.Domain.Aggregates
 {
-    public class Cart : BaseEntity
+    public class Cart
     {
         public Guid Id { get; private set; }
         public Guid UserId { get; private set; }
@@ -20,41 +20,43 @@ namespace Dynamiq.Domain.Aggregates
 
         }
 
-        public void AddItem(Guid productId, int quantity)
+        public void SetItemQuantity(Guid productId, int quantity)
         {
-            var existing = _items.FirstOrDefault(i => i.ProductId == productId);
-            if (existing != null)
-                existing.IncreaseQuantity(quantity);
+            var item = _items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null)
+            {
+                item = new CartItem(productId, quantity, Id);
+                _items.Add(item);
+            }
             else
             {
-                var cartItem = new CartItem(productId, quantity, Id);
-
-                _items.Add(cartItem);
-                AddDomainEvent(new CartItemAddedEvent(cartItem));
+                if (quantity == 0 || item.Quantity == 0)
+                    _items.Remove(item);
+                else
+                    item.SetQuantity(quantity);
             }
         }
 
-        public void RemoveItem(Guid productId, int quantity)
+        public void AddItem(Guid productId, int quantity)
         {
-            var item = _items.FirstOrDefault(i => i.ProductId == productId);
-            if (item == null) return;
+            if (quantity <= 0)
+                throw new ArgumentException("Quantity must be greater than zero.", nameof(quantity));
 
-            if (item.Quantity > quantity)
+            var item = _items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null)
             {
-                item.SetQuantity(item.Quantity - quantity);
-                AddDomainEvent(new CartItemRemovedEvent(item));
+                item = new CartItem(productId, quantity, Id);
+                _items.Add(item);
             }
             else
             {
-                _items.Remove(item);
-                AddDomainEvent(new CartItemClearEvent(item));
+                item.SetQuantity(item.Quantity + quantity);
             }
         }
 
         public void Clear()
         {
             _items.Clear();
-            AddDomainEvent(new CartClearedEvent(Id));
         }
     }
 }

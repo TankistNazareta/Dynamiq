@@ -17,19 +17,17 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddItemToCart([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
+        [HttpPut]
+        public async Task<IActionResult> SetItemQuantity([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(new AddItemToCartCommand(userId, productId, quantity));
-
+            var cart = await _mediator.Send(new SetQuantityCartItemCommand(userId, productId, quantity));
             return Ok(cart);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> RemoveItem([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
+        [HttpPost]
+        public async Task<IActionResult> AddItem([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(new RemoveItemFromCartCommand(userId, productId, quantity));
-
+            var cart = await _mediator.Send(new AddCartItemCommand(userId, productId, quantity));
             return Ok(cart);
         }
 

@@ -8,6 +8,7 @@ const CartItem: React.FC<CartItemProps> = ({
     priceTotal,
     quantity,
     onChangeQuantity,
+    onSetQuantity,
     onDelete,
     productId,
 }) => {
@@ -28,8 +29,12 @@ const CartItem: React.FC<CartItemProps> = ({
                 onChange={(e) => {
                     const onlyNums = e.target.value.replace(/\D/g, '');
                     setCustomQuantity(Number.parseInt(onlyNums));
+                    onChangeQuantity(Number.parseInt(onlyNums) || 0);
                 }}
-                onBlur={() => onChangeQuantity(customQuantity || 0)}
+                onBlur={(e) => {
+                    const onlyNums = e.target.value.replace(/\D/g, '');
+                    onSetQuantity(Number.parseInt(onlyNums) || 0);
+                }}
                 className="cart__item_quantity"
             />
             <button className="cart__item_remove" onClick={() => onDelete()}>

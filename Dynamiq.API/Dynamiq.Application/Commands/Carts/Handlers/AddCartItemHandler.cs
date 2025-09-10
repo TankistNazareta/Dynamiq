@@ -2,31 +2,39 @@
 using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.DTOs.AccountDTOs;
 using Dynamiq.Application.Interfaces.Repositories;
+using Dynamiq.Domain.Aggregates;
 using MediatR;
 
 namespace Dynamiq.Application.Commands.Carts.Handlers
 {
-    internal class RemoveItemFromCartHandler : IRequestHandler<RemoveItemFromCartCommand, CartDto>
+    public class AddCartItemHandler : IRequestHandler<AddCartItemCommand, CartDto>
     {
         private readonly ICartRepo _cartRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public RemoveItemFromCartHandler(ICartRepo cartRepo, IUnitOfWork unitOfWork, IMapper mapper)
+        public AddCartItemHandler(ICartRepo cartRepo, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _cartRepo = cartRepo;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<CartDto> Handle(RemoveItemFromCartCommand request, CancellationToken cancellationToken)
+        public async Task<CartDto> Handle(AddCartItemCommand request, CancellationToken cancellationToken)
         {
+            var isNewCart = false;
             var cart = await _cartRepo.GetByUserIdAsync(request.UserId, cancellationToken);
 
             if (cart == null)
-                throw new KeyNotFoundException($"Cart with user id: {request.UserId} wasn't found");
+            {
+                cart = new Cart(request.UserId);
+                isNewCart = true;
+            }
 
-            cart.RemoveItem(request.ProductId, request.Quantity);
+            cart.AddItem(request.ProductId, request.Quantity);
+
+            if (isNewCart)
+                await _cartRepo.AddAsync(cart, cancellationToken);
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

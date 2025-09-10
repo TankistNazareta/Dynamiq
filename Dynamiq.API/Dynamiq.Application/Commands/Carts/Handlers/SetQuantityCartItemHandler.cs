@@ -7,33 +7,34 @@ using MediatR;
 
 namespace Dynamiq.Application.Commands.Carts.Handlers
 {
-    public class AddItemToCartHandler : IRequestHandler<AddItemToCartCommand, CartDto>
+    public class SetQuantityCartItemHandler : IRequestHandler<SetQuantityCartItemCommand, CartDto>
     {
         private readonly ICartRepo _cartRepo;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public AddItemToCartHandler(ICartRepo cartRepo, IUnitOfWork unitOfWork, IMapper mapper)
+        public SetQuantityCartItemHandler(ICartRepo cartRepo, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _cartRepo = cartRepo;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        public async Task<CartDto> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
+        public async Task<CartDto> Handle(SetQuantityCartItemCommand request, CancellationToken cancellationToken)
         {
+            var isNewCart = false;
             var cart = await _cartRepo.GetByUserIdAsync(request.UserId, cancellationToken);
 
             if (cart == null)
             {
                 cart = new Cart(request.UserId);
-                cart.AddItem(request.ProductId, request.Quantity);
+                isNewCart = true;
+            }
+
+            cart.SetItemQuantity(request.ProductId, request.Quantity);
+
+            if (isNewCart)
                 await _cartRepo.AddAsync(cart, cancellationToken);
-            }
-            else
-            {
-                cart.AddItem(request.ProductId, request.Quantity);
-            }
 
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

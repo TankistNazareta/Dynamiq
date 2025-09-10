@@ -7,7 +7,7 @@ using Moq;
 
 namespace Dynamiq.Infrastructure.Tests.Services
 {
-    public class CouponServiceTests
+    public class CouponServiceTests 
     {
         private readonly Mock<ICouponRepo> _repoMock;
         private readonly CouponService _service;

@@ -7,9 +7,10 @@ const CartItem: React.FC<CartItemProps> = ({
     name,
     quantity,
     priceTotal,
-    onChangeQuantity: setQuantity,
+    onChangeQuantity,
     onDelete,
     productId,
+    onSetQuantity,
 }) => {
     const [customQuantity, setCustomQuantity] = useState(quantity);
 
@@ -28,9 +29,14 @@ const CartItem: React.FC<CartItemProps> = ({
                         value={customQuantity || 0}
                         onChange={(e) => {
                             const onlyNums = e.target.value.replace(/\D/g, '');
-                            setCustomQuantity(Number.parseInt(onlyNums));
+                            const quantity = Number.parseInt(onlyNums);
+                            setCustomQuantity(quantity);
+                            onChangeQuantity(quantity);
                         }}
-                        onBlur={(e) => setQuantity(customQuantity || 0)}
+                        onBlur={(e) => {
+                            const onlyNums = e.target.value.replace(/\D/g, '');
+                            onSetQuantity(Number.parseInt(onlyNums));
+                        }}
                         className="header__cart_item__price_count"
                     />
                     <p>X</p>

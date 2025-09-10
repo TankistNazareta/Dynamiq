@@ -6,11 +6,13 @@ namespace Dynamiq.Domain.Events
     {
         public DateTime OccurredOn { get; }
         public string Email { get; }
+        public Guid UserId { get; private set; }
 
-        public UserConfirmedEmailEvent(string email)
+        public UserConfirmedEmailEvent(string email, Guid userId)
         {
             Email = email;
             OccurredOn = DateTime.UtcNow;
+            UserId = userId;
         }
     }
 }

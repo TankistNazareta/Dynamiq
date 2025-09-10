@@ -147,7 +147,6 @@ builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 builder.Services.AddTransient<ICartRepo, CartRepo>();
 builder.Services.AddTransient<IProductPaymentHistoryRepo, ProductPaymentHistoryRepo>();
 builder.Services.AddTransient<ICouponRepo, CouponRepo>();
-builder.Services.AddTransient<ICartItemRepo, CartItemRepo>();
 
 //Services
 builder.Services.AddTransient<IEmailService, EmailService>();

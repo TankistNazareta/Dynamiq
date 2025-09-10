@@ -43,7 +43,7 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 productId = product!.Id;
             }
 
-            var addResponse = await _client.PostAsync(
+            var addResponse = await _client.PutAsync(
                 $"/cart?userId={userId}&productId={productId}&quantity=3",
                 new StringContent("")
             );
@@ -56,7 +56,7 @@ namespace Dynamiq.API.Tests.Integrations.Carts
             var cart = await response.Content.ReadFromJsonAsync<CartDto>();
             cart.Should().NotBeNull();
             cart!.Items.Should().HaveCount(1);
-            cart.Items.First().Quantity.Should().Be(2);
+            cart.Items.First().Quantity.Should().Be(1);
         }
     }
 }

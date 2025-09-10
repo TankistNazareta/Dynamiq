@@ -14,7 +14,7 @@ import useHttpHook from '../../hooks/useHttp';
 import { ErrorMsgType } from '../../utils/types/api';
 import CardList from '../../components/Card/CardList';
 import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../services/client/category';
-import { addItemToCart } from '../../services/client/cart';
+import { setQuantityCartItem } from '../../services/client/cart';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import { createCheckout, CreateCheckoutType } from '../../services/client/payment';
 
@@ -88,7 +88,7 @@ const Product = () => {
             return;
         }
 
-        addItemToCart(resOfToken.userId, productData!.id, quantity);
+        setQuantityCartItem(resOfToken.userId, productData!.id, quantity);
     };
 
     if (state === 'error') {

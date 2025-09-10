@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import CouponItem from './CouponItem';
 import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
-import useCart from '../../hooks/useCart';
+import useCart, { CartItemData } from '../../hooks/useCart';
 import Loading from '../../components/Loading';
 import { CouponRes, getCoupon } from '../../services/client/coupon';
 import useHttpHook from '../../hooks/useHttp';
@@ -16,6 +16,8 @@ const Cart = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [couponList, setCouponList] = useState<CouponRes[]>([]);
     const [needToShowPopupCoupon, setNeedToShowPopupCoupon] = useState(false);
+    const [subTotal, setSubTotal] = useState(0);
+    const [totalDiscount, setTotalDiscount] = useState(0);
 
     const {
         onChangeQuantityInput,
@@ -32,14 +34,36 @@ const Cart = () => {
         setCouponList((prev) => [...prev, coupon]);
     };
 
-    const countTotalDiscount = () => {
+    useEffect(() => {
+        setTotalDiscount(countTotalDiscount(cartData));
+    }, [couponList]);
+
+    useEffect(() => {
+        if (subTotal !== 0) return;
+
+        setSubTotal(cartData.reduce((acc, item) => acc + item.price * item.quantity, 0));
+        setTotalDiscount(countTotalDiscount());
+    }, [cartData]);
+
+    const onChangeQuantity = (productId: string, quantity: number) => {
+        setSubTotal(
+            cartData.reduce((acc, item) => {
+                if (item.productId == productId) return acc + item.price * quantity;
+
+                return acc + item.price * item.quantity;
+            }, 0)
+        );
+        setTotalDiscount(countTotalDiscount(cartData));
+    };
+
+    const countTotalDiscount = (cartDataProp: CartItemData[] = cartData) => {
         let totalDiscount: number = 0;
 
         const percentageCoupon = couponList.filter((coupon) => coupon.discountType === DiscountTypeEnum.Percentage);
         const fixedCoupon = couponList.filter((coupon) => coupon.discountType === DiscountTypeEnum.FixedAmount);
 
         percentageCoupon.forEach((coupon) => {
-            cartData.forEach(
+            cartDataProp.forEach(
                 (cartItem) => (totalDiscount += cartItem.price * (coupon.discountValue / 100) * cartItem.quantity)
             );
         });
@@ -48,9 +72,6 @@ const Cart = () => {
 
         return totalDiscount;
     };
-
-    const totalDiscount = countTotalDiscount();
-    const subTotal = cartData.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
     return (
         <>
@@ -76,9 +97,12 @@ const Cart = () => {
                                     imgUrl={data.img}
                                     name={data.name}
                                     quantity={data.quantity}
-                                    priceTotal={data.price}
-                                    onChangeQuantity={(num: number) => onChangeQuantityInput(data.productId, num)}
+                                    priceTotal={data.price * data.quantity}
+                                    onChangeQuantity={(num: number) => onChangeQuantity(data.productId, num)}
                                     onDelete={() => onClearItem(data.productId)}
+                                    onSetQuantity={(quantity: number) =>
+                                        onChangeQuantityInput(data.productId, quantity)
+                                    }
                                 />
                             ))
                         ) : (

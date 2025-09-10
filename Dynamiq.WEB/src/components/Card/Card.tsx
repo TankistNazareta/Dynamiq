@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
-import { addItemToCart } from '../../services/client/cart';
+import { addQuantityToCartItem } from '../../services/client/cart';
 
 interface CardProps {
     additionalClasses?: string;
@@ -23,7 +23,7 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
             return;
         }
 
-        addItemToCart(resOfToken.userId, id, 1);
+        addQuantityToCartItem(resOfToken.userId, id, 1);
     };
     return (
         <div
