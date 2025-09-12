@@ -7,6 +7,7 @@ import { CategoryRes, getAllCategories } from '../../../services/client/category
 import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { CloseButton } from 'react-bootstrap';
+import { useSearchParams } from 'react-router-dom';
 
 interface FilterMenuProps {
     isActive: boolean;
@@ -18,20 +19,71 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const [error, setError] = useState('');
     const [filter, setFilter] = useState<ProductFilter>({});
     const [categoryItems, setCategoryItems] = useState<CategoryItemPorps[]>([]);
+    const [needToSetFilterFromUrl, setNeedToSetFilterFromUrl] = useState(false);
 
     const { state, setState, makeRequest } = useHttpHook();
 
-    useEffect(() => {
-        if (categoryItems.length) return;
+    const [searchParams, setSearchParams] = useSearchParams();
 
-        makeRequest<CategoryRes[]>(() => getAllCategories())
-            .then((res: CategoryRes[]) => {
-                const data = res.map((category) => createDataForChildrenCategoryFromData(category, 1));
-                setCategoryItems(data);
-            })
-            .then(() => setState('success'))
-            .catch((error: ErrorMsgType) => setError(error.Message));
+    useEffect(() => {}, [filter.sortBy, filter.maxPrice, filter.minPrice, filter.categoryIds?.length]);
+
+    useEffect(() => {
+        if (!categoryItems.length) {
+            makeRequest<CategoryRes[]>(() => getAllCategories())
+                .then((res: CategoryRes[]) => {
+                    const data = res.map((category) => createDataForChildrenCategoryFromData(category, 1));
+                    setNeedToSetFilterFromUrl(true);
+                    setCategoryItems(data);
+                })
+                .then(() => setState('success'))
+                .catch((error: ErrorMsgType) => setError(error.Message));
+        }
     }, []);
+
+    useEffect(() => {
+        if (!needToSetFilterFromUrl) return;
+
+        setNeedToSetFilterFromUrl(false);
+
+        var newFilter: ProductFilter = {};
+
+        const sortBy = searchParams.get('sortBy');
+        const minPrice = searchParams.get('minPrice');
+        const maxPrice = searchParams.get('maxPrice');
+        const categoryIds = searchParams.getAll('category');
+
+        if (categoryIds) {
+            categoryIds.forEach((id) => setCheckToCategory(id, true));
+            const foundIds = getAllIdsFromUrl(categoryIds);
+
+            if (foundIds.length) newFilter.categoryIds = foundIds;
+        }
+        if (sortBy) newFilter.sortBy = Number.parseInt(sortBy) as SortEnum;
+        if (minPrice) newFilter.minPrice = Number.parseInt(minPrice);
+        if (maxPrice) newFilter.maxPrice = Number.parseInt(maxPrice);
+
+        setFilter(newFilter);
+        onFilterProp(newFilter);
+    }, [categoryItems]);
+
+    const getAllIdsFromUrl = (
+        parentIdsNeedToFound: string[],
+        categoryItemsProp: CategoryItemPorps[] = categoryItems,
+        foundParent: boolean = false
+    ) => {
+        let foundIds: string[] = [];
+
+        categoryItemsProp.forEach((categoryItem) => {
+            if (foundParent || parentIdsNeedToFound.includes(categoryItem.id)) {
+                foundIds.push(categoryItem.id);
+
+                if (categoryItem.childrenCategories.length)
+                    foundIds.push(...getAllIdsFromUrl(parentIdsNeedToFound, categoryItem.childrenCategories, true)!);
+            }
+        });
+
+        return foundIds;
+    };
 
     const createDataForChildrenCategoryFromData = (category: CategoryRes, parentNumber: number): CategoryItemPorps => {
         const categoryProp: CategoryItemPorps = {
@@ -45,7 +97,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                 setCheckToCategory(id, true);
             },
 
-            isChecked: true,
+            isChecked: false,
             parent: parentNumber,
             childrenCategories: [],
         };
@@ -90,7 +142,19 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         setCategoryItems((prev) => updateCategoriesChecked(prev, id, isChecked));
     };
 
-    const onFilter = (): ProductFilter | null => {
+    const GetCheckedCategoriesForUrl = (categories: CategoryItemPorps[] = categoryItems) => {
+        const idsCategories: string[] = [];
+
+        for (const category of categories) {
+            if (category.isChecked) idsCategories.push(category.id);
+            else if (category.childrenCategories.length)
+                idsCategories.push(...GetCheckedCategoriesForUrl(category.childrenCategories));
+        }
+
+        return idsCategories;
+    };
+
+    const onFilter = () => {
         if (filter.minPrice !== undefined && filter.maxPrice !== undefined && filter.minPrice > filter.maxPrice) {
             setError('min price cannot be bigger than max price');
             return null;
@@ -102,12 +166,34 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         const newFilter: ProductFilter = {
             ...filter,
-            ...(checkedCategories.length ? { categoryIds: [...checkedCategories] } : {}),
+            categoryIds: checkedCategories.length ? [...checkedCategories] : undefined,
         };
 
-        setFilter(newFilter);
+        // url
+        const searchParams = new URLSearchParams();
 
-        return newFilter;
+        if (filter.sortBy !== undefined && filter.sortBy !== SortEnum.Default)
+            searchParams.set('sortBy', filter.sortBy!.toString());
+        else searchParams.delete('sortBy');
+
+        if (filter.maxPrice) searchParams.set('maxPrice', filter.maxPrice.toString());
+        else searchParams.delete('maxPrice');
+
+        if (filter.minPrice) searchParams.set('minPrice', filter.minPrice.toString());
+        else searchParams.delete('minPrice');
+
+        const checkedCategoriesForUrl = GetCheckedCategoriesForUrl();
+
+        searchParams.delete('category');
+
+        if (checkedCategoriesForUrl.length) {
+            checkedCategoriesForUrl.forEach((c) => searchParams.append('category', c));
+        }
+
+        setSearchParams(searchParams);
+
+        setFilter(newFilter);
+        onFilterProp(filter);
     };
 
     const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {
@@ -138,7 +224,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                         onChange={(e) =>
                             setFilter((prev) => ({
                                 ...prev,
-                                sort: e.target.checked ? SortEnum.FromLowest : SortEnum.Default,
+                                sortBy: e.target.checked ? SortEnum.FromLowest : SortEnum.Default,
                             }))
                         }
                         className="shop__filter__section__item_btn-checkbox"
@@ -153,7 +239,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                         onChange={(e) =>
                             setFilter((prev) => ({
                                 ...prev,
-                                sort: e.target.checked ? SortEnum.FromHightest : SortEnum.Default,
+                                sortBy: e.target.checked ? SortEnum.FromHightest : SortEnum.Default,
                             }))
                         }
                         className="shop__filter__section__item_btn-checkbox"
@@ -212,12 +298,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                 )}
             </div>
             <div className="shop__filter__section-footer">
-                <button
-                    className="shop__filter__section-footer_btn"
-                    onClick={() => {
-                        const filter = onFilter();
-                        if (filter !== null) onFilterProp(filter);
-                    }}>
+                <button className="shop__filter__section-footer_btn" onClick={() => onFilter()}>
                     Search
                 </button>
                 <h3 className="shop__filter__section-footer_error text-danger">

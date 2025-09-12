@@ -21,20 +21,6 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
 }) => {
     const [needToShowChild, setNeedToShowChild] = useState(false);
 
-    const [hr, setHr] = useState<ReactElement[]>([]);
-
-    useEffect(() => {
-        if (hr.length !== 0) return;
-
-        const hrLocal: ReactElement[] = [];
-
-        for (let i = 1; i <= parent; i++) {
-            hrLocal.push(<hr key={i} className="shop__filter__section__item_hr" />);
-        }
-
-        setHr(hrLocal);
-    }, [parent, hr.length]);
-
     return (
         <div className="shop__filter__section__item">
             <div
@@ -46,7 +32,10 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
 
                     setNeedToShowChild((prev) => !prev);
                 }}>
-                {hr}
+                {Array.from({ length: parent }, (_, i) => (
+                    <hr key={i} className="shop__filter__section__item_hr" />
+                ))}
+
                 <p className="shop__filter__section__item_title">{name}</p>
                 <input
                     type="checkbox"

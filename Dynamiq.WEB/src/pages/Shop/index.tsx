@@ -14,23 +14,9 @@ const Shop = () => {
     const [dotCount, setDotCount] = useState(1);
     const [cards, setCards] = useState<ReactElement>();
     const [needShowFilterMenu, setNeedShowFilterMenu] = useState(false);
-    const [filter, setFilter] = useState<ProductFilter>();
     const [totalCount, setTotalCount] = useState<number | null>(null);
 
-    useEffect(() => {
-        setCards(
-            <CardList
-                limit={16}
-                offset={dotCount * 16 - 16}
-                productFilter={filter}
-                setTotalCount={(count) => setTotalCount(count)}
-            />
-        );
-    }, [dotCount]);
-
     const onFilter = (filterPorp: ProductFilter) => {
-        setFilter(filterPorp);
-
         setCards(
             <CardList
                 limit={16}
