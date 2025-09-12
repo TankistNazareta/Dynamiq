@@ -51,6 +51,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         const minPrice = searchParams.get('minPrice');
         const maxPrice = searchParams.get('maxPrice');
         const categoryIds = searchParams.getAll('category');
+        const search = searchParams.get('search');
 
         if (categoryIds) {
             categoryIds.forEach((id) => setCheckToCategory(id, true));
@@ -61,8 +62,8 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         if (sortBy) newFilter.sortBy = Number.parseInt(sortBy) as SortEnum;
         if (minPrice) newFilter.minPrice = Number.parseInt(minPrice);
         if (maxPrice) newFilter.maxPrice = Number.parseInt(maxPrice);
+        if (search) newFilter.searchTerm = search;
 
-        setFilter(newFilter);
         onFilterProp(newFilter);
     }, [categoryItems]);
 

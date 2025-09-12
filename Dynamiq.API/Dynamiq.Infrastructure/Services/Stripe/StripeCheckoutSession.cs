@@ -50,7 +50,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 });
             }
 
-            if (coupons.Count != 0)
+            if (coupons != null && coupons.Count != 0)
             {
                 var totalDiscount = await _couponService.CalculateTotalDiscount(cartItems, coupons, ct);
 

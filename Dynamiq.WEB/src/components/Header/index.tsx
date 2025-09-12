@@ -2,13 +2,21 @@ import { useEffect, useRef, useState } from 'react';
 
 import logo from '../../assets/images/loge.png';
 import PopupCart from './Cart/PopupCart';
-import { Link } from 'react-router-dom';
+import { useLocation, useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { CloseButton, Modal, Form } from 'react-bootstrap';
 
 const Header = () => {
     const [needSideBar, setNeedSideBar] = useState<boolean>(false);
+    const [needToShowCart, setNeedToShowCart] = useState(false);
+    const [needToShowSearch, setNeedToShowSearch] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+
     const sidebarRef = useRef<HTMLDivElement>(null);
     const hamburgerRef = useRef<HTMLDivElement>(null);
-    const [needToShowCart, setNeedToShowCart] = useState(false);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent | TouchEvent) => {
@@ -70,7 +78,7 @@ const Header = () => {
                             </svg>
                         </button>
                     </Link>
-                    <button className="header__social-link">
+                    <button className="header__social-link" onClick={() => setNeedToShowSearch(true)}>
                         <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M24.5 24.5L19.2663 19.257M22.1666 12.25C22.1666 14.88 21.1219 17.4024 19.2621 19.2621C17.4024 21.1219 14.88 22.1666 12.25 22.1666C9.61992 22.1666 7.09757 21.1219 5.23784 19.2621C3.3781 17.4024 2.33331 14.88 2.33331 12.25C2.33331 9.61992 3.3781 7.09757 5.23784 5.23784C7.09757 3.3781 9.61992 2.33331 12.25 2.33331C14.88 2.33331 17.4024 3.3781 19.2621 5.23784C21.1219 7.09757 22.1666 9.61992 22.1666 12.25V12.25Z"
@@ -109,6 +117,54 @@ const Header = () => {
                         <span></span>
                         <span></span>
                         <span></span>
+                    </div>
+                </div>
+            </div>
+            <div
+                className={`header__search d-flex justify-content-center align-items-center ${
+                    needToShowSearch ? 'header__search-active' : 'header__search-not_active'
+                }`}>
+                <div className="container">
+                    <div className="header__search__inner">
+                        <button
+                            className="header__search__btn header__search__btn-search"
+                            onClick={() => {
+                                if (location.pathname.startsWith('/shop')) {
+                                    searchParams.set('search', searchInput);
+                                    if (!searchInput.trim()) searchParams.delete('search');
+
+                                    setSearchParams(searchParams);
+                                } else if (searchInput.trim()) {
+                                    navigate(`/shop?search=${encodeURIComponent(searchInput)}`);
+                                } else {
+                                    navigate('/shop');
+                                }
+                            }}>
+                            <svg
+                                width="28"
+                                height="28"
+                                viewBox="0 0 28 28"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M24.5 24.5L19.2663 19.257M22.1666 12.25C22.1666 14.88 21.1219 17.4024 19.2621 19.2621C17.4024 21.1219 14.88 22.1666 12.25 22.1666C9.61992 22.1666 7.09757 21.1219 5.23784 19.2621C3.3781 17.4024 2.33331 14.88 2.33331 12.25C2.33331 9.61992 3.3781 7.09757 5.23784 5.23784C7.09757 3.3781 9.61992 2.33331 12.25 2.33331C14.88 2.33331 17.4024 3.3781 19.2621 5.23784C21.1219 7.09757 22.1666 9.61992 22.1666 12.25V12.25Z"
+                                    stroke="black"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                        </button>
+                        <input
+                            value={searchInput}
+                            onChange={(e) => setSearchInput(e.target.value)}
+                            type="text"
+                            className="header__search__input"
+                        />
+                        <CloseButton
+                            onClick={() => setNeedToShowSearch(false)}
+                            aria-label="Close"
+                            className="header__search__btn header__search__btn-close"
+                        />
                     </div>
                 </div>
             </div>
