@@ -7,7 +7,7 @@ import { CategoryRes, getAllCategories } from '../../../services/client/category
 import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { CloseButton } from 'react-bootstrap';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 
 interface FilterMenuProps {
     isActive: boolean;
@@ -24,8 +24,11 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const { state, setState, makeRequest } = useHttpHook();
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
 
-    useEffect(() => {}, [filter.sortBy, filter.maxPrice, filter.minPrice, filter.categoryIds?.length]);
+    useEffect(() => {
+        updateFilterFromUrl();
+    }, [location.search]);
 
     useEffect(() => {
         if (!categoryItems.length) {
@@ -40,11 +43,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         }
     }, []);
 
-    useEffect(() => {
-        if (!needToSetFilterFromUrl) return;
-
-        setNeedToSetFilterFromUrl(false);
-
+    const updateFilterFromUrl = () => {
         var newFilter: ProductFilter = {};
 
         const sortBy = searchParams.get('sortBy');
@@ -65,6 +64,14 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         if (search) newFilter.searchTerm = search;
 
         onFilterProp(newFilter);
+    };
+
+    useEffect(() => {
+        if (!needToSetFilterFromUrl) return;
+
+        setNeedToSetFilterFromUrl(false);
+
+        updateFilterFromUrl();
     }, [categoryItems]);
 
     const getAllIdsFromUrl = (
@@ -194,7 +201,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         setSearchParams(searchParams);
 
         setFilter(newFilter);
-        onFilterProp(filter);
     };
 
     const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {

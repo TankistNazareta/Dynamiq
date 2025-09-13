@@ -12,19 +12,12 @@ import { CloseButton } from 'react-bootstrap';
 
 const Shop = () => {
     const [dotCount, setDotCount] = useState(1);
-    const [cards, setCards] = useState<ReactElement>();
+    const [productFilter, setProductFilter] = useState<ProductFilter>();
     const [needShowFilterMenu, setNeedShowFilterMenu] = useState(false);
-    const [totalCount, setTotalCount] = useState<number | null>(null);
+    const [totalCount, setTotalCount] = useState<number>(0);
 
-    const onFilter = (filterPorp: ProductFilter) => {
-        setCards(
-            <CardList
-                limit={16}
-                offset={dotCount * 16 - 16}
-                productFilter={filterPorp}
-                setTotalCount={(count) => setTotalCount(count)}
-            />
-        );
+    const onFilter = (filterProp: ProductFilter) => {
+        setProductFilter(filterProp);
     };
 
     return (
@@ -58,7 +51,14 @@ const Shop = () => {
                     </div>
                 </div>
                 <section className="shop__first-section">
-                    <div className="container shop__cards">{cards}</div>
+                    <div className="container shop__cards">
+                        <CardList
+                            limit={16}
+                            offset={dotCount * 16 - 16}
+                            productFilter={productFilter}
+                            setTotalCount={setTotalCount}
+                        />
+                    </div>
                     <div className="shop__dots d-flex justify-content-center align-items-center">
                         {dotCount > 1 && (
                             <button
@@ -67,28 +67,34 @@ const Shop = () => {
                                 Previos
                             </button>
                         )}
+
                         {dotCount > 2 && (
                             <button onClick={() => setDotCount(dotCount - 2)} className="shop__dot">
                                 {dotCount - 2}
                             </button>
                         )}
+
                         {dotCount > 1 && (
                             <button onClick={() => setDotCount(dotCount - 1)} className="shop__dot">
                                 {dotCount - 1}
                             </button>
                         )}
+
                         <button className="shop__dot shop__dot-active">{dotCount}</button>
-                        {totalCount && dotCount * 16 < totalCount && (
+
+                        {dotCount * 16 < totalCount && (
                             <button onClick={() => setDotCount(dotCount + 1)} className="shop__dot">
                                 {dotCount + 1}
                             </button>
                         )}
-                        {totalCount && dotCount * 16 + 16 < totalCount && (
+
+                        {dotCount * 16 + 16 < totalCount && (
                             <button onClick={() => setDotCount(dotCount + 2)} className="shop__dot">
                                 {dotCount + 2}
                             </button>
                         )}
-                        {totalCount && dotCount * 16 < totalCount && (
+
+                        {dotCount * 16 < totalCount && (
                             <button
                                 onClick={() => setDotCount(dotCount + 1)}
                                 className="shop__dot shop__dot-additional shop__dot-next">

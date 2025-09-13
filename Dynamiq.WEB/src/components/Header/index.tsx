@@ -125,21 +125,26 @@ const Header = () => {
                     needToShowSearch ? 'header__search-active' : 'header__search-not_active'
                 }`}>
                 <div className="container">
-                    <div className="header__search__inner">
-                        <button
-                            className="header__search__btn header__search__btn-search"
-                            onClick={() => {
-                                if (location.pathname.startsWith('/shop')) {
-                                    searchParams.set('search', searchInput);
-                                    if (!searchInput.trim()) searchParams.delete('search');
+                    <form
+                        className="header__search__inner"
+                        onSubmit={(e) => {
+                            e.preventDefault();
 
-                                    setSearchParams(searchParams);
-                                } else if (searchInput.trim()) {
-                                    navigate(`/shop?search=${encodeURIComponent(searchInput)}`);
-                                } else {
-                                    navigate('/shop');
-                                }
-                            }}>
+                            if (location.pathname.startsWith('/shop')) {
+                                searchParams.set('search', searchInput);
+                                if (!searchInput.trim()) searchParams.delete('search');
+
+                                setSearchParams(searchParams);
+                            } else if (searchInput.trim()) {
+                                navigate(`/shop?search=${encodeURIComponent(searchInput)}`);
+                            } else {
+                                navigate('/shop');
+                            }
+
+                            setSearchInput('');
+                            setNeedToShowSearch(false);
+                        }}>
+                        <button className="header__search__btn header__search__btn-search">
                             <svg
                                 width="28"
                                 height="28"
@@ -165,7 +170,7 @@ const Header = () => {
                             aria-label="Close"
                             className="header__search__btn header__search__btn-close"
                         />
-                    </div>
+                    </form>
                 </div>
             </div>
             <aside ref={sidebarRef} className={`header__sidebar ${needSideBar ? 'header__sidebar-active' : ''}`}>
