@@ -170,13 +170,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         setError('');
 
-        const checkedCategories = GetCheckedCategories();
-
-        const newFilter: ProductFilter = {
-            ...filter,
-            categoryIds: checkedCategories.length ? [...checkedCategories] : undefined,
-        };
-
         // url
         const searchParams = new URLSearchParams();
 
@@ -199,8 +192,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         }
 
         setSearchParams(searchParams);
-
-        setFilter(newFilter);
     };
 
     const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {
@@ -218,7 +209,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
     return (
         <div className={`shop__filter ${isActive ? 'shop__filter-active' : ''}`}>
-            <CloseButton onClick={() => setNeedShowFilterMenu(false)} className="shop__filter_btn-close" />;
+            <CloseButton onClick={() => setNeedShowFilterMenu(false)} className="shop__filter_btn-close" />
             <h3 className="shop__filter_title">Filter</h3>
             <div className="shop__filter__section">
                 <h5 className="shop__filter__section_title">Sort by:</h5>

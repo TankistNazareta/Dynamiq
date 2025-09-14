@@ -4,13 +4,14 @@ interface CouponeProps {
     code: string;
     endTime: Date;
     amount: string;
+    place: number;
     onDelete: Function;
 }
 
-const Coupon: React.FC<CouponeProps> = ({ code, endTime, amount, onDelete }) => {
+const Coupon: React.FC<CouponeProps> = ({ code, endTime, amount, onDelete, place }) => {
     return (
         <div className="cart__coupon d-flex justify-content-between">
-            <p className="cart__coupon_value cart__coupon_count">1-st coupon</p>
+            <p className="cart__coupon_value cart__coupon_count">{place}-st coupon</p>
             <p className="cart__coupon_value cart__coupon_title">{code}</p>
             <p className="cart__coupon_value cart__coupon_end-date">{parseDateTime(endTime)}</p>
             <p className="cart__coupon_value cart__coupon_amount">{amount}</p>

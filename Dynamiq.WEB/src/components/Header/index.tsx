@@ -76,6 +76,7 @@ const Header = () => {
                                     fill="black"
                                 />
                             </svg>
+                            <span className="btn_descr">Profile</span>
                         </button>
                     </Link>
                     <button className="header__social-link" onClick={() => setNeedToShowSearch(true)}>
@@ -87,6 +88,7 @@ const Header = () => {
                                 stroke-linecap="round"
                             />
                         </svg>
+                        <span className="btn_descr">Search</span>
                     </button>
                     <div className="header__social-link-cart">
                         <button className="header__social-link" onClick={() => setNeedToShowCart(true)}>
@@ -101,6 +103,7 @@ const Header = () => {
                                     fill="black"
                                 />
                             </svg>
+                            <span className="btn_descr">Cart</span>
                         </button>
                         {needToShowCart && (
                             <PopupCart

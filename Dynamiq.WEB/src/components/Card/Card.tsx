@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import { addQuantityToCartItem } from '../../services/client/cart';
@@ -14,6 +14,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgUrl, id }) => {
     const [needToShowPopUp, setNeedToShowPopUp] = useState<boolean>(false);
+    const [checkIds, setCheckIds] = useState<ReturnType<typeof setTimeout>[]>([]);
 
     const onAddToCart = () => {
         const resOfToken = getUserIdFromAccessToken();
@@ -23,11 +24,18 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
             return;
         }
 
+        const timerId = setTimeout(() => {
+            setCheckIds((prev) => prev.filter((id) => id !== timerId));
+        }, 1000);
+
+        setCheckIds((prev) => [...prev, timerId]);
+
         addQuantityToCartItem(resOfToken.userId, id, 1);
     };
+
     return (
         <div
-            className={`card ${additionalClasses || ''}`}
+            className={`card ${additionalClasses}`}
             onMouseEnter={() => setNeedToShowPopUp(true)}
             onMouseLeave={() => setNeedToShowPopUp(false)}
             onTouchStart={() => setNeedToShowPopUp(true)}
@@ -40,10 +48,15 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
             </div>
             <div
                 className={`card__popup flex-column justify-content-center align-items-center ${
-                    needToShowPopUp ? ' card__popup-active' : ''
+                    needToShowPopUp && ' card__popup-active'
                 }`}>
                 <button className="card__popup-btn" onClick={() => onAddToCart()}>
                     Add to cart
+                    {checkIds.map((id) => (
+                        <span className="card__popup-btn_check" key={id.toString()}>
+                            ✔
+                        </span>
+                    ))}
                 </button>
                 <div className="card__popup-links d-flex justify-content-between">
                     <a href="" className="card__popup-link d-flex align-items-center">

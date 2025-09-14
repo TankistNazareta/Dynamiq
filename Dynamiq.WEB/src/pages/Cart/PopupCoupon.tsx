@@ -21,6 +21,7 @@ const PopupCoupon: React.FC<PopupCouponProps> = ({ show, onClose, onApply }) => 
             .then((res) => {
                 onApply(res);
                 setState('success');
+                setCoupon('');
                 onClose();
             })
             .catch((error: ErrorMsgType) => {

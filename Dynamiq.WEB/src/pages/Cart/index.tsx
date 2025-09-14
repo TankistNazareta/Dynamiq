@@ -119,10 +119,11 @@ const Cart = () => {
                             </div>
                             <div className="cart__wrapper d-flex flex-column align-items-center">
                                 {couponList.length ? (
-                                    couponList.map((coupon) => (
+                                    couponList.map((coupon, i) => (
                                         <CouponItem
                                             code={coupon.code}
                                             key={coupon.id}
+                                            place={i + 1}
                                             amount={
                                                 coupon.discountType === DiscountTypeEnum.FixedAmount
                                                     ? `${coupon.discountValue}$`
