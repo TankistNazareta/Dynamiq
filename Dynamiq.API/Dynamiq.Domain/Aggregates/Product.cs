@@ -13,6 +13,7 @@ namespace Dynamiq.Domain.Aggregates
         public string CardDescription { get; private set; }
         public int Price { get; private set; }
         public IntervalEnum Interval { get; private set; }
+        public int ViewCount { get; private set; }
 
         private List<ProductImgUrl> _imgUrls = new();
         public IReadOnlyList<ProductImgUrl> ImgUrls => _imgUrls.AsReadOnly();
@@ -41,6 +42,7 @@ namespace Dynamiq.Domain.Aggregates
         {
             Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId, imgUrls, paragraphs, cardDescription);
             CardDescription = cardDescription;
+            ViewCount = 0;
         }
 
         public void Update(
@@ -96,6 +98,8 @@ namespace Dynamiq.Domain.Aggregates
 
             _imgUrls.Add(new(imgUrl));
         }
+
+        public void AddSearch() => ViewCount++; 
 
         private void AddParagraph(string text, int order)
         {

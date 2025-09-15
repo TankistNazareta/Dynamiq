@@ -8,6 +8,7 @@ import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { CloseButton } from 'react-bootstrap';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import getFilterFromUrl from '../../../utils/services/getFilterFromUrl';
 
 interface FilterMenuProps {
     isActive: boolean;
@@ -44,24 +45,9 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     }, []);
 
     const updateFilterFromUrl = () => {
-        var newFilter: ProductFilter = {};
+        var newFilter = getFilterFromUrl(searchParams, categoryItems);
 
-        const sortBy = searchParams.get('sortBy');
-        const minPrice = searchParams.get('minPrice');
-        const maxPrice = searchParams.get('maxPrice');
-        const categoryIds = searchParams.getAll('category');
-        const search = searchParams.get('search');
-
-        if (categoryIds) {
-            categoryIds.forEach((id) => setCheckToCategory(id, true));
-            const foundIds = getAllIdsFromUrl(categoryIds);
-
-            if (foundIds.length) newFilter.categoryIds = foundIds;
-        }
-        if (sortBy) newFilter.sortBy = Number.parseInt(sortBy) as SortEnum;
-        if (minPrice) newFilter.minPrice = Number.parseInt(minPrice);
-        if (maxPrice) newFilter.maxPrice = Number.parseInt(maxPrice);
-        if (search) newFilter.searchTerm = search;
+        if (newFilter.categoryIds) newFilter.categoryIds.forEach((id) => setCheckToCategory(id, true));
 
         onFilterProp(newFilter);
     };
@@ -73,25 +59,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         updateFilterFromUrl();
     }, [categoryItems]);
-
-    const getAllIdsFromUrl = (
-        parentIdsNeedToFound: string[],
-        categoryItemsProp: CategoryItemPorps[] = categoryItems,
-        foundParent: boolean = false
-    ) => {
-        let foundIds: string[] = [];
-
-        categoryItemsProp.forEach((categoryItem) => {
-            if (foundParent || parentIdsNeedToFound.includes(categoryItem.id)) {
-                foundIds.push(categoryItem.id);
-
-                if (categoryItem.childrenCategories.length)
-                    foundIds.push(...getAllIdsFromUrl(parentIdsNeedToFound, categoryItem.childrenCategories, true)!);
-            }
-        });
-
-        return foundIds;
-    };
 
     const createDataForChildrenCategoryFromData = (category: CategoryRes, parentNumber: number): CategoryItemPorps => {
         const categoryProp: CategoryItemPorps = {
@@ -107,7 +74,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
             isChecked: false,
             parent: parentNumber,
-            childrenCategories: [],
+            subCategories: [],
         };
 
         if (category.subCategories && category.subCategories.length !== 0) {
@@ -115,7 +82,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                 createDataForChildrenCategoryFromData(subCategory, parentNumber + 1)
             );
 
-            categoryProp.childrenCategories = [...categoryProp.childrenCategories, ...res];
+            categoryProp.subCategories = [...categoryProp.subCategories, ...res];
         }
 
         return categoryProp;
@@ -127,17 +94,17 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         isChecked: boolean
     ): CategoryItemPorps[] => {
         const setDescendants = (cat: CategoryItemPorps, value: boolean): CategoryItemPorps => {
-            const children = (cat.childrenCategories || []).map((c) => setDescendants(c, value));
-            return { ...cat, isChecked: value, childrenCategories: children };
+            const children = (cat.subCategories || []).map((c) => setDescendants(c, value));
+            return { ...cat, isChecked: value, subCategories: children };
         };
 
         const mapAndUpdate = (cats: CategoryItemPorps[]): CategoryItemPorps[] => {
             return cats.map((cat) => {
                 if (cat.id === id) return setDescendants(cat, isChecked);
-                if (cat.childrenCategories && cat.childrenCategories.length) {
-                    const newChildren = mapAndUpdate(cat.childrenCategories);
+                if (cat.subCategories && cat.subCategories.length) {
+                    const newChildren = mapAndUpdate(cat.subCategories);
                     const newIsChecked = newChildren.length ? newChildren.every((c) => c.isChecked) : cat.isChecked;
-                    return { ...cat, childrenCategories: newChildren, isChecked: newIsChecked };
+                    return { ...cat, subCategories: newChildren, isChecked: newIsChecked };
                 }
                 return cat;
             });
@@ -155,8 +122,8 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         for (const category of categories) {
             if (category.isChecked) idsCategories.push(category.id);
-            else if (category.childrenCategories.length)
-                idsCategories.push(...GetCheckedCategoriesForUrl(category.childrenCategories));
+            else if (category.subCategories.length)
+                idsCategories.push(...GetCheckedCategoriesForUrl(category.subCategories));
         }
 
         return idsCategories;
@@ -198,8 +165,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         const idsCategories: string[] = [];
 
         for (const category of categories) {
-            if (category.childrenCategories.length)
-                idsCategories.push(...GetCheckedCategories(category.childrenCategories));
+            if (category.subCategories.length) idsCategories.push(...GetCheckedCategories(category.subCategories));
 
             if (category.isChecked) idsCategories.push(category.id);
         }

@@ -157,7 +157,7 @@ const Cart = () => {
                         <h4 className="cart__checkout__text_title">Discount</h4>
                         <h5
                             className={`cart__checkout__text-descr ${
-                                totalDiscount > 0 ? 'cart__checkout__text-discount' : ''
+                                totalDiscount > 0 && 'cart__checkout__text-discount'
                             }`}>
                             {totalDiscount}$
                         </h5>

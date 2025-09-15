@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState } from 'react';
 export interface CategoryItemPorps {
     id: string;
     name: string;
-    childrenCategories: CategoryItemPorps[];
+    subCategories: CategoryItemPorps[];
     onRemove: (id: string) => void;
     onSelect: (id: string) => void;
     isChecked: boolean;
@@ -13,7 +13,7 @@ export interface CategoryItemPorps {
 const CategoryItem: React.FC<CategoryItemPorps> = ({
     id,
     name,
-    childrenCategories,
+    subCategories: childrenCategories,
     onRemove,
     onSelect,
     isChecked,
@@ -62,7 +62,7 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
                         key={item.id}
                         id={item.id}
                         name={item.name}
-                        childrenCategories={item.childrenCategories}
+                        subCategories={item.subCategories}
                         onRemove={onRemove}
                         onSelect={onSelect}
                         isChecked={item.isChecked}

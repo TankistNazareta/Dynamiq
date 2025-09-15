@@ -166,6 +166,7 @@ builder.Services.AddTransient<IStripeWebhookParser, StripeWebhookParser>();
 builder.Services.AddTransient<IStripeCouponService, StripeCouponService>();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddMemoryCache();
 
 //Add background services
 if (!builder.Environment.IsEnvironment("Testing"))

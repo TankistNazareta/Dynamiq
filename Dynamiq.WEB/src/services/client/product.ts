@@ -28,6 +28,22 @@ export interface ProductFilter {
     sortBy?: SortEnum;
 }
 
+export interface SearchedNamesRes {
+    names: string[];
+}
+
+export const getSearchedNames = async (productFilter: ProductFilter) => {
+    const res = await apiRequest<SearchedNamesRes>(`/product/search-names?limit=${5}`, {
+        body: JSON.stringify(productFilter),
+        method: 'POST',
+    });
+    return res;
+};
+
+export const addViewCount = async (id: string) => {
+    await apiRequest(`/product/add-view?productId=${id}`, { method: 'PUT' });
+};
+
 export const getRangeProduct = async (limit: number, offset: number) => {
     const res = await apiRequest<ProductRes>(`/product?limit=${limit}&offset=${offset}`);
     return res;

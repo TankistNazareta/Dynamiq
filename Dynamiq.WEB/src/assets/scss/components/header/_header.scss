@@ -59,7 +59,7 @@
 
     &__search {
         width: 100%;
-        height: 100px;
+        min-height: 100px;
         position: absolute;
         left: 0;
         top: 0;
@@ -104,6 +104,26 @@
 
             &-close {
                 right: 15px;
+            }
+        }
+
+        &_suggestion {
+            padding: 50px 25px 40px 30px;
+
+            .hr-separator {
+                color: #000;
+                background: #000;
+            }
+
+            &__btn {
+                width: 100%;
+                background-color: rgba($color: #000000, $alpha: 0);
+                padding: 25px 0;
+                border: none;
+                font-family: var(--font-family);
+                font-weight: 400;
+                font-size: 19px;
+                color: #000;
             }
         }
     }

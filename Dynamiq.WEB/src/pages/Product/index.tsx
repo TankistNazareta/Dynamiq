@@ -9,7 +9,7 @@ import Loading from '../../components/Loading';
 import descr1 from '../../assets/images/testCarousel/descrProduct1.png';
 import descr2 from '../../assets/images/testCarousel/descrProduct2.png';
 
-import { getByIdProduct, ProductResBody } from '../../services/client/product';
+import { addViewCount, getByIdProduct, ProductResBody } from '../../services/client/product';
 import useHttpHook from '../../hooks/useHttp';
 import { ErrorMsgType } from '../../utils/types/api';
 import CardList from '../../components/Card/CardList';
@@ -52,6 +52,7 @@ const Product = () => {
                     .catch((err: ErrorMsgType) => {
                         setError(err);
                     });
+                addViewCount(id);
 
                 setState('success');
             })

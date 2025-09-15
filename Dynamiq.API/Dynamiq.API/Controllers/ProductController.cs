@@ -2,6 +2,7 @@
 using Dynamiq.Application.Queries.Products.Queries;
 using Dynamiq.Domain.Common;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
@@ -94,6 +95,23 @@ namespace Dynamiq.API.Controllers
             var products = await _mediator.Send(new GetFilteredProductsQuery(filter, limit, offset));
 
             return Ok(products);
+        }
+
+        [Authorize]
+        [HttpPut("add-view")]
+        public async Task<IActionResult> AddViewCount([FromQuery] Guid productId)
+        {
+            await _mediator.Send(new AddViewCountCommand(productId));
+
+            return Ok(new { Message = "Search count incremented" });
+        }
+
+        [HttpPost("search-names")]
+        public async Task<IActionResult> GetSearchedNames([FromBody] ProductFilter productFilter, [FromQuery] int limit = 5)
+        {
+            var names = await _mediator.Send(new GetSearchedProductQuery(productFilter, limit));
+
+            return Ok(new { Names = names});
         }
     }
 }

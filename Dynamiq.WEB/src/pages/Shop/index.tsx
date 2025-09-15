@@ -1,14 +1,9 @@
-import { ReactElement, useEffect, useState } from 'react';
-import Card from '../../components/Card/Card';
+import { useState } from 'react';
 import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
-import useHttpHook from '../../hooks/useHttp';
-import { getRangeProduct, ProductFilter, ProductResBody } from '../../services/client/product';
-import Loading from '../../components/Loading';
+import { ProductFilter } from '../../services/client/product';
 import CardList from '../../components/Card/CardList';
-import SortEnum from '../../utils/enums/sortByEnum';
 import FilterMenu from './components/FilterMenu';
-import { CloseButton } from 'react-bootstrap';
 
 const Shop = () => {
     const [dotCount, setDotCount] = useState(1);
