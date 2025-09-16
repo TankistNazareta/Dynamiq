@@ -14,30 +14,39 @@ const useHttpHook = () => {
 
             const res = await callMethod();
 
-            if (!res.success) throw res.error;
+            if (!res.success) {
+                setState('error');
+                throw res.error;
+            }
 
+            setState('success');
             return res.data;
         } catch (e: any) {
-            setState('error');
-
             if (!navigator.onLine) {
                 setState('fatal');
                 navigate('/error');
                 throw new Error('No internet connection');
             }
 
-            if (e.code === 'ERR_NETWORK') {
+            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
                 setState('fatal');
                 navigate('/error');
                 throw new Error('Server is not reachable');
             }
 
+            if (e?.status && e.status >= 500) {
+                setState('fatal');
+                navigate('/error');
+                throw new Error(`Server error: ${e.status}`);
+            }
+
+            setState('error');
             throw e;
         }
     };
 
     const resetError = () => {
-        setState('loading');
+        setState('waiting');
     };
 
     return { makeRequest, resetError, state, setState };
