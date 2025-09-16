@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Dynamiq.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class ResetMigration : Migration
+    public partial class resetMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -86,6 +86,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     CardDescription = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
                     Price = table.Column<int>(type: "int", nullable: false),
                     Interval = table.Column<int>(type: "int", nullable: false),
+                    ViewCount = table.Column<int>(type: "int", nullable: false),
                     CategoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
