@@ -60,7 +60,7 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
-        if (searchInput.length >= 3) {
+        if (searchInput.length >= 2) {
             const filter = getFilterFromUrl(searchParams, categoryItems);
 
             filter.searchTerm = searchInput;
@@ -74,6 +74,8 @@ const Header = () => {
     }, [searchInput]);
 
     const onSearch = (search: string) => {
+        addSearchHistrory(search);
+
         if (location.pathname.startsWith('/shop')) {
             searchParams.set('search', search);
             if (!search.trim()) searchParams.delete('search');
@@ -88,6 +90,22 @@ const Header = () => {
         setSearchInput('');
         setNeedToShowSearch(false);
     };
+
+    const getSearchHistory = () => {
+        const searchHistoryJson = localStorage.getItem('searchHistory');
+
+        return searchHistoryJson === null ? [] : (JSON.parse(searchHistoryJson) as string[]);
+    };
+
+    const addSearchHistrory = (searchInput: string) => {
+        let history = getSearchHistory().filter((item) => item !== searchInput);
+
+        history.unshift(searchInput);
+
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+    };
+
+    const searchHistory = getSearchHistory();
 
     return (
         <>
@@ -239,15 +257,15 @@ const Header = () => {
                             className="header__search__btn header__search__btn-close"
                         />
                     </form>
-                    {suggestionNames.length !== 0 && (
+                    {(suggestionNames.length !== 0 || searchHistory.length !== 0) && (
                         <div className="header__search_suggestion">
-                            {suggestionNames.map((name, i) => (
-                                <>
+                            {(suggestionNames.length ? suggestionNames : searchHistory).map((name, i, arr) => (
+                                <div key={i}>
                                     <button className="header__search_suggestion__btn" onClick={() => onSearch(name)}>
                                         {name}
                                     </button>
-                                    {i !== suggestionNames.length - 1 && <hr className="hr-separator" />}
-                                </>
+                                    {i !== arr.length - 1 && <hr className="hr-separator" />}
+                                </div>
                             ))}
                         </div>
                     )}
