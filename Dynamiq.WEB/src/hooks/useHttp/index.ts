@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ApiResult } from '../utils/types/api';
+import { ApiResult, ErrorMsgType } from '../../utils/types/api';
+import { useInfoMsg } from '../../components/InfoMsg/InfoMsgContext';
 
 export type stateType = 'loading' | 'error' | 'fatal' | 'success' | 'waiting';
 
 const useHttpHook = () => {
     const [state, setState] = useState<stateType>('waiting');
     const navigate = useNavigate();
+    const { addItem } = useInfoMsg();
 
     const makeRequest = async <T>(callMethod: () => Promise<ApiResult<T>>): Promise<T> => {
         try {
@@ -22,23 +24,23 @@ const useHttpHook = () => {
             setState('success');
             return res.data;
         } catch (e: any) {
-            if (!navigator.onLine) {
+            const setFatalError = (msg: string) => {
                 setState('fatal');
                 navigate('/error');
-                throw new Error('No internet connection');
-            }
+                addItem({ type: 'error', msg });
+                throw new Error(msg);
+            };
 
-            if (e instanceof TypeError && e.message.includes('Failed to fetch')) {
-                setState('fatal');
-                navigate('/error');
-                throw new Error('Server is not reachable');
-            }
+            if (!navigator.onLine) setFatalError('No internet connection');
 
-            if (e?.status && e.status >= 500) {
-                setState('fatal');
-                navigate('/error');
-                throw new Error(`Server error: ${e.status}`);
-            }
+            if (e instanceof TypeError && e.message.includes('Failed to fetch'))
+                setFatalError('Server is not reachable');
+
+            if (e?.status && e.status >= 500) setFatalError(`Server error: ${e.status}`);
+
+            const error = e as ErrorMsgType;
+            console.log(error, 'error useHttpHook');
+            if (error?.StatusCode && error.StatusCode !== 404) addItem({ type: 'info', msg: error.Message });
 
             setState('error');
             throw e;

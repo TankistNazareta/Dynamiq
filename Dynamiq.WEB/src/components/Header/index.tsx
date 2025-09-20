@@ -3,12 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import logo from '../../assets/images/loge.png';
 import PopupCart from './Cart/PopupCart';
 import { useLocation, useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { CloseButton, Modal, Form } from 'react-bootstrap';
+import { CloseButton } from 'react-bootstrap';
 import useHttpHook from '../../hooks/useHttp';
 import { getSearchedNames, SearchedNamesRes } from '../../services/client/product';
-import { CategoryItemPorps } from '../../pages/Shop/components/CategoryItem';
 import { CategoryRes, getAllCategories } from '../../services/client/category';
-import { ErrorMsgType } from '../../utils/types/api';
 import getFilterFromUrl from '../../utils/services/getFilterFromUrl';
 
 const Header = () => {

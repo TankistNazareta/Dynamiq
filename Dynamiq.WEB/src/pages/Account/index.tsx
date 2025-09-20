@@ -10,13 +10,7 @@ import Loading from '../../components/Loading';
 import { getPaymentHistoryByUserId, PaymentHistoryRes } from '../../services/client/paymentHistory';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 
-interface AccountProps {
-    role: roleEnum;
-    email: string;
-    hasSubscription: boolean;
-}
-
-const Account: React.FC<AccountProps> = ({ role, email, hasSubscription }) => {
+const Account = () => {
     const [error, setError] = useState('');
     const [user, setUser] = useState<UserRes>();
 

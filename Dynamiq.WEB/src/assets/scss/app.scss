@@ -69,6 +69,8 @@ ul {
     background-color: #d9d9d9;
 }
 
+@import './animations';
+
 // components
 @import './components/header/header';
 @import './components/card';
@@ -77,6 +79,7 @@ ul {
 @import './components/btns';
 @import './components/feature';
 @import './components/loading';
+@import './components/infoMsg';
 
 // pages
 @import './pages/main';
