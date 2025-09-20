@@ -38,9 +38,20 @@ const useHttpHook = () => {
 
             if (e?.status && e.status >= 500) setFatalError(`Server error: ${e.status}`);
 
+            if (e.errors) {
+                const firstField = Object.keys(e.errors)[0];
+                const firstError = e.errors[firstField][0];
+
+                const error: ErrorMsgType = {
+                    StatusCode: e.status,
+                    Message: firstError,
+                };
+
+                e = error;
+            }
+
             const error = e as ErrorMsgType;
-            console.log(error, 'error useHttpHook');
-            if (error?.StatusCode && error.StatusCode !== 404) addItem({ type: 'info', msg: error.Message });
+            if (error?.StatusCode && error.StatusCode !== 404) addItem({ type: 'error', msg: error.Message });
 
             setState('error');
             throw e;
