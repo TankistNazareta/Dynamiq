@@ -1,0 +1,40 @@
+.payment-status-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    height: auto;
+
+    .status-icon {
+        margin: 0 auto;
+    }
+
+    &.success {
+        .status-icon {
+            color: #28a745;
+            font-size: 4rem;
+        }
+    }
+
+    &.failed {
+        .status-icon {
+            color: #dc3545;
+            font-size: 4rem;
+        }
+    }
+
+    h2 {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    p {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    button {
+        width: 100%;
+        font-weight: 500;
+    }
+}

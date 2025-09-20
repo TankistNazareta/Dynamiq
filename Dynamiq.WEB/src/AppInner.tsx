@@ -17,6 +17,7 @@ import { useEffect, useState } from 'react';
 import useHttpHook from './hooks/useHttp';
 import AuthCallBack from './pages/Auth/AuthCallback';
 import InfoMsg from './components/InfoMsg';
+import PaymentStatus from './pages/PaymentStatus';
 
 const AppInner = () => {
     const [isAuth, setIsAuth] = useState(Boolean(localStorage.getItem('token')) ?? true);
@@ -81,6 +82,8 @@ const AppInner = () => {
                 <Route path="confirm-email/:token" element={<ConfirmEmail />} />
                 <Route path="error" element={<OfflinePage />} />
                 <Route path="auth/callback" element={<AuthCallBack onLogIn={onLogIn} />} />
+                <Route path="payment/success" element={<PaymentStatus status={'success'} />} />
+                <Route path="payment/failed" element={<PaymentStatus status={'failed'} />} />
             </Routes>
             <InfoMsg />
             {isAuth && <Footer />}

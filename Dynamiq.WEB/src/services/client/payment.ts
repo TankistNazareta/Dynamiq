@@ -44,7 +44,7 @@ export const createCheckout = async (props: CrateCheckoutProps) => {
         requestBody = {
             intervalEnum: props.intervalEnum,
             successUrl: `${mainUrl}/payment/success`,
-            cancelUrl: `${mainUrl}/payment/cancel`,
+            cancelUrl: `${mainUrl}/payment/failed`,
             userId: props.userId,
             productId: props.productId,
             quantity: props.quantity,
@@ -53,7 +53,7 @@ export const createCheckout = async (props: CrateCheckoutProps) => {
         requestBody = {
             intervalEnum: props.intervalEnum,
             successUrl: `${mainUrl}/payment/success`,
-            cancelUrl: `${mainUrl}/payment/cancel`,
+            cancelUrl: `${mainUrl}/payment/failed`,
             userId: props.userId,
             couponCodes: props.couponCodes,
         };

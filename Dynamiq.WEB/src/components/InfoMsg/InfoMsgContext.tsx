@@ -24,12 +24,7 @@ type InfoMsgProviderProps = {
 };
 
 export function InfoMsgProvider({ children }: InfoMsgProviderProps) {
-    const [infoMsgs, setInfoMsgs] = useState<InfoMsgType[]>([
-        { id: 'sdfsdfsdfsd', msg: 'skfhsdkjfj', type: 'error' },
-        { id: 'sdfsdfsdfsd32', msg: 'skfhsdkjfj', type: 'error' },
-        { id: 'sdfsdfsdfsd532', msg: 'skfhsdkjfj', type: 'error' },
-        { id: 'sdfsdfsdfsd53432', msg: 'warning: fdfsddgfdsgefgedaf', type: 'info' },
-    ]);
+    const [infoMsgs, setInfoMsgs] = useState<InfoMsgType[]>([]);
 
     const onAddItem = (infoMsg: InfoMsgToAddType) => {
         const id = crypto.randomUUID();
