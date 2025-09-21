@@ -13,6 +13,7 @@ const Shop = () => {
 
     const onFilter = (filterProp: ProductFilter) => {
         setProductFilter(filterProp);
+        setDotCount(1);
     };
 
     return (

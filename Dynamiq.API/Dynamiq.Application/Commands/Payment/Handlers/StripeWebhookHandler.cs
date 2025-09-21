@@ -81,7 +81,7 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                     paymentHistory.AddProduct(item.ProductId, item.Quantity);
                 }
 
-                _cartRepo.Remove(cart);
+                cart.Clear();
             }
 
             await _repo.AddAsync(paymentHistory, cancellationToken);

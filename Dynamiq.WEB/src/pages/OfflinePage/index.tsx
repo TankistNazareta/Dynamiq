@@ -8,10 +8,12 @@ const OfflinePage = () => {
 
     const reloadPage = () => {
         navigate(-1);
+        window.location.reload();
     };
 
     const goHome = () => {
         navigate('/');
+        window.location.reload();
     };
 
     return (

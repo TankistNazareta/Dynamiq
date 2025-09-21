@@ -70,7 +70,9 @@ const Cart = () => {
 
         fixedCoupon.forEach((coupon) => (totalDiscount += coupon.discountValue));
 
-        return totalDiscount;
+        if (totalDiscount > subTotal) return subTotal;
+
+        return Math.trunc(totalDiscount * 100) / 100;
     };
 
     return (
@@ -164,7 +166,9 @@ const Cart = () => {
                     </div>
                     <div className="cart__checkout__text d-flex justify-content-between align-items-center">
                         <h4 className="cart__checkout__text_title">Total:</h4>
-                        <h5 className="cart__checkout__text-price">${subTotal - totalDiscount}</h5>
+                        <h5 className="cart__checkout__text-price">
+                            ${Math.trunc((subTotal - totalDiscount) * 100) / 100}
+                        </h5>
                     </div>
                     <button
                         className="cart__checkout__btn"

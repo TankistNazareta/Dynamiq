@@ -9,11 +9,15 @@ interface CouponeProps {
 }
 
 const Coupon: React.FC<CouponeProps> = ({ code, endTime, amount, onDelete, place }) => {
+    const isExpired = new Date(endTime).getTime() < Date.now();
+
     return (
         <div className="cart__coupon d-flex justify-content-between">
             <p className="cart__coupon_value cart__coupon_count">{place}-st coupon</p>
             <p className="cart__coupon_value cart__coupon_title">{code}</p>
-            <p className="cart__coupon_value cart__coupon_end-date">{parseDateTime(endTime)}</p>
+            <p className={`cart__coupon_value cart__coupon_end-date ${isExpired ? 'text-danger' : ''}`}>
+                {isExpired ? 'expired' : parseDateTime(endTime)}
+            </p>
             <p className="cart__coupon_value cart__coupon_amount">{amount}</p>
             <button className="cart__coupon_remove" onClick={() => onDelete()}>
                 <svg width="21" height="22" viewBox="0 0 21 22" fill="none" xmlns="http://www.w3.org/2000/svg">

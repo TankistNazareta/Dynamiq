@@ -38,7 +38,8 @@ const getAllIdsFromUrl = (
 
             if (categoryItem.subCategories.length)
                 foundIds.push(...getAllIdsFromUrl(parentIdsNeedToFound, categoryItem.subCategories, true));
-        }
+        } else if (categoryItem.subCategories.length)
+            foundIds.push(...getAllIdsFromUrl(parentIdsNeedToFound, categoryItem.subCategories, false));
     });
 
     return foundIds;

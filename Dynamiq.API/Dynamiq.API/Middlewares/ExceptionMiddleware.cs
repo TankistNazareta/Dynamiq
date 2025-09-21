@@ -53,6 +53,11 @@ namespace Dynamiq.API.Middlewares
                     message = exception.Message;
                     _logger.LogWarning(exception, "Not confirmed Email.");
                     break;
+                case CannotLinkOidcAccountException:
+                    statusCode = HttpStatusCode.Conflict;
+                    message = exception.Message;
+                    _logger.LogWarning(exception, "Conflict.");
+                    break;
                 case TimeoutException:
                 case InvalidOperationException:
                 case ArgumentOutOfRangeException:

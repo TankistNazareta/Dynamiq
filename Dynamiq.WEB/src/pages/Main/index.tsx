@@ -1,14 +1,7 @@
-import Card from '../../components/Card/Card';
-
 import range1Card from '../../assets/images/main_range_1card.png';
 import range2Card from '../../assets/images/main_range_2card.png';
 import range3Card from '../../assets/images/main_range_3card.png';
 import funiroFurniture from '../../assets/images/funiroFurnitureMain.png';
-import { ReactElement, useEffect, useState } from 'react';
-import useHttpHook from '../../hooks/useHttp';
-import { getRangeProduct, ProductResBody } from '../../services/client/product';
-import Loading from '../../components/Loading';
-import { ErrorMsgType } from '../../utils/types/api';
 import { Link } from 'react-router-dom';
 import CardList from '../../components/Card/CardList';
 
@@ -25,7 +18,9 @@ const Main = () => (
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. <br /> Ut elit tellus, luctus nec
                         ullamcorper mattis.
                     </p>
-                    <button className="main__banner-btn">BUY Now</button>
+                    <Link to={'/shop'}>
+                        <button className="main__banner-btn">BUY Now</button>
+                    </Link>
                 </div>
             </div>
         </section>
@@ -33,18 +28,18 @@ const Main = () => (
             <h2 className="main__second-section-title">Browse The Range</h2>
             <p className="main__second-section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <div className="main__wrapper-range d-flex flex-wrap justify-content-center">
-                <a href="" className="main__range">
+                <Link to="/shop?category=c97d57a4-65e2-486f-875c-d3b1b08422a7" className="main__range">
                     <img src={range1Card} alt="Dining" />
                     <p>Dining</p>
-                </a>
-                <a href="" className="main__range">
+                </Link>
+                <Link to="/shop?category=3eb531a4-06fa-4108-866d-19bde1dbb980" className="main__range">
                     <img src={range2Card} alt="Living" />
                     <p>Living</p>
-                </a>
-                <a href="" className="main__range">
+                </Link>
+                <Link to="/shop?category=70afc1b1-e690-485e-b55b-755974842cbf" className="main__range">
                     <img src={range3Card} alt="Bedroom" />
                     <p>Bedroom</p>
-                </a>
+                </Link>
             </div>
         </section>
         <section className="main__third-section">
@@ -60,7 +55,7 @@ const Main = () => (
             <h3 className="main__forth-section-subtitle">Share your setup with</h3>
             <h2 className="main__forth-section-title">#FuniroFurniture</h2>
             <div className="main__forth-section__background-box">
-                <img className="main__forth-section-background" src={funiroFurniture} alt="" />
+                <img className="main__forth-section-background" draggable={false} src={funiroFurniture} alt="" />
             </div>
         </section>
     </main>
