@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import { addQuantityToCartItem } from '../../services/client/cart';
+import AddCartBtn from '../AddCartBtn';
 
 interface CardProps {
     additionalClasses?: string;
@@ -16,24 +17,6 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgUrl, id }) => {
     const [needToShowPopUp, setNeedToShowPopUp] = useState<boolean>(false);
-    const [checkIds, setCheckIds] = useState<ReturnType<typeof setTimeout>[]>([]);
-
-    const onAddToCart = () => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.userId === undefined) {
-            console.error('plese, log out and try again');
-            return;
-        }
-
-        const timerId = setTimeout(() => {
-            setCheckIds((prev) => prev.filter((id) => id !== timerId));
-        }, 1000);
-
-        setCheckIds((prev) => [...prev, timerId]);
-
-        addQuantityToCartItem(resOfToken.userId, id, 1);
-    };
 
     return (
         <div
@@ -49,14 +32,7 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
                 <h4 className="card__info-price">${price}</h4>
             </div>
             <div className={`card__popup ${needToShowPopUp ? ' card__popup--active' : ''}`}>
-                <button className="card__popup-btn" onClick={onAddToCart}>
-                    Add to cart
-                    {checkIds.map((id) => (
-                        <span className="card__popup-check" key={id.toString()}>
-                            ✔
-                        </span>
-                    ))}
-                </button>
+                <AddCartBtn id={id} quantity={1} className={'card__popup-btn'} />
                 <div className="card__popup-links">
                     <button
                         onClick={() =>
@@ -102,3 +78,6 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
 };
 
 export default Card;
+function AddCartCheck() {
+    throw new Error('Function not implemented.');
+}

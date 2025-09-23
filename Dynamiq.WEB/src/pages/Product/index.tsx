@@ -14,6 +14,7 @@ import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../s
 import { setQuantityCartItem } from '../../services/client/cart';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import { createCheckout, CreateCheckoutType } from '../../services/client/payment';
+import AddCartBtn from '../../components/AddCartBtn';
 
 const Product = () => {
     const { id } = useParams<{ id: string }>();
@@ -78,17 +79,6 @@ const Product = () => {
         });
     };
 
-    const onAddToCart = () => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setError({ Message: resOfToken.error, StatusCode: 500 });
-            return;
-        }
-
-        setQuantityCartItem(resOfToken.userId, productData!.id, quantity);
-    };
-
     if (state === 'error') {
         if (error?.StatusCode === 404) return <NotFound />;
         return <h3 className="cards_error text-danger">Error: {error?.Message ?? 'Unknown'}</h3>;
@@ -100,7 +90,6 @@ const Product = () => {
                 quantity={quantity}
                 setQuantity={setQuantity}
                 categories={categories}
-                onAddToCart={onAddToCart}
                 onPurchase={onPurchase}
             />
         );
@@ -114,9 +103,8 @@ const View: React.FC<{
     quantity: number;
     setQuantity: (q: number) => void;
     categories: string[];
-    onAddToCart: () => void;
     onPurchase: () => void;
-}> = ({ product, quantity, setQuantity, categories, onAddToCart, onPurchase }) => {
+}> = ({ product, quantity, setQuantity, categories, onPurchase }) => {
     const imgs = product.imgUrls.map((url) => <img key={url.imgUrl} src={url.imgUrl} alt="" />);
     const sortedDescr = product.paragraphs.sort((a, b) => b.order - a.order);
 
@@ -197,9 +185,7 @@ const View: React.FC<{
                                     +
                                 </button>
                             </div>
-                            <button className="info__btn" onClick={() => onAddToCart()}>
-                                Add To Cart
-                            </button>
+                            <AddCartBtn id={product.id} quantity={quantity || 0} className={'info__btn'} />
                             <button className="info__btn" onClick={() => onPurchase()}>
                                 purchase immediately
                             </button>
