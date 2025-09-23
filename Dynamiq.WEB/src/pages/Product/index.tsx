@@ -1,13 +1,10 @@
+import './scss/product.scss';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
-import Carousel from './Carousel';
-import Card from '../../components/Card/Card';
+import Carousel from './components/Carousel';
 import NotFound from '../NotFound';
 import Loading from '../../components/Loading';
-
-import descr1 from '../../assets/images/testCarousel/descrProduct1.png';
-import descr2 from '../../assets/images/testCarousel/descrProduct2.png';
 
 import { addViewCount, getByIdProduct, ProductResBody } from '../../services/client/product';
 import useHttpHook from '../../hooks/useHttp';
@@ -125,12 +122,12 @@ const View: React.FC<{
 
     return (
         <>
-            <div className="product__subheader">
+            <div className="subheader">
                 <nav className="d-flex align-items-center container">
                     <ul className="d-flex">
                         <Link to={'/home'} className="d-flex align-items-center">
-                            <li className="product__subheader__item">Home</li>
-                            <li className="product__subheader__item product__subheader__item-arrow">
+                            <li className="subheader__item">Home</li>
+                            <li className="subheader__item subheader__item-arrow">
                                 <svg
                                     width="8"
                                     height="14"
@@ -143,8 +140,8 @@ const View: React.FC<{
                         </Link>
 
                         <Link to={'/shop'} className="d-flex align-items-center">
-                            <li className="product__subheader__item">Shop</li>
-                            <li className="product__subheader__item product__subheader__item-arrow">
+                            <li className="subheader__item">Shop</li>
+                            <li className="subheader__item subheader__item-arrow">
                                 <svg
                                     width="8"
                                     height="14"
@@ -156,10 +153,10 @@ const View: React.FC<{
                             </li>
                         </Link>
 
-                        <hr className="hr-separetor product__subheader__hr" />
-                        <li className="product__subheader__item product__subheader__item-product-name">
-                            Name of product
-                        </li>
+                        <hr className="hr-separetor subheader__hr" />
+                        <Link to="">
+                            <li className="subheader__item subheader__item-product-name">{product.name}</li>
+                        </Link>
                     </ul>
                 </nav>
             </div>
@@ -172,23 +169,23 @@ const View: React.FC<{
                             </div>
                         ))}
                     </Carousel>
-                    <div className="product__info">
-                        <h2 className="product__info_title">{product.name}</h2>
-                        <h4 className="product__info_price">${product.price}</h4>
-                        <p className="product__info_descr">{product.description}</p>
-                        <div className="product__info_btns d-flex flex-wrap justify-content-between align-items-center">
-                            <div className="product__info_counter d-flex">
+                    <div className="info">
+                        <h2 className="info__title">{product.name}</h2>
+                        <h4 className="info__price">${product.price}</h4>
+                        <p className="info__descr">{product.description}</p>
+                        <div className="info__btns">
+                            <div className="info__counter d-flex">
                                 <button
                                     onClick={() => {
                                         if (quantity !== 0) setQuantity(quantity - 1);
                                     }}
-                                    className="product__info_counter-btn product__info_counter-btn-remove">
+                                    className="info__counter-btn info_counter-btn-remove">
                                     -
                                 </button>
                                 <input
                                     value={quantity || 0}
                                     type="string"
-                                    className="product__info_counter-input"
+                                    className="info__counter-input"
                                     onChange={(e) => {
                                         const onlyNums = e.target.value.replace(/\D/g, '');
                                         setQuantity(Number.parseInt(onlyNums));
@@ -196,28 +193,35 @@ const View: React.FC<{
                                 />
                                 <button
                                     onClick={() => setQuantity(quantity + 1)}
-                                    className="product__info_counter-btn product__info_counter-btn-add">
+                                    className="info__counter-btn info__counter-btn-add">
                                     +
                                 </button>
                             </div>
-                            <button className="product__info_btn" onClick={() => onAddToCart()}>
+                            <button className="info__btn" onClick={() => onAddToCart()}>
                                 Add To Cart
                             </button>
-                            <button className="product__info_btn" onClick={() => onPurchase()}>
+                            <button className="info__btn" onClick={() => onPurchase()}>
                                 purchase immediately
                             </button>
                         </div>
-                        <hr className="hr-separetor product__info_hr" />
-                        <div className="product__info__additional">
-                            <div className="product__info__additional_item d-flex justify-content-center">
-                                <p className="product__info__additional_item-title">Category</p>
-                                <p className="product__info__additional_item-separator">:</p>
-                                <p className="product__info__additional_item-descr">{categories.join(', ')}</p>
+                        <hr className="hr-separetor info__hr" />
+                        <div className="info__additional">
+                            <div className="info__additional-item">
+                                <p className="info__additional-item-title">Category</p>
+                                <p className="info__additional-item-separator">:</p>
+                                <p className="info__additional-item-descr">{categories.join(', ')}</p>
                             </div>
-                            <div className="product__info__additional_item d-flex justify-content-center">
-                                <p className="product__info__additional_item-title">Share</p>
-                                <p className="product__info__additional_item-separator">:</p>
-                                <a className="product__info__additional_item-descr product__info__additional_item-link">
+                            <div className="info__additional-item">
+                                <p className="info__additional-item-title">Share</p>
+                                <p className="info__additional-item-separator">:</p>
+                                <a
+                                    onClick={() =>
+                                        navigator.share({
+                                            title: product.name,
+                                            url: window.location.href,
+                                        })
+                                    }
+                                    className="info__additional-item-descr info__additional-item-link">
                                     Click
                                 </a>
                             </div>
@@ -226,17 +230,17 @@ const View: React.FC<{
                 </div>
             </section>
             <hr className="hr-separator" />
-            <section className="product__description container">
-                <h2 className="product__description_title">Description</h2>
-                <div className="product__description__paragraphs">
+            <section className="description container">
+                <h2 className="description__title">Description</h2>
+                <div className="description__paragraphs">
                     {sortedDescr.map((item, i) => (
                         <p key={i}>{item.text}</p>
                     ))}
-                    <div className="product__description_photo_wrapper d-flex flex-wrap justify-content-center">
+                    <div className="description__photo-wrapper d-flex flex-wrap justify-content-center">
                         {product.imgUrls.length > 5 && (
-                            <div className="product__description_photo_wrapper d-flex flex-wrap justify-content-center">
+                            <div className="description__photo-wrapper d-flex flex-wrap justify-content-center">
                                 {product.imgUrls.slice(5).map((imgUrl, index) => (
-                                    <div key={index} className="product__description_photo">
+                                    <div key={index} className="description__photo">
                                         <img src={imgUrl.imgUrl} alt="" />
                                     </div>
                                 ))}
@@ -244,15 +248,15 @@ const View: React.FC<{
                         )}
                     </div>
                 </div>
-                <div className="product__description_photos d-flex flex-wrap"></div>
+                <div className="description__photos d-flex flex-wrap"></div>
             </section>
             <hr className="hr-separator" />
             <section className="product__related">
-                <h2 className="product__related_title">Related Products</h2>
-                <div className="container product__related_cards">
+                <h2 className="product__related-title">Related Products</h2>
+                <div className="container product__related-cards">
                     <CardList limit={4} offset={0} productFilter={{ categoryIds: [product.categoryId] }} />
                 </div>
-                <button className="btn-show-more">Show more</button>
+                <button className="btn--show-more">Show more</button>
             </section>
         </>
     );

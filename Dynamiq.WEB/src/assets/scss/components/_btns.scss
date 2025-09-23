@@ -1,5 +1,32 @@
+button {
+    border: none;
+    position: relative;
+}
+
 .btn {
-    &-show-more {
+    &--descr {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: 0px;
+        left: 50%;
+        transform: translate(-50%, 125%);
+        background-color: black;
+        color: #fff;
+        padding: 5px 8px;
+        border-radius: 4px;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+        font-size: 12px;
+        z-index: 10;
+    }
+
+    button:hover &--descr {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    &--show-more {
         width: 245px;
         height: 48px;
         font-family: var(--font-family);
@@ -10,5 +37,39 @@
         background-color: rgba(#000000, 0);
         border: 1px solid var(--primary);
         margin: 0 auto;
+    }
+
+    &--right-arrow {
+        padding-right: 20px;
+        position: relative;
+
+        &::before,
+        &::after {
+            content: '';
+            width: 7px;
+            height: 2px;
+            display: block;
+            position: absolute;
+            right: 3px;
+            top: 50%;
+            background-color: var(--primary);
+            transition: 0.3s all;
+        }
+        &::before {
+            transform: translate(2px, -50%) rotate(135deg);
+        }
+
+        &::after {
+            transform: translate(-2px, -50%) rotate(-135deg);
+        }
+
+        &--active {
+            &::before {
+                transform: translate(2px, -50%) rotate(45deg);
+            }
+            &::after {
+                transform: translate(-2px, -50%) rotate(-45deg);
+            }
+        }
     }
 }

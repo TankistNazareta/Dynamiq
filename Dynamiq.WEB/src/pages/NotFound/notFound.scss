@@ -1,0 +1,22 @@
+.not-found {
+    height: 75vh;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    &__title {
+        font-family: var(--font-family);
+        font-weight: 500;
+        font-size: 48px;
+        margin-bottom: 20px;
+        color: #000;
+    }
+
+    &__descr {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 16px;
+        color: #555555;
+    }
+}

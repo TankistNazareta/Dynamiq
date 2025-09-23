@@ -8,7 +8,7 @@ import {
     ProductRes,
     ProductResBody,
 } from '../../services/client/product';
-import Card from './Card';
+import Card from '.';
 
 interface CardListProps {
     className?: string;
@@ -20,7 +20,7 @@ interface CardListProps {
 
 const CardList: React.FC<CardListProps> = ({ className, limit, offset, productFilter, setTotalCount }) => {
     const [error, setError] = useState('');
-    const [products, setProducts] = useState<ReactElement[]>();
+    const [products, setProducts] = useState<ProductResBody[]>();
 
     const { state, setState, makeRequest } = useHttpHook();
 
@@ -33,22 +33,10 @@ const CardList: React.FC<CardListProps> = ({ className, limit, offset, productFi
         console.log(productFilter);
 
         makeRequest<ProductRes>(requestMethod)
-            .then((res: ProductRes) => {
+            .then((res) => {
                 console.log('CardList made request (looking for perfomance)');
                 if (setTotalCount !== undefined) setTotalCount(res.totalCount);
-                setProducts(
-                    res.products.map((prod) => (
-                        <Card
-                            key={prod.id}
-                            additionalClasses="main__card"
-                            name={prod.name}
-                            price={prod.price}
-                            descr={prod.cardDescription}
-                            imgUrl={prod.imgUrls[0].imgUrl}
-                            id={prod.id}
-                        />
-                    ))
-                );
+                setProducts(res.products);
             })
             .then(() => setState('success'))
             .catch((err: any) => {
@@ -60,9 +48,19 @@ const CardList: React.FC<CardListProps> = ({ className, limit, offset, productFi
     return (
         <div className={`d-flex flex-wrap justify-content-between gx-4 gy-4 ${className}`}>
             {state === 'success' ? (
-                products
+                products?.map((prod) => (
+                    <Card
+                        key={prod.id}
+                        additionalClasses="main__card"
+                        name={prod.name}
+                        price={prod.price}
+                        descr={prod.cardDescription}
+                        imgUrl={prod.imgUrls[0].imgUrl}
+                        id={prod.id}
+                    />
+                ))
             ) : state === 'error' ? (
-                <h3 className="cards_error text-danger">Error while getting data: {error}</h3>
+                <h3 className="text-danger">Error while getting data: {error}</h3>
             ) : (
                 <Loading />
             )}

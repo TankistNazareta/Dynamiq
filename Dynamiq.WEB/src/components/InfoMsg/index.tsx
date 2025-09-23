@@ -1,3 +1,5 @@
+import './infoMsg.scss';
+
 import { CloseButton } from 'react-bootstrap';
 import { InfoMsgToAddType, InfoMsgType, useInfoMsg } from './InfoMsgContext';
 import { useEffect, useState } from 'react';
@@ -44,12 +46,12 @@ const InfoMsg = () => {
     };
 
     return (
-        <div className="info-msg_container">
+        <div className="info-msg__container">
             {infoMsgs.map((item) => (
                 <div
                     key={item.id}
-                    className={`d-flex align-items-center info-msg ${
-                        closeTimers.find((timer) => timer.id === item.id) ? 'info-msg-disappearing' : ''
+                    className={`info-msg ${
+                        closeTimers.find((timer) => timer.id === item.id) ? 'info-msg--disappearing' : ''
                     }`}>
                     {item.type === 'error' ? (
                         <svg

@@ -1,0 +1,41 @@
+.subheader-nav {
+    height: 316px;
+    background: url('../../assets/images/subheaderNav.png') no-repeat center/cover;
+    width: 100%;
+
+    &__wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__title {
+        font-family: var(--font-family);
+        font-weight: 500;
+        font-size: 48px;
+        color: #000;
+    }
+
+    &__list {
+        margin-top: 2px;
+        display: flex;
+
+        &-item {
+            font-family: var(--font-family);
+            font-weight: 500;
+            font-size: 16px;
+            color: #000;
+            margin-right: 6px;
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            &--active {
+                font-weight: 300;
+            }
+        }
+    }
+}

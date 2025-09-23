@@ -1,15 +1,14 @@
-import CartItem from './CartItem';
+import './scss/cart.scss';
 
-import img from '../../assets/images/testImgForCard.png';
+import CartItem from './components/CartItem';
 import { useEffect, useState } from 'react';
-import CouponItem from './CouponItem';
+import CouponItem from './components/CouponItem';
 import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
 import useCart, { CartItemData } from '../../hooks/useCart';
 import Loading from '../../components/Loading';
 import { CouponRes, getCoupon } from '../../services/client/coupon';
-import useHttpHook from '../../hooks/useHttp';
-import PopupCoupon from './PopupCoupon';
+import PopupCoupon from './components/PopupCoupon';
 import DiscountTypeEnum from '../../utils/enums/discountTypeEnum';
 
 const Cart = () => {
@@ -78,15 +77,15 @@ const Cart = () => {
     return (
         <>
             <SubheaderNav nameRoute="Cart" />
-            <section className="cart container d-flex flex-wrap justify-content-between">
+            <section className="cart container">
                 <div className="cart__list">
-                    <div className="cart__hat d-flex align-items-center justify-content-between flex-wrap">
-                        <p className="cart__hat_descr">Your cart:</p>
+                    <div className="cart__hat">
+                        <p className="cart__hat-descr">Your cart:</p>
                         <p>Name:</p>
                         <p>Price:</p>
                         <p>Quantity:</p>
                     </div>
-                    <div className="cart__wrapper d-flex flex-column">
+                    <div className="cart__wrapper">
                         {stateCart === 'error' ? (
                             <h3 className="title-error text-danger">{errorCart}</h3>
                         ) : !isLoaded ? (
@@ -108,18 +107,18 @@ const Cart = () => {
                                 />
                             ))
                         ) : (
-                            <h3 className="cart__wrapper_title">Your cart is empty</h3>
+                            <h3 className="cart__wrapper-title">Your cart is empty</h3>
                         )}
                     </div>
                     {cartData.length !== 0 && (
                         <>
-                            <div className="cart__hat cart__hat-coupon d-flex align-items-center justify-content-between flex-wrap">
-                                <p className="cart__hat_descr">Your coupons:</p>
+                            <div className="cart__hat cart__hat-coupon">
+                                <p className="cart__hat-descr">Your coupons:</p>
                                 <p>Code:</p>
                                 <p>End date:</p>
                                 <p>Amount:</p>
                             </div>
-                            <div className="cart__wrapper d-flex flex-column align-items-center">
+                            <div className="cart__wrapper">
                                 {couponList.length ? (
                                     couponList.map((coupon, i) => (
                                         <CouponItem
@@ -140,7 +139,7 @@ const Cart = () => {
                                         />
                                     ))
                                 ) : (
-                                    <h3 className="cart__wrapper_title">You don't have active coupons</h3>
+                                    <h3 className="cart__wrapper-title">You don't have active coupons</h3>
                                 )}
                                 <button className="cart__add-new-coupon" onClick={() => setNeedToShowPopupCoupon(true)}>
                                     Add new coupon
@@ -150,28 +149,28 @@ const Cart = () => {
                     )}
                 </div>
                 <div className="cart__checkout">
-                    <h3 className="cart__checkout_title">Cart Totals</h3>
-                    <div className="cart__checkout__text d-flex justify-content-between align-items-center">
-                        <h4 className="cart__checkout__text_title">Subtotal</h4>
-                        <h5 className="cart__checkout__text-descr">${subTotal}</h5>
+                    <h3 className="cart__checkout-title">Cart Totals</h3>
+                    <div className="cart__checkout-text">
+                        <h4 className="cart__checkout-text-title">Subtotal:</h4>
+                        <h5 className="cart__checkout-text-descr">${subTotal}</h5>
                     </div>
-                    <div className="cart__checkout__text d-flex justify-content-between align-items-center">
-                        <h4 className="cart__checkout__text_title">Discount</h4>
+                    <div className="cart__checkout-text">
+                        <h4 className="cart__checkout-text-title">Discount:</h4>
                         <h5
-                            className={`cart__checkout__text-descr ${
-                                totalDiscount > 0 && 'cart__checkout__text-discount'
+                            className={`cart__checkout-text-descr ${
+                                totalDiscount > 0 && 'cart__checkout-text-discount'
                             }`}>
                             {totalDiscount}$
                         </h5>
                     </div>
-                    <div className="cart__checkout__text d-flex justify-content-between align-items-center">
-                        <h4 className="cart__checkout__text_title">Total:</h4>
-                        <h5 className="cart__checkout__text-price">
+                    <div className="cart__checkout-text">
+                        <h4 className="cart__checkout-text-title">Total:</h4>
+                        <h5 className="cart__checkout-text-price">
                             ${Math.trunc((subTotal - totalDiscount) * 100) / 100}
                         </h5>
                     </div>
                     <button
-                        className="cart__checkout__btn"
+                        className="cart__checkout-btn"
                         onClick={() =>
                             onPurchase(
                                 () => setIsLoaded(false),

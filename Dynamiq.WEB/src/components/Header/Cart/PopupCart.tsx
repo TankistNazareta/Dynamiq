@@ -38,9 +38,9 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
         <>
             <div className="popup-cart">
                 <div className="popup-cart__wrapper">
-                    <div className="popup-cart__header d-flex align-items-center">
-                        <h3 className="popup-car__header_title">Shopping Cart</h3>
-                        <button className="popup-cart__header_btn" onClick={() => setNeedToShowToFalse()}>
+                    <div className="popup-cart__header">
+                        <h3 className="popup-car__header-title">Shopping Cart</h3>
+                        <button className="popup-cart__header-btn" onClick={() => setNeedToShowToFalse()}>
                             <svg
                                 width="17"
                                 height="19"
@@ -60,14 +60,14 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                             </svg>
                         </button>
                     </div>
-                    <hr className="hr-separator popup-cart_hr-separator" />
+                    <hr className="hr-separator popup-cart__hr-separator" />
                     {state === 'error' ? (
                         <h3 className="title-error text-danger">{error}</h3>
                     ) : !isLoaded ? (
                         <Loading />
                     ) : (
                         <>
-                            <div className="popup-cart__inner d-flex flex-column">
+                            <div className="popup-cart__inner">
                                 {cartData.length !== 0 ? (
                                     cartData.map((data) => (
                                         <CartItem
@@ -87,12 +87,12 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                                         />
                                     ))
                                 ) : (
-                                    <h3 className="popup-cart__inner_title">Your cart is empty</h3>
+                                    <h3 className="popup-cart__inner-title">Your cart is empty</h3>
                                 )}
                             </div>
-                            <div className="popup-cart__total_wrapper d-flex">
-                                <h4 className="popup-cart__total_title">Subtotal</h4>
-                                <h4 className="popup-cart__total_amount">
+                            <div className="popup-cart__total-wrapper">
+                                <h4 className="popup-cart__total-title">Subtotal</h4>
+                                <h4 className="popup-cart__total-amount">
                                     ${cartData.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0}
                                 </h4>
                             </div>
@@ -114,9 +114,7 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                     </Link>
                 </div>
             </div>
-            <div
-                onClick={() => setNeedToShowToFalse()}
-                className={`popup-cart__background ${needToShow ? 'popup-cart-active__background' : ''}`}></div>
+            <div onClick={() => setNeedToShowToFalse()} className="popup-cart__background"></div>
         </>
     );
 };

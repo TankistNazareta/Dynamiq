@@ -1,3 +1,5 @@
+import './scss/header.scss';
+
 import { useEffect, useRef, useState } from 'react';
 
 import logo from '../../assets/images/loge.png';
@@ -108,13 +110,13 @@ const Header = () => {
     return (
         <>
             <header className="header">
-                <div className="header__wrapper d-flex justify-content-around align-items-center">
-                    <a className="header__logo d-flex align-items-center justify-content-center" href="/">
+                <div className="header__wrapper">
+                    <a className="header__logo" href="/">
                         <img className="header__logo-image" src={logo} alt="logo" />
                         <h3 className="header__logo-title">Dynamiq</h3>
                     </a>
                     <nav className="header__nav">
-                        <ul className="header__list d-flex justify-content-between">
+                        <ul className="header__list">
                             <li className="header__item">
                                 <Link to="/">Home</Link>
                             </li>
@@ -129,7 +131,7 @@ const Header = () => {
                             </li>
                         </ul>
                     </nav>
-                    <div className="d-flex justify-content-between align-items-center header__socials">
+                    <div className="header__socials">
                         <Link to="/account">
                             <button className="header__social-link">
                                 <svg
@@ -143,7 +145,7 @@ const Header = () => {
                                         fill="black"
                                     />
                                 </svg>
-                                <span className="btn_descr">Profile</span>
+                                <span className="btn--descr">Profile</span>
                             </button>
                         </Link>
                         <button className="header__social-link" onClick={() => setNeedToShowSearch(true)}>
@@ -160,7 +162,7 @@ const Header = () => {
                                     stroke-linecap="round"
                                 />
                             </svg>
-                            <span className="btn_descr">Search</span>
+                            <span className="btn--descr">Search</span>
                         </button>
                         <div className="header__social-link-cart">
                             <button className="header__social-link" onClick={() => setNeedToShowCart(true)}>
@@ -175,7 +177,7 @@ const Header = () => {
                                         fill="black"
                                     />
                                 </svg>
-                                <span className="btn_descr">Cart</span>
+                                <span className="btn--descr">Cart</span>
                             </button>
                             {needToShowCart && (
                                 <PopupCart
@@ -187,7 +189,7 @@ const Header = () => {
 
                         <div
                             ref={hamburgerRef}
-                            className={`header__hamburger ${needSideBar ? 'header__hamburger-active' : ''}`}
+                            className={`header__hamburger ${needSideBar ? 'header__hamburger--active' : ''}`}
                             onClick={() => setNeedSideBar((needSideBar) => !needSideBar)}>
                             <span></span>
                             <span></span>
@@ -195,9 +197,9 @@ const Header = () => {
                         </div>
                     </div>
                 </div>
-                <aside ref={sidebarRef} className={`header__sidebar ${needSideBar ? 'header__sidebar-active' : ''}`}>
+                <aside ref={sidebarRef} className={`header__sidebar ${needSideBar ? 'header__sidebar--active' : ''}`}>
                     <nav className="header__nav header__sidebar-nav">
-                        <ul className="header__list header__sidebar-list d-flex flex-column justify-content-between">
+                        <ul className="header__list header__sidebar-list">
                             <li className="header__item header__sidebar-item">
                                 <a href="/">Home</a>
                             </li>
@@ -218,17 +220,17 @@ const Header = () => {
                 </aside>
             </header>
             <div
-                className={`header__search d-flex justify-content-center align-items-center ${
-                    needToShowSearch ? 'header__search-active' : 'header__search-not_active'
+                className={`header__search ${
+                    needToShowSearch ? 'header__search--active' : 'header__search--not-active'
                 }`}>
                 <div className="container">
                     <form
-                        className="header__search__inner"
+                        className="header__search-inner"
                         onSubmit={(e) => {
                             e.preventDefault();
                             onSearch(searchInput);
                         }}>
-                        <button className="header__search__btn header__search__btn-search">
+                        <button className="header__search-btn header__search-btn-search">
                             <svg
                                 width="28"
                                 height="28"
@@ -247,19 +249,19 @@ const Header = () => {
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
                             type="text"
-                            className="header__search__input"
+                            className="header__search-input"
                         />
                         <CloseButton
                             onClick={() => setNeedToShowSearch(false)}
                             aria-label="Close"
-                            className="header__search__btn header__search__btn-close"
+                            className="header__search-btn header__search-btn-close"
                         />
                     </form>
                     {(suggestionNames.length !== 0 || searchHistory.length !== 0) && (
-                        <div className="header__search_suggestion">
+                        <div className="header__search-suggestion">
                             {(suggestionNames.length ? suggestionNames : searchHistory).map((name, i, arr) => (
                                 <div key={i}>
-                                    <button className="header__search_suggestion__btn" onClick={() => onSearch(name)}>
+                                    <button className="header__search-suggestion-btn" onClick={() => onSearch(name)}>
                                         {name}
                                     </button>
                                     {i !== arr.length - 1 && <hr className="hr-separator" />}

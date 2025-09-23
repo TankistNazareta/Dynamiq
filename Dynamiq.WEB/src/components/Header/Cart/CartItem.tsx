@@ -15,15 +15,15 @@ const CartItem: React.FC<CartItemProps> = ({
     const [customQuantity, setCustomQuantity] = useState(quantity);
 
     return (
-        <div className="header__cart_item d-flex align-items-center">
+        <div className="header__cart-item">
             <Link to={`/product/${productId}`}>
-                <div className="header__cart_item_img">
+                <div className="header__cart-item-img">
                     <img src={imgUrl} alt="" />
                 </div>
             </Link>
-            <div className="header__cart_item__descr">
-                <h4 className="header__cart_item_name">{name}</h4>
-                <div className="header__cart_item__price align-items-center">
+            <div className="header__cart-item-descr">
+                <h4 className="header__cart-item-name">{name}</h4>
+                <div className="header__cart-item-price">
                     <input
                         type="string"
                         value={customQuantity || 0}
@@ -37,13 +37,13 @@ const CartItem: React.FC<CartItemProps> = ({
                             const onlyNums = e.target.value.replace(/\D/g, '');
                             onSetQuantity(Number.parseInt(onlyNums));
                         }}
-                        className="header__cart_item__price_count"
+                        className="header__cart-item-price-count"
                     />
                     <p>X</p>
-                    <h5 className="header__cart_item__price_total">{priceTotal}$</h5>
+                    <h5 className="header__cart-item-price-total">{priceTotal}$</h5>
                 </div>
             </div>
-            <button className="header__cart_item_btn" onClick={() => onDelete()}>
+            <button className="header__cart-item-btn" onClick={() => onDelete()}>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                         fill-rule="evenodd"

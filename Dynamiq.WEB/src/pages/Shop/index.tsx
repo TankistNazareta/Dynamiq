@@ -1,3 +1,5 @@
+import './shop.scss';
+
 import { useState } from 'react';
 import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
@@ -38,10 +40,10 @@ const Shop = () => {
                                     stroke-linejoin="round"
                                 />
                             </svg>
-                            <p className="shop__subheader_p">Filter</p>
+                            <p className="shop__subheader-p">Filter</p>
                         </button>
-                        <hr className="hr-separator shop__subheader_hr-separator" />
-                        <p className="shop__subheader_p">
+                        <hr className="hr-separator shop__subheader-hr-separator" />
+                        <p className="shop__subheader-p">
                             Total found: {totalCount !== null ? totalCount : 'Loading...'}
                         </p>
                     </div>

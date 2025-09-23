@@ -22,9 +22,9 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
     const [needToShowChild, setNeedToShowChild] = useState(false);
 
     return (
-        <div className="shop__filter__section__item">
+        <div className="filter__section-item">
             <div
-                className="shop__filter__section__item_parent d-flex align-items-center"
+                className="filter__section-item_parent d-flex align-items-center"
                 onClick={(e) => {
                     const target = e.target;
 
@@ -33,22 +33,22 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
                     setNeedToShowChild((prev) => !prev);
                 }}>
                 {Array.from({ length: parent }, (_, i) => (
-                    <hr key={i} className="shop__filter__section__item_hr" />
+                    <hr key={i} className="filter__section-item__hr" />
                 ))}
 
-                <p className="shop__filter__section__item_title">{name}</p>
+                <p className="filter__section-item__title">{name}</p>
                 <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={(e) => {
                         e.target.checked ? onSelect(id) : onRemove(id);
                     }}
-                    className="shop__filter__section__item_btn-checkbox"
+                    className="filter__section-item__btn-checkbox"
                 />
                 {childrenCategories.length ? (
                     <button
-                        className={`user__payment-history_item_descr user__payment-history_item_btn shop__filter__section__item_btn-dropdown ${
-                            needToShowChild ? 'user__payment-history_item_btn-active' : ''
+                        className={`user__payment-history_item_descr user__payment-history_item_btn filter__section-item__btn-dropdown ${
+                            needToShowChild ? 'user__payment-history_item__btn--active' : ''
                         }`}>
                         <span></span>
                         <span></span>

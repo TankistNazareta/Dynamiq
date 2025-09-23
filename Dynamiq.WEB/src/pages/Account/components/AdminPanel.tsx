@@ -1,3 +1,5 @@
+import '../scss/adminPanel.scss';
+
 import { useState } from 'react';
 import PaymentHistory from './PaymentHistory';
 import { getUserByEmail, UserRes } from '../../../services/client/user';
@@ -35,8 +37,8 @@ const AdminPanel = () => {
 
     return (
         <section className="admin-panel container">
-            <h4 className="admin-panel_title">Your admin panel</h4>
-            <p className="admin-panel_descr">Here you can write somebody's email and you'll get his info</p>
+            <h4 className="admin-panel__title">Your admin panel</h4>
+            <p className="admin-panel__descr">Here you can write somebody's email and you'll get his info</p>
             <form
                 action=""
                 className="admin-panel__form d-flex justify-content-center fle-wrap"
@@ -48,7 +50,7 @@ const AdminPanel = () => {
                     className="admin-panel__form_input"
                     placeholder="Email"
                 />
-                <button type="submit" className="admin-panel__form_btn">
+                <button type="submit" className="admin-panel__form-btn">
                     Submit
                 </button>
             </form>
@@ -71,21 +73,19 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
     return (
         <>
             <div className="admin-panel__result d-flex flex-wrap justify-content-around">
-                <p className="user__payment-history_item_descr admin-panel__result_descr">{user.email}</p>
-                <p className="user__payment-history_item_descr admin-panel__result_descr">
+                <p className="payment-history-item__descr admin-panel__result-descr">{user.email}</p>
+                <p className="payment-history-item__descr admin-panel__result-descr">
                     {'Created at: '}
                     {parseDateTime(user.emailVerification.createdAt)}
                 </p>
-                <p className="user__payment-history_item_descr admin-panel__result_descr">
+                <p className="payment-history-item__descr admin-panel__result-descr">
                     email confirmed: {user.emailVerification.isConfirmed ? '✔' : '❌'}
                 </p>
-                <p className="user__payment-history_item_descr admin-panel__result_descr">
+                <p className="payment-history-item__descr admin-panel__result-descr">
                     has subscription: {user.subscription.isConfirmed ? '✔' : '❌'}
                 </p>
-                <p className="user__payment-history_item_descr admin-panel__result_payment-history">
-                    Payment Histories:
-                </p>
-                <div className="user__payment-history__container d-flex flex-column admin-panel__result_payment-history__container container">
+                <p className="payment-history-item__descr admin-panel__result-payment-history">Payment Histories:</p>
+                <div className="payment-history__container d-flex flex-column admin-panel__result-payment-history-container container">
                     {user.paymnetHistories && user.paymnetHistories.length ? (
                         user.paymnetHistories.map((item, idx) => (
                             <PaymentHistory
@@ -96,9 +96,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                             />
                         ))
                     ) : (
-                        <h3 className="user__payment-history_descr text-center">
-                            User doesn't have yet payment histories
-                        </h3>
+                        <h3 className="payment-history__descr text-center">User doesn't have yet payment histories</h3>
                     )}
                 </div>
             </div>

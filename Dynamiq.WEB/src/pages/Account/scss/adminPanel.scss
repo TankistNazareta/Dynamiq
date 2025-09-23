@@ -1,0 +1,72 @@
+.admin-panel {
+    padding-top: 40px;
+    text-align: center;
+
+    &__title {
+        font-family: var(--font-family);
+        font-weight: 600;
+        font-size: 36px;
+        color: #000;
+        margin-bottom: 8px;
+    }
+
+    &__descr {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 16px;
+        text-align: center;
+        color: #9f9f9f;
+    }
+
+    &__form {
+        margin: 20px auto 40px auto;
+        gap: 30px;
+
+        &_input {
+            padding: 0 5px;
+            border: 1px solid #9f9f9f;
+            border-radius: 10px;
+            width: 300px;
+            height: 55px;
+            background-color: rgba($color: #000000, $alpha: 0);
+
+            &::placeholder {
+                font-family: var(--font-family);
+                font-weight: 400;
+                font-size: 16px;
+                color: #9f9f9f;
+            }
+        }
+
+        &-btn {
+            width: 150px;
+            height: 55px;
+            border: 1px solid #000;
+            border-radius: 15px;
+            background-color: rgba($color: #000000, $alpha: 0);
+            font-family: var(--font-family);
+            font-weight: 400;
+            font-size: 20px;
+            color: #000;
+        }
+    }
+
+    &__result {
+        text-align: center;
+        gap: 30px;
+
+        &-descr {
+            color: #000;
+        }
+
+        &-payment-history {
+            width: 100%;
+            margin-top: 20px;
+            color: #000;
+        }
+
+        &-payment-history-container {
+            padding-top: 0px !important;
+        }
+    }
+}

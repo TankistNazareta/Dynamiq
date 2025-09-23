@@ -1,0 +1,156 @@
+.card {
+    width: 285px;
+    height: 446px;
+    background: #f4f5f7;
+    position: relative;
+
+    &__img {
+        height: 301px;
+    }
+
+    &__info {
+        margin: 16px 5px 30px 16px;
+        text-align: left;
+
+        &-title {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 120%;
+            color: #3a3a3a;
+        }
+
+        &-descr {
+            font-family: var(--font-family);
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 150%;
+            color: #898989;
+            margin: 8px 0;
+        }
+
+        &-price {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 150%;
+            color: #3a3a3a;
+        }
+    }
+
+    &__popup {
+        display: none !important;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        background: rgba(58, 58, 58, 0);
+        transition: background 0.3s ease, opacity 0.3s ease;
+
+        * {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        &--active {
+            display: flex !important;
+
+            background: rgba(58, 58, 58, 0.72);
+
+            * {
+                opacity: 1;
+            }
+        }
+
+        &-check {
+            position: absolute;
+            right: 10px;
+            background: #4caf50;
+            color: white;
+            font-size: 13px;
+            padding: 0px 3px;
+            border-radius: 50%;
+            opacity: 0;
+            animation: flyUpFade 1s forwards;
+        }
+
+        &-btn {
+            width: 202px;
+            height: 48px;
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 150%;
+            color: var(--primary);
+            margin-bottom: 24px;
+        }
+
+        &-links {
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        &-link {
+            font-family: var(--font-family);
+            font-weight: 600;
+            font-size: 16px;
+            line-height: 150%;
+            color: #fff;
+            background: rgba($color: #000000, $alpha: 0);
+            display: flex;
+            align-items: center;
+
+            p {
+                margin-left: 5px;
+            }
+        }
+
+        &__bottom {
+            font-family: var(--font-family);
+            font-weight: 400;
+            font-size: 16px;
+            color: #000;
+        }
+    }
+}
+
+@keyframes popup-show {
+    from {
+        transform: translateX(-50%) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes flyUpFade {
+    0% {
+        transform: scale(0) translateY(0);
+        opacity: 0;
+    }
+    20% {
+        transform: scale(1.2) translateY(0);
+        opacity: 1;
+    }
+    40% {
+        transform: scale(1) translateY(-5px);
+        opacity: 1;
+    }
+    80% {
+        transform: scale(1) translateY(-25px);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.8) translateY(-40px);
+        opacity: 0;
+    }
+}

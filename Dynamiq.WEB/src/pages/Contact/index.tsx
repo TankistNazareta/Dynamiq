@@ -1,3 +1,5 @@
+import './contact.scss';
+
 import SubheaderNav from '../../components/SubheaderNav';
 
 const Contact = () => {
@@ -5,11 +7,11 @@ const Contact = () => {
         <>
             <SubheaderNav nameRoute="Contact" />
             <section className="contact container">
-                <h2 className="contact_titile">My contacts</h2>
-                <p className="contact_descr">If you wanna contact with me here is all my contacts</p>
-                <div className="contact_btns d-flex flex-wrap justify-content-around align-items-center">
+                <h2 className="contact__titile">My contacts</h2>
+                <p className="contact__descr">If you wanna contact with me here is all my contacts</p>
+                <div className="contact__btns">
                     <a href="mailto:youtopak@gmail.com">
-                        <button className="contact_btn contact_btn-email">
+                        <button className="contact__btn contact__btn-email">
                             <img
                                 height="20"
                                 alt="Logo of Gmail since 2020"
@@ -19,7 +21,7 @@ const Contact = () => {
                         </button>
                     </a>
                     <a href="https://t.me/usertankist">
-                        <button className="contact_btn contact_btn-telegram">
+                        <button className="contact__btn contact__btn-telegram">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" height="27px">
                                 <g id="SVGRepo_bgCarrier"></g>
                                 <g id="SVGRepo_tracerCarrier"></g>
@@ -36,7 +38,7 @@ const Contact = () => {
                         </button>
                     </a>
                     <a href="https://x.com/TankistNazareta">
-                        <button className="contact_btn contact_btn-x">
+                        <button className="contact__btn contact__btn-x">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 x="0px"

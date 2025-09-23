@@ -1,10 +1,11 @@
+import './scss/account.scss';
+
 import { useEffect, useState } from 'react';
 import useHttpHook from '../../hooks/useHttp';
 import { getUserById, UserRes } from '../../services/client/user';
 import roleEnum from '../../utils/enums/roleEnum';
 import AdminPanel from './components/AdminPanel';
 import PaymentHistory from './components/PaymentHistory';
-import { jwtDecode } from 'jwt-decode';
 import { ErrorMsgType } from '../../utils/types/api';
 import Loading from '../../components/Loading';
 import { getPaymentHistoryByUserId, PaymentHistoryRes } from '../../services/client/paymentHistory';
@@ -47,17 +48,17 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
     return (
         <>
             <section className="user__about">
-                <h2 className="user__about_welcome">Welcome back!</h2>
-                <h5 className="user__about_descr">
+                <h2 className="user__about-welcome">Welcome back!</h2>
+                <h5 className="user__about-descr">
                     Your role - {user.role == roleEnum.Admin ? 'Admin' : 'default user'}. <br />
                     Your email - {user.email}. <br />
                     You
                     {user.subscription.isConfirmed ? ' have' : " don't have"} subscribtion <br /> We was waiting for you
                 </h5>
             </section>
-            <section className="user__payment-history container">
-                <div className="user__payment-history__header d-flex align-items-center">Your payment history:</div>
-                <div className="user__payment-history__container d-flex flex-column">
+            <section className="payment-history container">
+                <div className="payment-history__header ">Your payment history:</div>
+                <div className="payment-history__container">
                     {user.paymnetHistories.length ? (
                         user.paymnetHistories.map((item) => (
                             <PaymentHistory
@@ -67,9 +68,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                             />
                         ))
                     ) : (
-                        <h3 className="user__payment-history_descr text-center">
-                            You don't have yet payment histories
-                        </h3>
+                        <h3 className="payment-history__descr">You don't have yet payment histories</h3>
                     )}
                 </div>
             </section>

@@ -174,14 +174,14 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     };
 
     return (
-        <div className={`shop__filter ${isActive ? 'shop__filter-active' : ''}`}>
-            <CloseButton onClick={() => setNeedShowFilterMenu(false)} className="shop__filter_btn-close" />
-            <h3 className="shop__filter_title">Filter</h3>
-            <div className="shop__filter__section">
-                <h5 className="shop__filter__section_title">Sort by:</h5>
-                <div className="shop__filter__section__item d-flex align-items-center">
-                    <hr className="shop__filter__section__item_hr" />
-                    <p className="shop__filter__section__item_title">From lowest price</p>
+        <div className={`filter ${isActive ? 'filter--active' : ''}`}>
+            <CloseButton onClick={() => setNeedShowFilterMenu(false)} className="filter_btn-close" />
+            <h3 className="filter__title">Filter</h3>
+            <div className="filter__section">
+                <h5 className="filter__section-title">Sort by:</h5>
+                <div className="filter__section-item d-flex align-items-center">
+                    <hr className="filter__section-item__hr" />
+                    <p className="filter__section-item__title">From lowest price</p>
                     <input
                         type="checkbox"
                         checked={filter.sortBy === SortEnum.FromLowest}
@@ -191,12 +191,12 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                                 sortBy: e.target.checked ? SortEnum.FromLowest : SortEnum.Default,
                             }))
                         }
-                        className="shop__filter__section__item_btn-checkbox"
+                        className="filter__section-item__btn-checkbox"
                     />
                 </div>
-                <div className="shop__filter__section__item d-flex align-items-center">
-                    <hr className="shop__filter__section__item_hr" />
-                    <p className="shop__filter__section__item_title">From highest price</p>
+                <div className="filter__section-item d-flex align-items-center">
+                    <hr className="filter__section-item__hr" />
+                    <p className="filter__section-item__title">From highest price</p>
                     <input
                         type="checkbox"
                         checked={filter.sortBy === SortEnum.FromHightest}
@@ -206,16 +206,16 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                                 sortBy: e.target.checked ? SortEnum.FromHightest : SortEnum.Default,
                             }))
                         }
-                        className="shop__filter__section__item_btn-checkbox"
+                        className="filter__section-item__btn-checkbox"
                     />
                 </div>
             </div>
             <hr className="hr-separator" />
-            <div className="shop__filter__section">
-                <h5 className="shop__filter__section_title">Filter:</h5>
-                <div className="shop__filter__section__item d-flex align-items-center">
-                    <hr className="shop__filter__section__item_hr" />
-                    <p className="shop__filter__section__item_title">Highest price</p>
+            <div className="filter__section">
+                <h5 className="filter__section__title">Filter:</h5>
+                <div className="filter__section-item d-flex align-items-center">
+                    <hr className="filter__section-item__hr" />
+                    <p className="filter__section-item__title">Highest price</p>
                     <input
                         type="text"
                         value={filter.maxPrice ?? 0}
@@ -226,12 +226,12 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                                 maxPrice: e.target.value ? Number.parseInt(onlyNums) : undefined,
                             }));
                         }}
-                        className="shop__filter__section__item_btn-input"
+                        className="filter__section-item__btn-input"
                     />
                 </div>
-                <div className="shop__filter__section__item d-flex align-items-center">
-                    <hr className="shop__filter__section__item_hr" />
-                    <p className="shop__filter__section__item_title">Lowest price</p>
+                <div className="filter__section-item d-flex align-items-center">
+                    <hr className="filter__section-item__hr" />
+                    <p className="filter__section-item__title">Lowest price</p>
                     <input
                         type="text"
                         value={filter.minPrice ?? 0}
@@ -242,13 +242,13 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                                 minPrice: e.target.value ? Number.parseInt(onlyNums) : undefined,
                             }));
                         }}
-                        className="shop__filter__section__item_btn-input"
+                        className="filter__section-item__btn-input"
                     />
                 </div>
             </div>
             <hr className="hr-separator" />
-            <div className="shop__filter__section">
-                <h5 className="shop__filter__section_title">Categories:</h5>
+            <div className="filter__section">
+                <h5 className="filter__section-title">Categories:</h5>
                 {state == 'loading' ? (
                     <Loading />
                 ) : state == 'success' ? (
@@ -261,11 +261,11 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                     ''
                 )}
             </div>
-            <div className="shop__filter__section-footer">
-                <button className="shop__filter__section-footer_btn" onClick={() => onFilter()}>
+            <div className="filter__footer">
+                <button className="filter__footer-btn" onClick={() => onFilter()}>
                     Search
                 </button>
-                <h3 className="shop__filter__section-footer_error text-danger">
+                <h3 className="filter__footer-error text-danger">
                     {error ? 'error while getting categories: ' + error : ''}
                 </h3>
             </div>

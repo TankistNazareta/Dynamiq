@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import '../scss/paymentHistory.scss';
 
-import imgTest from '../../../assets/images/testImgForCard.png';
+import { useState } from 'react';
 import useHttpHook, { stateType } from '../../../hooks/useHttp';
 import { getByIdProduct, ProductRes, ProductResBody } from '../../../services/client/product';
 import { ErrorMsgType } from '../../../utils/types/api';
@@ -56,18 +56,18 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ amount, createdAt, prod
     };
 
     return (
-        <div className={`user__payment-history_item ${needToShowDetails ? 'user__payment-history_item-active' : ''}`}>
+        <div className={`payment-history-item ${needToShowDetails ? 'payment-history-item-active' : ''}`}>
             <div
-                className="user__payment-history_item__wrapper d-flex align-items-center justify-content-around"
+                className="payment-history-item__wrapper"
                 onClick={() => {
                     setNeedToShowDetails(!needToShowDetails);
                     onLoad();
                 }}>
-                <p className="user__payment-history_item_descr">${amount}</p>
-                <p className="user__payment-history_item_descr">{parseDateTime(createdAt)}</p>
+                <p className="payment-history-item__descr">${amount}</p>
+                <p className="payment-history-item__descr">{parseDateTime(createdAt)}</p>
                 <button
-                    className={`user__payment-history_item_descr user__payment-history_item_btn ${
-                        needToShowDetails ? 'user__payment-history_item_btn-active' : ''
+                    className={`payment-history-item__descr payment-history-item__btn btn--right-arrow ${
+                        needToShowDetails ? 'btn--right-arrow--active' : ''
                     }`}>
                     More
                     <span></span>
@@ -76,25 +76,23 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ amount, createdAt, prod
             </div>
             {needToShowDetails && (
                 <>
-                    <hr className="hr-separator user__payment-history_item_hr-separator" />
-                    <div className="user__payment-history_item_product__wrapper d-flex flex-column">
+                    <hr className="hr-separator payment-history-item__hr-separator" />
+                    <div className="payment-history-item__product-wrapper">
                         {state === 'error' ? (
                             <h3 className="title-error text-danger">{error}</h3>
                         ) : state === 'success' ? (
                             productPaymentHistoryData.map((obj) => (
                                 <Link to={`/product/${obj.productId}`}>
-                                    <div
-                                        key={obj.productId}
-                                        className="cart__item d-flex align-items-center user__payment-history_item_product">
-                                        <div className="cart__item_img user__payment-history_item_product_img">
+                                    <div key={obj.productId} className="cart-item  payment-history-item__product">
+                                        <div className="cart-item__img payment-history-item__product-img">
                                             <img src={obj.img} alt="" />
                                         </div>
-                                        <h5 className="cart__item_title cart__item_title-name">{obj.name}</h5>
+                                        <h5 className="cart-item__title cart-item__title-name">{obj.name}</h5>
                                         <input
                                             type="text"
                                             value={obj.quantity || 0}
                                             onChange={() => {}}
-                                            className="cart__item_quantity"
+                                            className="cart-item__quantity"
                                             disabled
                                         />
                                     </div>

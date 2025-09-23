@@ -1,0 +1,44 @@
+.payment-history-item {
+    transition: 0.3s all;
+    border-radius: 10px;
+    padding: 10px 15px;
+
+    &__wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+
+    &__descr {
+        font-family: var(--font-family);
+        font-weight: 400;
+        font-size: 16px;
+        color: #9f9f9f;
+    }
+
+    &__btn {
+        background: rgba($color: #000000, $alpha: 0);
+    }
+
+    &__hr-separator {
+        margin: 25px 0;
+    }
+
+    &--active {
+        box-shadow: 0 0 12px rgba(0, 0, 0, 0.25), 0 0 24px rgba(0, 0, 0, 0.15);
+        padding-bottom: 20px;
+    }
+
+    &__product {
+        &-wrapper {
+            gap: 17px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        &-img {
+            width: 75px;
+            height: 75px;
+        }
+    }
+}
