@@ -8,6 +8,8 @@ const OfflinePage = () => {
 
     const reloadPage = () => {
         navigate(-1);
+        if (window.location.pathname === '/error') navigate('/');
+
         window.location.reload();
     };
 
