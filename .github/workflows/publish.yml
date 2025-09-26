@@ -34,7 +34,7 @@ jobs:
       matrix:
         include:
           - context: .
-            dockerfile: ./Dynamiq.API/Dockerfile
+            dockerfile: ./Dynamiq.API/Dynamiq.API/Dockerfile
             image: ghcr.io/tankistnazareta/dynamiq-api
 
     permissions:
