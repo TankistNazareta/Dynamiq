@@ -1,0 +1,61 @@
+name: Publish
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore Dynamiq.slnf
+
+      - name: Build
+        run: dotnet build Dynamiq.slnf --no-restore
+
+      - name: Test
+        run: dotnet test Dynamiq.slnf --no-build --verbosity normal
+
+  build-and-push-image:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - context: .
+            dockerfile: ./Dynamiq.API/Dockerfile
+            image: ghcr.io/shopyappteam/Dynamiq-api
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Docker login
+        run: docker login --username ${{ secrets.GH_USERNAME }} --password ${{ secrets.GH_TOKEN }} ghcr.io
+
+      # Build and tag the Docker image with multiple tags
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ matrix.image }}:latest -f ${{ matrix.dockerfile }} ${{ matrix.context }}
+          docker tag ${{ matrix.image }}:latest ${{ matrix.image }}:${{ github.ref_name }}
+
+      # Push the Docker images with all tags
+      - name: Push Docker images
+        run: |
+          docker push ${{ matrix.image }}:latest
+          docker push ${{ matrix.image }}:${{ github.ref_name }}
