@@ -35,7 +35,7 @@ jobs:
         include:
           - context: .
             dockerfile: ./Dynamiq.API/Dockerfile
-            image: ghcr.io/shopyappteam/Dynamiq-api
+            image: ghcr.io/TankistNazareta/dynamiq-api
 
     permissions:
       contents: read

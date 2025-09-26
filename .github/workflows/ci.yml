@@ -42,12 +42,12 @@ jobs:
           done
 
       - name: Restore dependencies
-        run: dotnet restore Dynamiq.API/Dynamiq.API.sln
+        run: dotnet restore Dynamiq.API/Dynamiq.Tests.slnf
 
       - name: Build
-        run: dotnet build Dynamiq.API/Dynamiq.API.sln --no-restore --configuration Release
+        run: dotnet build Dynamiq.API/Dynamiq.Tests.slnf --no-restore --configuration Release
 
       - name: Run tests
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=Dynamiq;User=sa;Password=YourStrongPassword123!;TrustServerCertificate=True"
-        run: dotnet test Dynamiq.API/Dynamiq.API.sln --no-build --configuration Release --logger trx
+        run: dotnet test Dynamiq.API/Dynamiq.Tests.slnf --no-build --configuration Release --logger trx
