@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("api/product")]
+    [Route("product")]
     [ApiController]
     public class ProductController : ControllerBase
     {

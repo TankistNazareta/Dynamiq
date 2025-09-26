@@ -7,7 +7,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
-    [Route("api/cart")]
+    [Route("cart")]
     public class CartController : ControllerBase
     {
         private readonly IMediator _mediator;

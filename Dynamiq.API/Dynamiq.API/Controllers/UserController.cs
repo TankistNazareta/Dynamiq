@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("api/user")]
+    [Route("user")]
     [ApiController]
     public class UserController : ControllerBase
     {

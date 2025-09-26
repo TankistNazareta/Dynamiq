@@ -1,0 +1,11 @@
+{
+  "solution": {
+    "path": "Dynamiq.API.sln",
+    "projects": [
+      "Dynamiq.API\\Dynamiq.API.csproj",
+      "Dynamiq.Application\\Dynamiq.Application.csproj",
+      "Dynamiq.Domain\\Dynamiq.Domain.csproj",
+      "Dynamiq.Infrastructure\\Dynamiq.Infrastructure.csproj"
+    ]
+  }
+}

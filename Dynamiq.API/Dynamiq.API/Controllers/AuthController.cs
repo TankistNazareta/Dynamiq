@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
-    [Route("api/auth")]
+    [Route("auth")]
     public class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;

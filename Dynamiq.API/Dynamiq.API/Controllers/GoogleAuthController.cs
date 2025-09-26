@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
-    [Route("api/auth/google")]
+    [Route("auth/google")]
     [AllowAnonymous]
     public class GoogleAuthController : ControllerBase
     {

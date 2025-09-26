@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("api/payment-history")]
+    [Route("payment-history")]
     [ApiController]
     public class PaymentHistoryController : ControllerBase
     {

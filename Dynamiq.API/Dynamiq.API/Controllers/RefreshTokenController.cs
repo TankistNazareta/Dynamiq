@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("api/token")]
+    [Route("token")]
     [ApiController]
     public class RefreshTokenController : ControllerBase
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
-    [Route("api/coupon")]
+    [Route("coupon")]
     public class CouponController : ControllerBase
     {
         private readonly IMediator _mediator;
