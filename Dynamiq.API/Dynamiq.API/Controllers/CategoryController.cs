@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
-    [Route("category")]
+    [Route("api/category")]
     public class CategoryController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dynamiq.API.Controllers
 {
-    [Route("payment")]
+    [Route("api/payment")]
     [ApiController]
     public class PaymentController : ControllerBase
     {

@@ -2,7 +2,7 @@ import './scss/header.scss';
 
 import { useEffect, useRef, useState } from 'react';
 
-import logo from '../../assets/images/loge.png';
+import logo from '../../assets/images/logo.png';
 import PopupCart from './Cart/PopupCart';
 import { useLocation, useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { CloseButton } from 'react-bootstrap';
