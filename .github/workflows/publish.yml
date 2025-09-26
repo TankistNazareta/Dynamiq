@@ -16,13 +16,13 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore Dynamiq.slnf
+        run: dotnet restore Dynamiq.API/Dynamiq.slnf
 
       - name: Build
-        run: dotnet build Dynamiq.slnf --no-restore
+        run: dotnet build Dynamiq.API/Dynamiq.slnf --no-restore
 
       - name: Test
-        run: dotnet test Dynamiq.slnf --no-build --verbosity normal
+        run: dotnet test Dynamiq.API/Dynamiq.slnf --no-build --verbosity normal
 
   build-and-push-image:
     needs: build

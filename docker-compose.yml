@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dynamiq.API/Dynamiq.API/Dockerfile
+    ports:
+      - "80:80"
