@@ -23,11 +23,20 @@ namespace Dynamiq.Infrastructure.Services.Auth
         private const string Authority = "https://accounts.google.com";
 
         public GoogleOidcService(
-            IOptions<GoogleOAuthOptions> options,
             System.Net.Http.IHttpClientFactory httpFactory,
             IHttpContextAccessor httpContextAccessor)
         {
-            _opts = options.Value;
+            var request = httpContextAccessor.HttpContext?.Request;
+
+            _opts = new GoogleOAuthOptions() 
+            {
+                ClientId = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_CLIENT_ID") 
+                    ?? throw new ArgumentNullException("GoogleOAuth:ClientId is not configured"),
+                ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_CLIENT_SECRET")
+                    ?? throw new ArgumentNullException("GoogleOAuth:ClientSecret is not configured"),
+                RedirectUri = $"{request.Scheme}://{request.Host}{request.PathBase}/auth/google/callback"
+            };
+            
             _http = httpFactory.CreateClient("google-oauth");
             _httpContextAccessor = httpContextAccessor;
 

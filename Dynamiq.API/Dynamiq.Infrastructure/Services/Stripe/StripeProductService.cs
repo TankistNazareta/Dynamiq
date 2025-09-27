@@ -13,7 +13,8 @@ namespace Dynamiq.Infrastructure.Services.Stripe
 
         public StripeProductService(IConfiguration config)
         {
-            var secretKey = config["Stripe:SecretKey"];
+            var secretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET")!
+                ?? throw new ArgumentNullException("Stripe:SecretKey is not configured");
             _client = new StripeClient(secretKey);
         }
 

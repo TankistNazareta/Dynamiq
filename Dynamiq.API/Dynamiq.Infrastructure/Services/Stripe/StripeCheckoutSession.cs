@@ -20,12 +20,13 @@ namespace Dynamiq.Infrastructure.Services.Stripe
 
         private readonly string _stripeSecretKey;
 
-        public StripeCheckoutSession(IConfiguration config, IStripeCouponService couponServiceStripe, ICouponService couponService)
+        public StripeCheckoutSession(IStripeCouponService couponServiceStripe, ICouponService couponService)
         {
             _couponServiceStripe = couponServiceStripe;
             _couponService = couponService;
 
-            _stripeSecretKey = config["Stripe:SecretKey"]!;
+            _stripeSecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET")!
+                ?? throw new ArgumentNullException("Stripe:SecretKey is not configured");
 
             _client = new StripeClient(_stripeSecretKey);
         }

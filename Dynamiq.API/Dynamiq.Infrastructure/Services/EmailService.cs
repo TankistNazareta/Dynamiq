@@ -22,7 +22,8 @@ namespace Dynamiq.Infrastructure.Services
             )
         {
             _emailFrom = config["Smtp:EmailFrom"]!;
-            _emailPassword = config["Smtp:Password"]!;
+            _emailPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD")!
+                ?? throw new ArgumentNullException("SMTP_PASSWORD is not configured"); ;
             _smtpHost = config["Smtp:Host"]!;
             _smtpPort = int.Parse(config["Smtp:Port"]!);
 

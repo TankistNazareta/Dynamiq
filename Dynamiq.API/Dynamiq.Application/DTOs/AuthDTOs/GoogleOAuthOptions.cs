@@ -4,6 +4,6 @@
     {
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
-        public string RedirectUri { get; set; } = string.Empty; // e.g. https://localhost:5001/auth/google/callback
+        public string RedirectUri { get; set; } = string.Empty;
     }
 }

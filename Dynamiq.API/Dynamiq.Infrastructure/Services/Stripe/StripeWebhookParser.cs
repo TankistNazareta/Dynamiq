@@ -13,7 +13,8 @@ namespace Dynamiq.Infrastructure.Services.Stripe
 
         public StripeWebhookParser(IConfiguration config)
         {
-            _webhookSecret = config["Stripe:WebhookSecret"];
+            _webhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET")!
+                ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET is not configured"); ;
         }
 
         public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature, out string eventType)

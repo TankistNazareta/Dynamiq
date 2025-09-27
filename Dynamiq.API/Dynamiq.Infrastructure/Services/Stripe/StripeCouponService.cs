@@ -9,9 +9,9 @@ namespace Dynamiq.Infrastructure.Services.Stripe
     {
         private readonly string _stripeSecretKey;
 
-        public StripeCouponService(IConfiguration configuration)
+        public StripeCouponService()
         {
-            _stripeSecretKey = configuration["Stripe:SecretKey"]
+            _stripeSecretKey = Environment.GetEnvironmentVariable("STRIPE_SECRET")!
                 ?? throw new ArgumentNullException("Stripe:SecretKey is not configured");
 
             StripeConfiguration.ApiKey = _stripeSecretKey;
