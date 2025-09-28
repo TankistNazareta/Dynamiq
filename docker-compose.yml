@@ -5,5 +5,7 @@ services:
     build:
       context: .
       dockerfile: ./Dynamiq.API/Dynamiq.API/Dockerfile
+    env:
+      - ./Dynamiq.API/Dyanmiq.API/.env
     ports:
       - "80:80"

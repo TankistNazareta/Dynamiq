@@ -1,6 +1,6 @@
 import { ApiResult, ErrorMsgType } from '../utils/types/api';
 
-const API_BASE = 'http://52.87.166.92:8080';
+const API_BASE = 'http://api.dynamiq-nazareta.fun:8080';
 
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
     const token = localStorage.getItem('token');
