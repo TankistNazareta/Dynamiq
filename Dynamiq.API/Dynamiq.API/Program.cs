@@ -190,7 +190,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", "http://truthful-scarecrow.surge.sh", "https://truthful-scarecrow.surge.sh/")
+            policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", "https://dynamiq-nazareta.netlify.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
