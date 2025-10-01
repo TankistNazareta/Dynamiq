@@ -200,8 +200,6 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionMiddleware>();
-
 if (!builder.Environment.IsEnvironment("Testing"))
 {
     //app.UseRateLimiter();
@@ -215,6 +213,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(MyAllowSpecificOrigins);
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
