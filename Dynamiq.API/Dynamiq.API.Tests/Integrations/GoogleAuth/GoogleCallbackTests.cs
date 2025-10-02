@@ -75,7 +75,7 @@ namespace Dynamiq.API.Tests.Integrations.GoogleAuth
 
             var redirectUri = response.Headers.Location?.ToString();
             redirectUri.Should().NotBeNull();
-            redirectUri.Should().Contain("http://localhost:3000/auth/callback");
+            redirectUri.Should().Contain("http://dynamiq-nazareta.fun/auth/callback");
             redirectUri.Should().Contain("accessToken=");
 
             using var scope = _factory.Services.CreateScope();
