@@ -69,7 +69,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
     };
 
     const onLogInByGoogle = () => {
-        window.location.href = 'http://localhost:5083/auth/google/log-in';
+        window.location.href = 'https://api.dynamiq-nazareta.fun/auth/google/log-in';
     };
 
     return (

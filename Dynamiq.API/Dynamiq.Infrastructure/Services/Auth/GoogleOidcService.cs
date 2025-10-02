@@ -34,7 +34,8 @@ namespace Dynamiq.Infrastructure.Services.Auth
                     ?? throw new ArgumentNullException("GoogleOAuth:ClientId is not configured"),
                 ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_CLIENT_SECRET")
                     ?? throw new ArgumentNullException("GoogleOAuth:ClientSecret is not configured"),
-                RedirectUri = $"{request.Scheme}://{request.Host}{request.PathBase}/auth/google/callback"
+                RedirectUri = Environment.GetEnvironmentVariable("GOOGLE_OAUTH_REDIRECT")
+                    ?? throw new ArgumentNullException("GOOGLEOAUTH:REDIRECT is not configured")
             };
             
             _http = httpFactory.CreateClient("google-oauth");
