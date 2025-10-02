@@ -42,7 +42,7 @@ namespace Dynamiq.API.Controllers
                 HttpOnly = true,
                 SameSite = SameSiteMode.Strict
             });
-            var frontendUrl = "http://dynamiq-nazareta.fun/auth/callback";
+            var frontendUrl = "https://dynamiq-nazareta.fun/auth/callback";
             return Redirect($"{frontendUrl}?accessToken={authResponse.AccessToken}");
         }
     }
