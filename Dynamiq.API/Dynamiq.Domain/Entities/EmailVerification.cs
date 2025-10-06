@@ -21,7 +21,7 @@ namespace Dynamiq.Domain.Entities
             IsConfirmed = false;
         }
 
-        public void Confirm(string email)
+        public void Confirm(string email, bool? needToSendEmail = true)
         {
             if (IsConfirmed)
                 throw new InvalidOperationException("Email already confirmed.");
@@ -31,7 +31,8 @@ namespace Dynamiq.Domain.Entities
 
             IsConfirmed = true;
 
-            AddDomainEvent(new UserConfirmedEmailEvent(email, UserId));
+            if(needToSendEmail == true) 
+                AddDomainEvent(new UserConfirmedEmailEvent(email, UserId));
         }
     }
 }

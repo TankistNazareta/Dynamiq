@@ -24,7 +24,9 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
     return (
         <div className="filter__section-item">
             <div
-                className="filter__section-item_parent d-flex align-items-center"
+                className={`filter__section-item_parent d-flex align-items-center btn--rigth-arrow ${
+                    needToShowChild ? 'btn--right-arrow--active' : ''
+                }`}
                 onClick={(e) => {
                     const target = e.target;
 

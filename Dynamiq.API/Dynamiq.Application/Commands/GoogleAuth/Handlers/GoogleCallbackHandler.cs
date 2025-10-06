@@ -76,7 +76,7 @@ namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
                 await _userRepo.AddAsync(user, ct);
                 await _unitOfWork.SaveChangesAsync(ct);
 
-                user.EmailVerification.Confirm(email);
+                user.EmailVerification.Confirm(email, false);
             }
             else if (user.PasswordHash != IPasswordService.DefaultHashForOidc)
             {
@@ -87,8 +87,6 @@ namespace Dynamiq.Application.Commands.GoogleAuth.Handlers
             user.AddRefreshToken(new RefreshToken(user.Id, authResponseDto.RefreshToken));
 
             await _unitOfWork.SaveChangesAsync(ct);
-
-            await _emailService.SendEmailAsync(user.Email, "New log in", HtmlBodyForEmail.GetLogInBody());
 
             return authResponseDto;
         }

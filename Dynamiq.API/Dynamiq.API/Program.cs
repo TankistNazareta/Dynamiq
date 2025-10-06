@@ -17,6 +17,7 @@ using Dynamiq.Infrastructure.Repositories;
 using Dynamiq.Infrastructure.Services;
 using Dynamiq.Infrastructure.Services.Auth;
 using Dynamiq.Infrastructure.Services.Stripe;
+using DotNetEnv;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +29,8 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -191,7 +194,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", 
-                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun")
+                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun", "http://localhost:3000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
