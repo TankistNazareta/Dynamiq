@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import SortEnum from '../../../utils/enums/sortByEnum';
 import { ProductFilter } from '../../../services/client/product';
 import CategoryItem, { CategoryItemPorps } from './CategoryItem';
@@ -14,9 +14,10 @@ interface FilterMenuProps {
     isActive: boolean;
     onFilterProp: (filter: ProductFilter) => void;
     setNeedShowFilterMenu: (needToShow: boolean) => void;
+    onClickFilter: () => void;
 }
 
-const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeedShowFilterMenu }) => {
+const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeedShowFilterMenu, onClickFilter }) => {
     const [error, setError] = useState('');
     const [filter, setFilter] = useState<ProductFilter>({});
     const [categoryItems, setCategoryItems] = useState<CategoryItemPorps[]>([]);
@@ -25,11 +26,13 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const { state, setState, makeRequest } = useHttpHook();
 
     const [searchParams, setSearchParams] = useSearchParams();
+    const location = useLocation();
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (!needToSetFilterFromUrl) return;
+
         updateFilterFromUrl();
-    }, [searchParams]);
+    }, [location.search]);
 
     useEffect(() => {
         if (!categoryItems.length) {
@@ -55,6 +58,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     useEffect(() => {
         if (!needToSetFilterFromUrl) return;
 
+        setFilter(getFilterFromUrl(searchParams, categoryItems));
         setNeedToSetFilterFromUrl(false);
 
         updateFilterFromUrl();
@@ -141,7 +145,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         const searchParams = new URLSearchParams();
 
         if (filter.sortBy !== undefined && filter.sortBy !== SortEnum.Default)
-            searchParams.set('sortBy', filter.sortBy!.toString());
+            searchParams.set('sortBy', filter.sortBy.toString());
         else searchParams.delete('sortBy');
 
         if (filter.maxPrice) searchParams.set('maxPrice', filter.maxPrice.toString());
@@ -172,6 +176,8 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         return idsCategories;
     };
+
+    console.log(filter, 'filter');
 
     return (
         <div className={`filter ${isActive ? 'filter--active' : ''}`}>
@@ -262,7 +268,12 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                 )}
             </div>
             <div className="filter__footer">
-                <button className="filter__footer-btn" onClick={() => onFilter()}>
+                <button
+                    className="filter__footer-btn"
+                    onClick={() => {
+                        onFilter();
+                        onClickFilter();
+                    }}>
                     Search
                 </button>
                 <h3 className="filter__footer-error text-danger">

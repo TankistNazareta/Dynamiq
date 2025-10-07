@@ -22,6 +22,12 @@ const Shop = () => {
         if (filterLoaded === false) setFilterLoaded(true);
     };
 
+    const onChangeDot = (addNumber: number) => {
+        setDotCount((prev) => prev + addNumber);
+
+        window.scrollTo({ top: 200, left: 0, behavior: 'smooth' });
+    };
+
     return (
         <>
             <SubheaderNav nameRoute="Shop" />
@@ -68,20 +74,20 @@ const Shop = () => {
                     <div className="shop__dots d-flex justify-content-center align-items-center">
                         {dotCount > 1 && (
                             <button
-                                onClick={() => setDotCount(dotCount - 1)}
+                                onClick={() => onChangeDot(-1)}
                                 className="shop__dot shop__dot-additional shop__dot-prev">
                                 Previos
                             </button>
                         )}
 
                         {dotCount > 2 && (
-                            <button onClick={() => setDotCount(dotCount - 2)} className="shop__dot">
+                            <button onClick={() => onChangeDot(-2)} className="shop__dot">
                                 {dotCount - 2}
                             </button>
                         )}
 
                         {dotCount > 1 && (
-                            <button onClick={() => setDotCount(dotCount - 1)} className="shop__dot">
+                            <button onClick={() => onChangeDot(-1)} className="shop__dot">
                                 {dotCount - 1}
                             </button>
                         )}
@@ -89,20 +95,20 @@ const Shop = () => {
                         <button className="shop__dot shop__dot-active">{dotCount}</button>
 
                         {dotCount * 16 < totalCount && (
-                            <button onClick={() => setDotCount(dotCount + 1)} className="shop__dot">
+                            <button onClick={() => onChangeDot(1)} className="shop__dot">
                                 {dotCount + 1}
                             </button>
                         )}
 
                         {dotCount * 16 + 16 < totalCount && (
-                            <button onClick={() => setDotCount(dotCount + 2)} className="shop__dot">
+                            <button onClick={() => onChangeDot(2)} className="shop__dot">
                                 {dotCount + 2}
                             </button>
                         )}
 
                         {dotCount * 16 < totalCount && (
                             <button
-                                onClick={() => setDotCount(dotCount + 1)}
+                                onClick={() => onChangeDot(1)}
                                 className="shop__dot shop__dot-additional shop__dot-next">
                                 Next
                             </button>
@@ -115,6 +121,7 @@ const Shop = () => {
                 isActive={needShowFilterMenu}
                 onFilterProp={onFilter}
                 setNeedShowFilterMenu={setNeedShowFilterMenu}
+                onClickFilter={() => setNeedShowFilterMenu(false)}
             />
         </>
     );

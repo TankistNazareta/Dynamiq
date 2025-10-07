@@ -20,7 +20,7 @@ import InfoMsg from './components/InfoMsg';
 import PaymentStatus from './pages/PaymentStatus';
 
 const AppInner = () => {
-    const [isAuth, setIsAuth] = useState(Boolean(localStorage.getItem('token')) ?? true);
+    const [isAuth, setIsAuth] = useState(Boolean(localStorage.getItem('token')) ?? null);
 
     const { makeRequest } = useHttpHook();
 
@@ -44,10 +44,6 @@ const AppInner = () => {
             // const expiresInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
             callInMs = exp ? exp * 1000 - Date.now() : 0;
         }
-
-        console.log(token);
-
-        console.log(callInMs, 'setTimerForRefreshTheAccessToken.expiresInMs ');
 
         setTimeout(async () => {
             makeRequest<AccessTokenReturnType>(() => refreshTheAccessToken())
@@ -77,13 +73,13 @@ const AppInner = () => {
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/account" element={<Account />} />
                         <Route path="*" element={<NotFound />} />
+                        <Route path="payment/success" element={<PaymentStatus status={'success'} />} />
+                        <Route path="payment/failed" element={<PaymentStatus status={'failed'} />} />
                     </>
                 )}
                 <Route path="confirm-email/:token" element={<ConfirmEmail />} />
                 <Route path="error" element={<OfflinePage />} />
                 <Route path="auth/callback" element={<AuthCallBack onLogIn={onLogIn} />} />
-                <Route path="payment/success" element={<PaymentStatus status={'success'} />} />
-                <Route path="payment/failed" element={<PaymentStatus status={'failed'} />} />
             </Routes>
             <InfoMsg />
             {isAuth && <Footer />}
