@@ -6,16 +6,20 @@ import SubheaderNav from '../../components/SubheaderNav';
 import { ProductFilter } from '../../services/client/product';
 import CardList from '../../components/Card/CardList';
 import FilterMenu from './components/FilterMenu';
+import Loading from '../../components/Loading';
 
 const Shop = () => {
     const [dotCount, setDotCount] = useState(1);
     const [productFilter, setProductFilter] = useState<ProductFilter>();
     const [needShowFilterMenu, setNeedShowFilterMenu] = useState(false);
     const [totalCount, setTotalCount] = useState<number>(0);
+    const [filterLoaded, setFilterLoaded] = useState<boolean>(false);
 
     const onFilter = (filterProp: ProductFilter) => {
         setProductFilter(filterProp);
         setDotCount(1);
+
+        if (filterLoaded === false) setFilterLoaded(true);
     };
 
     return (
@@ -50,12 +54,16 @@ const Shop = () => {
                 </div>
                 <section className="shop__first-section">
                     <div className="container shop__cards">
-                        <CardList
-                            limit={16}
-                            offset={dotCount * 16 - 16}
-                            productFilter={productFilter}
-                            setTotalCount={setTotalCount}
-                        />
+                        {filterLoaded === false ? (
+                            <Loading />
+                        ) : (
+                            <CardList
+                                limit={16}
+                                offset={dotCount * 16 - 16}
+                                productFilter={productFilter}
+                                setTotalCount={setTotalCount}
+                            />
+                        )}
                     </div>
                     <div className="shop__dots d-flex justify-content-center align-items-center">
                         {dotCount > 1 && (

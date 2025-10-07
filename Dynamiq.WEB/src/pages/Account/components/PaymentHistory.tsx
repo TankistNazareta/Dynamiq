@@ -1,8 +1,8 @@
 import '../scss/paymentHistory.scss';
 
 import { useState } from 'react';
-import useHttpHook, { stateType } from '../../../hooks/useHttp';
-import { getByIdProduct, ProductRes, ProductResBody } from '../../../services/client/product';
+import useHttpHook from '../../../hooks/useHttp';
+import { getByIdProduct, ProductResBody } from '../../../services/client/product';
 import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { ProductPaymentHistory } from '../../../services/client/paymentHistory';
@@ -81,9 +81,9 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ amount, createdAt, prod
                         {state === 'error' ? (
                             <h3 className="title-error text-danger">{error}</h3>
                         ) : state === 'success' ? (
-                            productPaymentHistoryData.map((obj) => (
-                                <Link to={`/product/${obj.productId}`}>
-                                    <div key={obj.productId} className="cart-item  payment-history-item__product">
+                            productPaymentHistoryData.map((obj, idx) => (
+                                <Link key={obj.productId ?? idx} to={`/product/${obj.productId}`}>
+                                    <div className="cart-item  payment-history-item__product">
                                         <div className="cart-item__img payment-history-item__product-img">
                                             <img src={obj.img} alt="" />
                                         </div>

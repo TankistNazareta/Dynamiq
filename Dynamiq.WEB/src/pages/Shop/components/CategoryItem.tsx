@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 export interface CategoryItemPorps {
     id: string;
@@ -24,7 +24,7 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
     return (
         <div className="filter__section-item">
             <div
-                className={`filter__section-item_parent d-flex align-items-center btn--rigth-arrow ${
+                className={`filter__section-item_parent d-flex align-items-center btn--right-arrow ${
                     needToShowChild ? 'btn--right-arrow--active' : ''
                 }`}
                 onClick={(e) => {

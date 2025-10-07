@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import SortEnum from '../../../utils/enums/sortByEnum';
 import { ProductFilter } from '../../../services/client/product';
 import CategoryItem, { CategoryItemPorps } from './CategoryItem';
@@ -25,11 +25,11 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const { state, setState, makeRequest } = useHttpHook();
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const location = useLocation();
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (!needToSetFilterFromUrl) return;
         updateFilterFromUrl();
-    }, [location.search]);
+    }, [searchParams]);
 
     useEffect(() => {
         if (!categoryItems.length) {

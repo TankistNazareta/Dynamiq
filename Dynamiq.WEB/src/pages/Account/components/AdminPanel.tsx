@@ -89,7 +89,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                     {user.paymnetHistories && user.paymnetHistories.length ? (
                         user.paymnetHistories.map((item, idx) => (
                             <PaymentHistory
-                                key={(item as any).id ?? idx}
+                                key={item.id ?? idx}
                                 amount={item.amount}
                                 createdAt={item.createdAt}
                                 productPaymentHistory={item.products}

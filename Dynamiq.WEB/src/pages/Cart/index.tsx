@@ -47,7 +47,7 @@ const Cart = () => {
     const onChangeQuantity = (productId: string, quantity: number) => {
         setSubTotal(
             cartData.reduce((acc, item) => {
-                if (item.productId == productId) return acc + item.price * quantity;
+                if (item.productId === productId) return acc + item.price * quantity;
 
                 return acc + item.price * item.quantity;
             }, 0)
@@ -88,7 +88,7 @@ const Cart = () => {
                     <div className="cart__wrapper">
                         {stateCart === 'error' ? (
                             <h3 className="title-error text-danger">{errorCart}</h3>
-                        ) : !isLoaded ? (
+                        ) : stateCart === 'loading' || stateCart === 'waiting' ? (
                             <Loading />
                         ) : cartData.length ? (
                             cartData.map((data) => (

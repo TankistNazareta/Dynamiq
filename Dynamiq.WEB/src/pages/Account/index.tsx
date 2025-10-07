@@ -50,7 +50,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
             <section className="user__about">
                 <h2 className="user__about-welcome">Welcome back!</h2>
                 <h5 className="user__about-descr">
-                    Your role - {user.role == roleEnum.Admin ? 'Admin' : 'default user'}. <br />
+                    Your role - {user.role === roleEnum.Admin ? 'Admin' : 'default user'}. <br />
                     Your email - {user.email}. <br />
                     You
                     {user.subscription.isConfirmed ? ' have' : " don't have"} subscribtion <br /> We was waiting for you
@@ -60,8 +60,9 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                 <div className="payment-history__header ">Your payment history:</div>
                 <div className="payment-history__container">
                     {user.paymnetHistories.length ? (
-                        user.paymnetHistories.map((item) => (
+                        user.paymnetHistories.map((item, idx) => (
                             <PaymentHistory
+                                key={item.id ?? idx}
                                 amount={item.amount}
                                 createdAt={item.createdAt}
                                 productPaymentHistory={item.products}
@@ -72,7 +73,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                     )}
                 </div>
             </section>
-            {user.role == roleEnum.Admin ? <AdminPanel /> : ''}
+            {user.role === roleEnum.Admin ? <AdminPanel /> : ''}
         </>
     );
 };

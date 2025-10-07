@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { CartRes, getCart, setQuantityCartItem } from '../services/client/cart';
 import getUserIdFromAccessToken from '../utils/services/getUserIdFromAccessToken';
-import { ApiResult, ErrorMsgType } from '../utils/types/api';
-import useHttpHook, { stateType } from './useHttp';
+import { ErrorMsgType } from '../utils/types/api';
+import useHttpHook from './useHttp';
 import { getByIdProduct, ProductResBody } from '../services/client/product';
-import { useNavigate } from 'react-router-dom';
 import { createCheckout, CreateCheckoutType } from '../services/client/payment';
 import intervalEnum from '../utils/enums/intervalEnum';
 

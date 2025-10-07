@@ -30,15 +30,15 @@ const Main = () => (
             <h2 className="main__second-section-title">Browse The Range</h2>
             <p className="main__second-section-subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
             <div className="main__wrapper-range d-flex flex-wrap justify-content-center">
-                <Link to="/shop?category=c97d57a4-65e2-486f-875c-d3b1b08422a7" className="main__range">
+                <Link to="/shop?category=a17d0cbd-0b78-486d-8145-428a15560a66" className="main__range">
                     <img src={range1Card} alt="Dining" />
                     <p>Dining</p>
                 </Link>
-                <Link to="/shop?category=3eb531a4-06fa-4108-866d-19bde1dbb980" className="main__range">
+                <Link to="/shop?category=86d3d91e-7f7d-4f15-b873-5abed85a1341" className="main__range">
                     <img src={range2Card} alt="Living" />
                     <p>Living</p>
                 </Link>
-                <Link to="/shop?category=70afc1b1-e690-485e-b55b-755974842cbf" className="main__range">
+                <Link to="/shop?category=211fc880-f38b-427d-ac79-a6ab995dd79b" className="main__range">
                     <img src={range3Card} alt="Bedroom" />
                     <p>Bedroom</p>
                 </Link>
