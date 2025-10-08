@@ -26,12 +26,11 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const { state, setState, makeRequest } = useHttpHook();
 
     const [searchParams, setSearchParams] = useSearchParams();
-    const location = useLocation();
-
     useEffect(() => {
         if (categoriesIsLoading) return;
 
         updateFilterFromUrl();
+        setFilter(getFilterFromUrl(searchParams, categoryItems));
     }, [searchParams]);
 
     useEffect(() => {
@@ -47,6 +46,14 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         }
     }, []);
 
+    useEffect(() => {
+        if (categoriesIsLoading) return;
+
+        setFilter(getFilterFromUrl(searchParams, categoryItems));
+
+        updateFilterFromUrl();
+    }, [categoryItems.length]);
+
     const updateFilterFromUrl = () => {
         var newFilter = getFilterFromUrl(searchParams, categoryItems);
 
@@ -54,14 +61,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         onFilterProp(newFilter);
     };
-
-    useEffect(() => {
-        if (categoriesIsLoading) return;
-
-        setFilter(getFilterFromUrl(searchParams, categoryItems));
-
-        updateFilterFromUrl();
-    }, [categoryItems]);
 
     const createDataForChildrenCategoryFromData = (category: CategoryRes, parentNumber: number): CategoryItemPorps => {
         const categoryProp: CategoryItemPorps = {
