@@ -63,7 +63,7 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
                     <hr className="hr-separator popup-cart__hr-separator" />
                     {state === 'error' ? (
                         <h3 className="title-error text-danger">{error}</h3>
-                    ) : !isLoaded && (state === 'loading' || state === 'waiting') ? (
+                    ) : !isLoaded ? (
                         <Loading />
                     ) : (
                         <>

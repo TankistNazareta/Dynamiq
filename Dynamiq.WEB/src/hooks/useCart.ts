@@ -29,10 +29,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
             return;
         }
 
-        if (!isLoaded) {
-            syncCart(resOfToken.userId);
-            setLoaded();
-        }
+        if (!isLoaded) syncCart(resOfToken.userId);
 
         const interval = setInterval(() => syncCart(resOfToken.userId), 30000);
 
@@ -71,6 +68,9 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
             .then((products: CartItemData[]) => {
                 setCartData(products);
                 setState('success');
+            })
+            .then(() => {
+                if (!isLoaded) setLoaded();
             })
             .catch((error) => {
                 if (error.status === 404) {

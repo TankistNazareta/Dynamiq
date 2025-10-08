@@ -88,7 +88,7 @@ const Cart = () => {
                     <div className="cart__wrapper">
                         {stateCart === 'error' ? (
                             <h3 className="title-error text-danger">{errorCart}</h3>
-                        ) : stateCart === 'loading' || stateCart === 'waiting' ? (
+                        ) : !isLoaded ? (
                             <Loading />
                         ) : cartData.length ? (
                             cartData.map((data) => (
