@@ -74,7 +74,7 @@ const Header = () => {
     }, [searchInput]);
 
     const onSearch = (search: string) => {
-        addSearchHistrory(search);
+        if (search.trim()) addSearchHistrory(search);
 
         if (location.pathname.startsWith('/shop')) {
             searchParams.set('search', search);

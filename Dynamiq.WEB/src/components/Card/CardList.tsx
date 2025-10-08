@@ -30,11 +30,8 @@ const CardList: React.FC<CardListProps> = ({ className, limit, offset, productFi
                 ? () => getFilteredProducts(productFilter, limit, offset)
                 : () => getRangeProduct(limit, offset);
 
-        console.log(productFilter);
-
         makeRequest<ProductRes>(requestMethod)
             .then((res) => {
-                console.log('CardList made request (looking for perfomance)');
                 if (setTotalCount !== undefined) setTotalCount(res.totalCount);
                 setProducts(res.products);
             })

@@ -21,7 +21,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const [error, setError] = useState('');
     const [filter, setFilter] = useState<ProductFilter>({});
     const [categoryItems, setCategoryItems] = useState<CategoryItemPorps[]>([]);
-    const [needToSetFilterFromUrl, setNeedToSetFilterFromUrl] = useState(false);
+    const [categoriesIsLoading, setCategoriesIsLoading] = useState(true);
 
     const { state, setState, makeRequest } = useHttpHook();
 
@@ -29,17 +29,17 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const location = useLocation();
 
     useEffect(() => {
-        if (!needToSetFilterFromUrl) return;
+        if (categoriesIsLoading) return;
 
         updateFilterFromUrl();
-    }, [location.search]);
+    }, [searchParams]);
 
     useEffect(() => {
         if (!categoryItems.length) {
             makeRequest<CategoryRes[]>(() => getAllCategories())
                 .then((res: CategoryRes[]) => {
                     const data = res.map((category) => createDataForChildrenCategoryFromData(category, 1));
-                    setNeedToSetFilterFromUrl(true);
+                    setCategoriesIsLoading(false);
                     setCategoryItems(data);
                 })
                 .then(() => setState('success'))
@@ -56,10 +56,9 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     };
 
     useEffect(() => {
-        if (!needToSetFilterFromUrl) return;
+        if (categoriesIsLoading) return;
 
         setFilter(getFilterFromUrl(searchParams, categoryItems));
-        setNeedToSetFilterFromUrl(false);
 
         updateFilterFromUrl();
     }, [categoryItems]);
@@ -142,27 +141,27 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         setError('');
 
         // url
-        const searchParams = new URLSearchParams();
+        const urlSearchParams = new URLSearchParams(searchParams);
 
         if (filter.sortBy !== undefined && filter.sortBy !== SortEnum.Default)
-            searchParams.set('sortBy', filter.sortBy.toString());
-        else searchParams.delete('sortBy');
+            urlSearchParams.set('sortBy', filter.sortBy.toString());
+        else urlSearchParams.delete('sortBy');
 
-        if (filter.maxPrice) searchParams.set('maxPrice', filter.maxPrice.toString());
-        else searchParams.delete('maxPrice');
+        if (filter.maxPrice) urlSearchParams.set('maxPrice', filter.maxPrice.toString());
+        else urlSearchParams.delete('maxPrice');
 
-        if (filter.minPrice) searchParams.set('minPrice', filter.minPrice.toString());
-        else searchParams.delete('minPrice');
+        if (filter.minPrice) urlSearchParams.set('minPrice', filter.minPrice.toString());
+        else urlSearchParams.delete('minPrice');
 
         const checkedCategoriesForUrl = GetCheckedCategoriesForUrl();
 
-        searchParams.delete('category');
+        urlSearchParams.delete('category');
 
         if (checkedCategoriesForUrl.length) {
-            checkedCategoriesForUrl.forEach((c) => searchParams.append('category', c));
+            checkedCategoriesForUrl.forEach((c) => urlSearchParams.append('category', c));
         }
 
-        setSearchParams(searchParams);
+        setSearchParams(urlSearchParams);
     };
 
     const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {
@@ -176,8 +175,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
 
         return idsCategories;
     };
-
-    console.log(filter, 'filter');
 
     return (
         <div className={`filter ${isActive ? 'filter--active' : ''}`}>
