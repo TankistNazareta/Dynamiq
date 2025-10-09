@@ -1,12 +1,13 @@
 ﻿using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.Queries.Carts.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("cart")]
     public class CartController : ControllerBase
     {
