@@ -21,15 +21,18 @@ namespace Dynamiq.API.Tests.Integrations.Users
 
         private async Task<HttpResponseMessage> MakeChangePasswordRequest(ChangeUserPasswordCommand command)
         {
+            TestAuthHandler.TestEmail = command.Email;
+            _client = _factory.CreateClient(); 
+
             var signUpCommand = new RegisterUserCommand(command.Email, "OldPassword123!");
             await UserServiceForTests.CreateUserAndConfirmHisEmail(_factory, _client, signUpCommand);
 
             var logInCommand = new LogInUserCommand(command.Email, "OldPassword123!");
-
             var logInResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
             var logInResponseDto = await logInResponse.Content.ReadFromJsonAsync<LogInResponse>();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", logInResponseDto.AccessToken);
+            _client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", logInResponseDto.AccessToken);
 
             var response = await _client.PutAsJsonAsync("/user/change-password", command);
 
@@ -37,7 +40,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
         }
 
         [Fact]
-
         public async Task ChangePassword_WithValidData_ShouldReturnOk()
         {
             var command = new ChangeUserPasswordCommand($"newEmail{Guid.NewGuid():N}@gmail.com", "OldPassword123!", "NewPassword456!");

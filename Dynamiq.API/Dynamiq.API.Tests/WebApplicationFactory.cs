@@ -1,6 +1,7 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Context;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
@@ -75,6 +76,16 @@ namespace Dynamiq.API.Tests
                 var mockEmail = new Mock<IEmailService>();
                 mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
                 services.AddSingleton(mockEmail.Object);
+
+                services.AddAuthentication("Test")
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
+
+                services.PostConfigure<Microsoft.AspNetCore.Authentication.AuthenticationOptions>(opts =>
+                {
+                    opts.DefaultAuthenticateScheme = "Test";
+                    opts.DefaultChallengeScheme = "Test";
+                });
+
 
                 var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
                 foreach (var hs in hostedServices)
