@@ -1,11 +1,13 @@
 ﻿using Dynamiq.Application.Commands.Users.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
+    [AllowAnonymous]
     [Route("auth")]
     public class AuthController : ControllerBase
     {

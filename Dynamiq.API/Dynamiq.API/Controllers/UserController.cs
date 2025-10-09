@@ -10,6 +10,7 @@ using System.Security.Claims;
 namespace Dynamiq.API.Controllers
 {
     [Route("user")]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -22,7 +23,6 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
@@ -42,7 +42,6 @@ namespace Dynamiq.API.Controllers
             return Ok(user);
         }
 
-        [Authorize]
         [HttpPut("change-password")]
         public async Task<IActionResult> Put([FromBody] ChangeUserPasswordCommand command)
         {
@@ -58,7 +57,6 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "You successfully changed your password" });
         }
 
-        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -75,7 +73,6 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "user was removed" });
         }
 
-        [Authorize]
         [HttpGet("email")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {

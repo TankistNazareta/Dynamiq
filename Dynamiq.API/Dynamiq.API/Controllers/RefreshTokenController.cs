@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Application.Commands.RefreshTokens.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
@@ -17,6 +18,7 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
+        [Authorize]
         [HttpPut("revoke")]
         public async Task<IActionResult> Revoke()
         {
@@ -32,6 +34,7 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "Token successfully revoked" });
         }
 
+        [AllowAnonymous]
         [HttpPut("refresh")]
         public async Task<IActionResult> Refresh()
         {

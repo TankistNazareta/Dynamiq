@@ -1,11 +1,13 @@
 ﻿using Dynamiq.Application.Commands.EmailVerifications.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
     [Route("email-verification")]
     [ApiController]
+    [AllowAnonymous]
     public class EmailVerificationController : ControllerBase
     {
         private readonly ILogger<EmailVerificationController> _logger;

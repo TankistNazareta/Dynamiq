@@ -9,6 +9,7 @@ namespace Dynamiq.API.Controllers
 {
     [Route("product")]
     [ApiController]
+    [Authorize]
     public class ProductController : ControllerBase
     {
         private readonly ILogger _logger;
@@ -97,7 +98,6 @@ namespace Dynamiq.API.Controllers
             return Ok(products);
         }
 
-        [Authorize]
         [HttpPut("add-view")]
         public async Task<IActionResult> AddViewCount([FromQuery] Guid productId)
         {

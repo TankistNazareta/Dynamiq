@@ -1,5 +1,6 @@
 ﻿using Dynamiq.Application.Commands.Payment.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -20,6 +21,7 @@ namespace Dynamiq.API.Controllers
 
         [HttpPost("create-checkout-session")]
         [EnableRateLimiting("CreateCheckoutLimiter")]
+        [Authorize]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionCommand request)
         {
             var sessionUrl = await _mediator.Send(request);
@@ -30,6 +32,7 @@ namespace Dynamiq.API.Controllers
         }
 
         [HttpPost("webhook")]
+        [AllowAnonymous]
         public async Task<IActionResult> StripeWebhook()
         {
             string json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();

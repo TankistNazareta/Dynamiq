@@ -1,11 +1,13 @@
 ﻿using Dynamiq.Application.Queries.PaymentHistory.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
     [Route("payment-history")]
     [ApiController]
+    [Authorize]
     public class PaymentHistoryController : ControllerBase
     {
         private readonly IMediator _mediator;

@@ -1,10 +1,12 @@
 ﻿using Dynamiq.Application.Queries.Coupons.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("coupon")]
     public class CouponController : ControllerBase
     {

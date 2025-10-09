@@ -1,10 +1,12 @@
 ﻿using Dynamiq.Application.Queries.Categories.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dynamiq.API.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("category")]
     public class CategoryController : ControllerBase
     {
