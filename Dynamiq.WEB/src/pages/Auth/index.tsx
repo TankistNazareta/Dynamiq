@@ -26,8 +26,8 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
     const { makeRequest, state, setState } = useHttpHook();
 
     useEffect(() => {
-        addItem({ type: 'info', msg: 'For Admin email: admin@example.com; pass: Admin' });
-        addItem({ type: 'info', msg: 'For User email: user@example.com; pass: User' });
+        addItem({ type: 'info', msg: 'For Admin email: admin@example.com; pass: Password123' });
+        addItem({ type: 'info', msg: 'For User email: user@example.com; pass: Password123' });
         addItem({ type: 'info', msg: 'Also you can create new account :)' });
     }, []);
 
