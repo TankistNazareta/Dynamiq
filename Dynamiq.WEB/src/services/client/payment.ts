@@ -36,6 +36,7 @@ type CrateCheckoutProps =
       };
 
 export const createCheckout = async (props: CrateCheckoutProps) => {
+    alert('type: 4242 4242 4242 4242 for successfully payment, and 4000 0000 0000 0002 for cancel payment');
     const mainUrl = window.location.origin;
 
     let requestBody: CreateCheckoutRequest;

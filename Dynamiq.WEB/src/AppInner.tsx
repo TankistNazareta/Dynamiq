@@ -18,15 +18,20 @@ import useHttpHook from './hooks/useHttp';
 import AuthCallBack from './pages/Auth/AuthCallback';
 import InfoMsg from './components/InfoMsg';
 import PaymentStatus from './pages/PaymentStatus';
+import About from './pages/About';
 
 const AppInner = () => {
-    const [isAuth, setIsAuth] = useState(Boolean(localStorage.getItem('token')) ?? null);
+    const [isAuth, setIsAuth] = useState(true);
 
     const { makeRequest } = useHttpHook();
 
     useEffect(() => {
         setTimerForRefreshTheAccessToken();
-    }, [isAuth]);
+    }, []);
+
+    useEffect(() => {
+        if (localStorage.getItem('token') === undefined) setIsAuth(false);
+    }, [localStorage.getItem('token')]);
 
     const setTimerForRefreshTheAccessToken = async () => {
         if (!isAuth) return;
@@ -41,8 +46,7 @@ const AppInner = () => {
             const payload = JSON.parse(payloadJson);
 
             const exp = payload.exp;
-            // const expiresInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
-            callInMs = exp ? exp * 1000 - Date.now() : 0;
+            callInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
         }
 
         setTimeout(async () => {
@@ -71,6 +75,7 @@ const AppInner = () => {
                         <Route path="/product/:id" element={<Product />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/cart" element={<Cart />} />
+                        <Route path="/about" element={<About />} />
                         <Route path="/account" element={<Account />} />
                         <Route path="*" element={<NotFound />} />
                         <Route path="payment/success" element={<PaymentStatus status={'success'} />} />

@@ -194,7 +194,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", 
-                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun", "http://localhost:3000")
+                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

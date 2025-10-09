@@ -1,18 +1,21 @@
 import './auth.scss';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { logIn, AccessTokenReturnType, signUp, logInByGoogle, LogInByGoogleResponse } from '../../services/client/auth';
 import { ResponseMsg } from '../../utils/types/api';
 import useHttpHook from '../../hooks/useHttp';
 import Loading from '../../components/Loading';
+import { useInfoMsg } from '../../components/InfoMsg/InfoMsgContext';
 
 interface AuthPageProps {
     onLogIn: Function;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
+    const { addItem } = useInfoMsg();
+
     const [newUser, setNewUser] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,6 +24,12 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
     const [success, setSuccess] = useState('');
 
     const { makeRequest, state, setState } = useHttpHook();
+
+    useEffect(() => {
+        addItem({ type: 'info', msg: 'For Admin email: admin@example.com; pass: Admin' });
+        addItem({ type: 'info', msg: 'For User email: user@example.com; pass: User' });
+        addItem({ type: 'info', msg: 'Also you can create new account :)' });
+    }, []);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

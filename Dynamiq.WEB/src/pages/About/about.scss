@@ -1,0 +1,45 @@
+.about-project {
+    padding: 50px 20px;
+    background-color: #f9f9f9;
+    font-family: Arial, sans-serif;
+
+    &__container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    &__title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    &__subtitle {
+        font-size: 1.5rem;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        color: #444;
+    }
+
+    &__description {
+        font-size: 1rem;
+        margin-bottom: 15px;
+        color: #555;
+        line-height: 1.6;
+
+        &-link {
+            color: #0000ee;
+            text-decoration: underline;
+        }
+    }
+
+    &__list {
+        list-style: disc;
+        padding-left: 20px;
+        margin-bottom: 20px;
+    }
+
+    &__item {
+        margin-bottom: 10px;
+    }
+}
