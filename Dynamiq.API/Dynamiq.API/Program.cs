@@ -205,7 +205,7 @@ var app = builder.Build();
 
 if (!builder.Environment.IsEnvironment("Testing"))
 {
-    //app.UseRateLimiter();
+    app.UseRateLimiter();
 }
 
 // Configure the HTTP request pipeline.
