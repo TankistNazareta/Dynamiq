@@ -40,6 +40,11 @@ export const getSearchedNames = async (productFilter: ProductFilter) => {
     return res;
 };
 
+export const getSubscriptions = async () => {
+    const res = await apiRequest<ProductRes>('/product/subscription');
+    return res;
+};
+
 export const addViewCount = async (id: string) => {
     await apiRequest(`/product/add-view?productId=${id}`, { method: 'PUT' });
 };

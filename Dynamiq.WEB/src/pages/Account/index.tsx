@@ -10,6 +10,7 @@ import { ErrorMsgType } from '../../utils/types/api';
 import Loading from '../../components/Loading';
 import { getPaymentHistoryByUserId, PaymentHistoryRes } from '../../services/client/paymentHistory';
 import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
+import SubscriptionModal from './components/SubscriptionModal';
 
 const Account = () => {
     const [error, setError] = useState('');
@@ -45,6 +46,8 @@ const Account = () => {
 };
 
 const View: React.FC<{ user: UserRes }> = ({ user }) => {
+    const [needShowSubscriptionModal, setNeedShowSubscriptionModal] = useState(false);
+
     return (
         <>
             <section className="user__about">
@@ -53,7 +56,15 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                     Your role - {user.role === roleEnum.Admin ? 'Admin' : 'default user'}. <br />
                     Your email - {user.email}. <br />
                     You
-                    {user.subscription.isConfirmed ? ' have' : " don't have"} subscribtion <br /> We was waiting for you
+                    {user.subscription.isConfirmed ? ' have' : " don't have"} subscribtion
+                    {!user.subscription.isConfirmed ? (
+                        <button className="user__about-buy" onClick={() => setNeedShowSubscriptionModal(true)}>
+                            <strong>Buy subscribtion?</strong>
+                        </button>
+                    ) : (
+                        ''
+                    )}
+                    <br /> We was waiting for you
                 </h5>
             </section>
             <section className="payment-history container">
@@ -74,6 +85,7 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                 </div>
             </section>
             {user.role === roleEnum.Admin ? <AdminPanel /> : ''}
+            <SubscriptionModal isOpen={needShowSubscriptionModal} onClose={() => setNeedShowSubscriptionModal(false)} />
         </>
     );
 };
