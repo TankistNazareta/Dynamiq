@@ -82,19 +82,21 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                     email confirmed: {user.emailVerification.isConfirmed ? '✔' : '❌'}
                 </p>
                 <p className="payment-history-item__descr admin-panel__result-descr">
-                    has subscription: {user.subscription.isConfirmed ? '✔' : '❌'}
+                    has subscription: {user.hasActiveSubscription ? '✔' : '❌'}
                 </p>
                 <p className="payment-history-item__descr admin-panel__result-payment-history">Payment Histories:</p>
                 <div className="payment-history__container d-flex flex-column admin-panel__result-payment-history-container container">
                     {user.paymnetHistories && user.paymnetHistories.length ? (
-                        user.paymnetHistories.map((item, idx) => (
-                            <PaymentHistory
-                                key={item.id ?? idx}
-                                amount={item.amount}
-                                createdAt={item.createdAt}
-                                productPaymentHistory={item.products}
-                            />
-                        ))
+                        user.paymnetHistories
+                            .filter((item) => item.products.length)
+                            .map((item, idx) => (
+                                <PaymentHistory
+                                    key={item.id ?? idx}
+                                    amount={item.amount}
+                                    createdAt={item.createdAt}
+                                    productPaymentHistory={item.products}
+                                />
+                            ))
                     ) : (
                         <h3 className="payment-history__descr text-center">User doesn't have yet payment histories</h3>
                     )}

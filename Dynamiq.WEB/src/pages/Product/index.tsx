@@ -11,8 +11,6 @@ import useHttpHook from '../../hooks/useHttp';
 import { ErrorMsgType } from '../../utils/types/api';
 import CardList from '../../components/Card/CardList';
 import { getCategoryWithParentById, GetCategoryWithParentByIdRes } from '../../services/client/category';
-import { setQuantityCartItem } from '../../services/client/cart';
-import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import { createCheckout, CreateCheckoutType } from '../../services/client/payment';
 import AddCartBtn from '../../components/AddCartBtn';
 
@@ -60,17 +58,8 @@ const Product = () => {
     }, [id]);
 
     const onPurchase = () => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setError({ Message: resOfToken.error, StatusCode: 401 });
-            return;
-        }
-
         makeRequest<CreateCheckoutType>(() =>
             createCheckout({
-                intervalEnum: productData!.interval,
-                userId: resOfToken.userId,
                 productId: productData!.id,
                 quantity: quantity,
             })

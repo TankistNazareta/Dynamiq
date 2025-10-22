@@ -54,6 +54,7 @@ namespace Dynamiq.API.Middlewares
                     _logger.LogWarning(exception, "Not confirmed Email.");
                     break;
                 case CannotLinkOidcAccountException:
+                case ActiveSubscriptionExistsException:
                     statusCode = HttpStatusCode.Conflict;
                     message = exception.Message;
                     _logger.LogWarning(exception, "Conflict.");

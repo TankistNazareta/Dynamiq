@@ -6,5 +6,6 @@ namespace Dynamiq.Application.Interfaces.Repositories
     {
         Task AddAsync(PaymentHistory paymentHistory, CancellationToken ct);
         Task<IReadOnlyList<PaymentHistory>> GetListByUserIdAsync(Guid userId, CancellationToken ct);
+        Task<PaymentHistory?> GetBySubscriptionIdAsync(string subscriptionId, CancellationToken ct);
     }
 }

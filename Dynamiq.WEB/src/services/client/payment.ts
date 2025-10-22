@@ -1,4 +1,3 @@
-import IntervalEnum from '../../utils/enums/intervalEnum';
 import { apiRequest } from '../api';
 
 export type CreateCheckoutType = {
@@ -7,55 +6,57 @@ export type CreateCheckoutType = {
 
 export type CreateCheckoutRequest =
     | {
-          intervalEnum: IntervalEnum;
           successUrl: string;
           cancelUrl: string;
-          userId: string;
           couponCodes?: string[];
       }
     | {
           productId: string;
           quantity: number;
-          intervalEnum: IntervalEnum;
           successUrl: string;
           cancelUrl: string;
-          userId: string;
+      }
+    | {
+          subscriptionId: string;
+          successUrl: string;
+          cancelUrl: string;
       };
 
 type CrateCheckoutProps =
     | {
-          intervalEnum: IntervalEnum;
-          userId: string;
           productId: string;
           quantity: number;
       }
     | {
-          intervalEnum: IntervalEnum;
-          userId: string;
           couponCodes?: string[];
+      }
+    | {
+          subscriptionId: string;
       };
 
 export const createCheckout = async (props: CrateCheckoutProps) => {
-    alert('type: 4242 4242 4242 4242 for successfully payment, and 4000 0000 0000 0002 for cancel payment');
+    alert('type: 4242 4242 4242 4242 for successfully payment, and 4000 0000 0000 0002 for fail payment');
     const mainUrl = window.location.origin;
 
     let requestBody: CreateCheckoutRequest;
 
     if ('productId' in props && 'quantity' in props) {
         requestBody = {
-            intervalEnum: props.intervalEnum,
             successUrl: `${mainUrl}/payment/success`,
             cancelUrl: `${mainUrl}/payment/failed`,
-            userId: props.userId,
             productId: props.productId,
             quantity: props.quantity,
         };
-    } else {
+    } else if ('subscriptionId' in props) {
         requestBody = {
-            intervalEnum: props.intervalEnum,
             successUrl: `${mainUrl}/payment/success`,
             cancelUrl: `${mainUrl}/payment/failed`,
-            userId: props.userId,
+            subscriptionId: props.subscriptionId,
+        };
+    } else {
+        requestBody = {
+            successUrl: `${mainUrl}/payment/success`,
+            cancelUrl: `${mainUrl}/payment/failed`,
             couponCodes: props.couponCodes,
         };
     }

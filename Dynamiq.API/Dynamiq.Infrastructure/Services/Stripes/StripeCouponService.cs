@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Stripe;
 using StripeSdk = Stripe;
 
-namespace Dynamiq.Infrastructure.Services.Stripe
+namespace Dynamiq.Infrastructure.Services.Stripes
 {
     public class StripeCouponService : IStripeCouponService
     {

@@ -75,7 +75,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void AddSubscription_ShouldAdd_When_NoActive()
         {
             var user = new User(ValidEmail, ValidPasswordHash, RoleEnum.DefaultUser);
-            var sub = new Subscription(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
             sub.Cancel();
 
             user.AddSubscription(sub);
@@ -87,10 +87,10 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void AddSubscription_ShouldThrow_When_AlreadyHasActive()
         {
             var user = new User(ValidEmail, ValidPasswordHash, RoleEnum.DefaultUser);
-            var active = new Subscription(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
+            var active = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
             user.AddSubscription(active);
 
-            var another = new Subscription(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
+            var another = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
             Action act = () => user.AddSubscription(another);
 
             act.Should().Throw<InvalidOperationException>();

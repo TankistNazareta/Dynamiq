@@ -2,7 +2,6 @@
 {
     public enum IntervalEnum
     {
-        OneTime,
         Monthly,
         Yearly
     }

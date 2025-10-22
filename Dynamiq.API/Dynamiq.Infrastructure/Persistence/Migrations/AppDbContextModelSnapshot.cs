@@ -71,23 +71,19 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("Amount");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Interval")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StripePaymentId")
+                    b.Property<string>("StripeTransactionId")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("StripeTransactionId");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -96,7 +92,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentHistories");
+                    b.ToTable("PaymentHistories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Product", b =>
@@ -118,9 +114,6 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("Interval")
-                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -148,6 +141,38 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Dynamiq.Domain.Aggregates.Subscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Interval")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StripePriceId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("StripeProductId")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Subscriptions", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.User", b =>
@@ -271,8 +296,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("PaymentHistoryId")
                         .HasColumnType("uniqueidentifier");
@@ -289,7 +313,7 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductPaymentHistories");
+                    b.ToTable("ProductPaymentHistories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Entities.RefreshToken", b =>
@@ -320,37 +344,30 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
-            modelBuilder.Entity("Dynamiq.Domain.Entities.Subscription", b =>
+            modelBuilder.Entity("Dynamiq.Domain.Entities.SubscriptionHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWID()");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PaymentHistoryId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProductId")
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("PaymentHistoryId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("SubscriptionId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaymentHistoryId");
+                    b.HasIndex("PaymentHistoryId")
+                        .IsUnique();
 
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Subscriptions");
+                    b.ToTable("SubscriptionHistories", (string)null);
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.Category", b =>
@@ -487,23 +504,11 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Dynamiq.Domain.Entities.Subscription", b =>
+            modelBuilder.Entity("Dynamiq.Domain.Entities.SubscriptionHistory", b =>
                 {
                     b.HasOne("Dynamiq.Domain.Aggregates.PaymentHistory", null)
-                        .WithMany()
-                        .HasForeignKey("PaymentHistoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Dynamiq.Domain.Aggregates.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Dynamiq.Domain.Aggregates.User", null)
-                        .WithMany("Subscriptions")
-                        .HasForeignKey("UserId")
+                        .WithOne("Subscription")
+                        .HasForeignKey("Dynamiq.Domain.Entities.SubscriptionHistory", "PaymentHistoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -523,6 +528,9 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.PaymentHistory", b =>
                 {
                     b.Navigation("Products");
+
+                    b.Navigation("Subscription")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Dynamiq.Domain.Aggregates.User", b =>
@@ -533,8 +541,6 @@ namespace Dynamiq.Infrastructure.Persistence.Migrations
                     b.Navigation("PaymentHistories");
 
                     b.Navigation("RefreshTokens");
-
-                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

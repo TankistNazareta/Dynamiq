@@ -14,7 +14,7 @@ namespace Dynamiq.Domain.Tests.Entities
         public void Constructor_ShouldSetDates_For_MonthlyInterval()
         {
             var before = DateTime.UtcNow;
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
             var after = DateTime.UtcNow;
 
             sub.UserId.Should().Be(_userId);
@@ -28,7 +28,7 @@ namespace Dynamiq.Domain.Tests.Entities
         public void Constructor_ShouldSetDates_For_YearlyInterval()
         {
             var before = DateTime.UtcNow;
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Yearly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Yearly);
             var after = DateTime.UtcNow;
 
             sub.StartDate.Should().BeAfter(before.AddSeconds(-1)).And.BeBefore(after.AddSeconds(1));
@@ -38,22 +38,22 @@ namespace Dynamiq.Domain.Tests.Entities
         [Fact]
         public void Constructor_ShouldThrow_For_UnsupportedInterval()
         {
-            Action act = () => new Subscription(_userId, _productId, _paymentHistoryId, (IntervalEnum)999);
+            Action act = () => new SubscriptionHistory(_userId, _productId, _paymentHistoryId, (IntervalEnum)999);
             act.Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Fact]
         public void IsActive_ShouldReturnTrue_When_CurrentBetweenStartAndEnd()
         {
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
             sub.IsActive().Should().BeTrue();
         }
 
         [Fact]
         public void IsActive_ShouldReturnFalse_When_AfterEndDate()
         {
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
-            typeof(Subscription)
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            typeof(SubscriptionHistory)
                 .GetProperty("EndDate")
                 .SetValue(sub, DateTime.UtcNow.AddSeconds(-1));
             sub.IsActive().Should().BeFalse();
@@ -62,7 +62,7 @@ namespace Dynamiq.Domain.Tests.Entities
         [Fact]
         public void Extend_ShouldThrow_When_DurationNotPositive()
         {
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
             Action act = () => sub.Extend(TimeSpan.FromDays(0));
             act.Should().Throw<ArgumentException>()
                 .WithMessage("Duration must be positive");
@@ -71,7 +71,7 @@ namespace Dynamiq.Domain.Tests.Entities
         [Fact]
         public void Extend_ShouldAddDurationToEndDate_When_Valid()
         {
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
             var originalEnd = sub.EndDate;
             sub.Extend(TimeSpan.FromDays(5));
             sub.EndDate.Should().BeCloseTo(originalEnd.AddDays(5), precision: TimeSpan.FromSeconds(1));
@@ -80,7 +80,7 @@ namespace Dynamiq.Domain.Tests.Entities
         [Fact]
         public void Cancel_ShouldSetEndDateToNow()
         {
-            var sub = new Subscription(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
+            var sub = new SubscriptionHistory(_userId, _productId, _paymentHistoryId, IntervalEnum.Monthly);
             sub.Cancel();
             sub.EndDate.Should().BeCloseTo(DateTime.UtcNow, precision: TimeSpan.FromSeconds(1));
         }

@@ -21,9 +21,6 @@ namespace Dynamiq.Application.Commands.Products.Validators
             RuleFor(x => x.Price)
                 .GreaterThan(0).WithMessage("Price must be greater than zero.");
 
-            RuleFor(x => x.Interval)
-                .IsInEnum().WithMessage("Interval must be a valid enum value.");
-
             RuleFor(x => x.ImgUrls)
                 .NotEmpty().WithMessage("At least one image URL is required.")
                 .ForEach(urlRule => urlRule

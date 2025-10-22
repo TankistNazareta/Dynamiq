@@ -28,25 +28,23 @@ namespace Dynamiq.Infrastructure.Repositories
 
         public async Task<User?> GetByEmailAsync(string email, CancellationToken ct)
                     => await _db.Users
-                                    .Include(u => u.EmailVerification)
-                                    .Include(u => u.Subscriptions)
-                                    .Include(u => u.PaymentHistories)
-                                    .Include(u => u.RefreshTokens)
-                                    .FirstOrDefaultAsync(u => u.Email == email, ct);
+                        .Include(u => u.EmailVerification)
+                        .Include(u => u.PaymentHistories)
+                            .ThenInclude(ph => ph.Subscription)
+                        .Include(u => u.RefreshTokens)
+                        .FirstOrDefaultAsync(u => u.Email == email, ct);
 
         public async Task<User?> GetByEmailVerificationTokenAsync(string token, CancellationToken ct)
                     => await _db.Users
                                .Include(u => u.EmailVerification)
-                               .Include(u => u.Subscriptions)
-                               .Include(u => u.PaymentHistories)
                                .Include(u => u.RefreshTokens)
                                .FirstOrDefaultAsync(u => u.EmailVerification.Token == token);
 
         public async Task<User?> GetByIdAsync(Guid id, CancellationToken ct)
                     => await _db.Users
                                     .Include(u => u.EmailVerification)
-                                    .Include(u => u.Subscriptions)
                                     .Include(u => u.PaymentHistories)
+                                        .ThenInclude(ph => ph.Subscription)
                                     .Include(u => u.RefreshTokens)
                                     .FirstOrDefaultAsync(u => u.Id == id, ct);
 
@@ -54,8 +52,6 @@ namespace Dynamiq.Infrastructure.Repositories
                     => await _db.Users
                                     .Include(u => u.RefreshTokens)
                                     .Include(u => u.EmailVerification)
-                                    .Include(u => u.Subscriptions)
-                                    .Include(u => u.PaymentHistories)
                                     .FirstOrDefaultAsync(u =>
                                                     u.RefreshTokens.Any(rt => rt.Token == token &&
                                                     !rt.IsRevoked &&

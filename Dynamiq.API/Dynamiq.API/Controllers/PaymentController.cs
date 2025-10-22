@@ -1,4 +1,5 @@
-﻿using Dynamiq.Application.Commands.Payment.Commands;
+﻿using Dynamiq.API.Interfaces;
+using Dynamiq.Application.Commands.Payment.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace Dynamiq.API.Controllers
     {
         private readonly ILogger _logger;
         private readonly IMediator _mediator;
+        private readonly IUserContextService _userContext;
 
-        public PaymentController(ILogger<PaymentController> logger, IMediator mediator)
+        public PaymentController(ILogger<PaymentController> logger, IMediator mediator, IUserContextService userContextService)
         {
             _logger = logger;
             _mediator = mediator;
+            _userContext = userContextService;
         }
 
         [HttpPost("create-checkout-session")]
@@ -24,6 +27,8 @@ namespace Dynamiq.API.Controllers
         [Authorize]
         public async Task<IActionResult> CreateCheckoutSession([FromBody] CreateCheckoutSessionCommand request)
         {
+            request.UserId = _userContext.GetUserId();
+
             var sessionUrl = await _mediator.Send(request);
 
             _logger.LogInformation("checkout session was created for user: {Id}", request.UserId);
@@ -43,7 +48,7 @@ namespace Dynamiq.API.Controllers
             if (!needResponse)
                 return Ok();
 
-            _logger.LogInformation("payment completed successfully");
+            _logger.LogInformation("webhook completed successfully");
 
             return Ok(new { Message = "completed successfully" });
         }

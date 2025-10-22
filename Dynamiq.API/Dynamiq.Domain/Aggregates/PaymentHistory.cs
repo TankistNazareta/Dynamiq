@@ -9,18 +9,18 @@ namespace Dynamiq.Domain.Aggregates
     public class PaymentHistory : BaseEntity
     {
         public Guid Id { get; private set; }
-        public string StripePaymentId { get; private set; }
+        public string StripeTransactionId { get; private set; }
         public decimal Amount { get; private set; }
-        public IntervalEnum Interval { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public Guid UserId { get; private set; }
 
         private readonly List<ProductPaymentHistory> _products = new();
         public IReadOnlyCollection<ProductPaymentHistory> Products => _products.AsReadOnly();
+        public SubscriptionHistory Subscription { get; private set; }
 
         private PaymentHistory() { } // EF Core
 
-        public PaymentHistory(Guid userId, string stripePaymentId, decimal amount, IntervalEnum interval)
+        public PaymentHistory(Guid userId, string stripePaymentId, decimal amount)
         {
             if (string.IsNullOrWhiteSpace(stripePaymentId))
                 throw new ArgumentException("Stripe Payment Id cannot be empty", nameof(stripePaymentId));
@@ -29,9 +29,8 @@ namespace Dynamiq.Domain.Aggregates
                 throw new ArgumentException("Quantity must be greater than zero", nameof(amount));
 
             UserId = userId;
-            StripePaymentId = stripePaymentId;
+            StripeTransactionId = stripePaymentId;
             Amount = amount;
-            Interval = interval;
             CreatedAt = DateTime.UtcNow;
 
             AddDomainEvent(new PaymentHistoryCreatedEvent(this));
@@ -39,5 +38,8 @@ namespace Dynamiq.Domain.Aggregates
 
         public void AddProduct(Guid productId, int quantity = 1)
             => _products.Add(new(productId, Id, quantity));
+
+        public void SetSubscription(Guid subscriptionId) 
+            => Subscription = new(subscriptionId, Id);
     }
 }

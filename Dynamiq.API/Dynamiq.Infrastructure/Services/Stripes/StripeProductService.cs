@@ -5,7 +5,7 @@ using Dynamiq.Domain.Enums;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 
-namespace Dynamiq.Infrastructure.Services.Stripe
+namespace Dynamiq.Infrastructure.Services.Stripes
 {
     public class StripeProductService : IStripeProductService
     {
@@ -18,12 +18,12 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             _client = new StripeClient(secretKey);
         }
 
-        public async Task<StripeIdsDto> CreateProductStripeAsync(ProductDto product)
+        public async Task<StripeIdsDto> CreateProductStripeAsync(ProductDto product, IntervalEnum? intervalEnum = null)
         {
             var productService = new ProductService(_client);
             var priceService = new PriceService(_client);
 
-            var recurring = CreatePriceRecurringOptions(product.Interval);
+            var recurring = CreatePriceRecurringOptions(intervalEnum);
 
             var createdProduct = await productService.CreateAsync(new ProductCreateOptions
             {
@@ -42,7 +42,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             return new(createdPrice.Id, createdProduct.Id);
         }
 
-        public async Task<StripeIdsDto> UpdateProductStripeAsync(ProductDto product, string stripeProductId, string stripePriceId)
+        public async Task<StripeIdsDto> UpdateProductStripeAsync(ProductDto product, string stripeProductId, string stripePriceId, IntervalEnum? intervalEnum = null)
         {
             var productService = new ProductService(_client);
             var priceService = new PriceService(_client);
@@ -58,7 +58,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 Active = false
             });
 
-            var recurring = CreatePriceRecurringOptions(product.Interval);
+            var recurring = CreatePriceRecurringOptions(intervalEnum);
 
             var createdProduct = await productService.CreateAsync(new ProductCreateOptions
             {
@@ -93,9 +93,12 @@ namespace Dynamiq.Infrastructure.Services.Stripe
             });
         }
 
-        private PriceRecurringOptions? CreatePriceRecurringOptions(IntervalEnum paymentTypeEnum)
+        private PriceRecurringOptions? CreatePriceRecurringOptions(IntervalEnum? paymentTypeEnum)
         {
             PriceRecurringOptions recurring = null;
+
+            if(paymentTypeEnum == null)
+                return recurring;
 
             switch (paymentTypeEnum)
             {
@@ -112,8 +115,6 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                         Interval = "year",
                         IntervalCount = 1,
                     };
-                    break;
-                case IntervalEnum.OneTime:
                     break;
                 default:
                     throw new Exception("Unknown paymentTypeEnum: " + paymentTypeEnum.ToString());

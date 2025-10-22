@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { CartRes, getCart, setQuantityCartItem } from '../services/client/cart';
-import getUserIdFromAccessToken from '../utils/services/getUserIdFromAccessToken';
 import { ErrorMsgType } from '../utils/types/api';
 import useHttpHook from './useHttp';
 import { getByIdProduct, ProductResBody } from '../services/client/product';
@@ -21,23 +20,13 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setState('error');
-            setError(resOfToken.error);
-            return;
-        }
-
-        if (!isLoaded) syncCart(resOfToken.userId);
-
-        const interval = setInterval(() => syncCart(resOfToken.userId), 30000);
+        const interval = setInterval(() => syncCart(), 30000);
 
         return () => clearInterval(interval);
     }, []);
 
-    const syncCart = (userId: string) => {
-        makeRequest<CartRes>(() => getCart(userId))
+    const syncCart = () => {
+        makeRequest<CartRes>(() => getCart())
             .then(async (cartRes: CartRes) => {
                 const arrayOfProducts = await Promise.all(
                     cartRes.items.map(async (item) => {
@@ -54,7 +43,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
                             const err = error as ErrorMsgType;
                             if (err.StatusCode === 404) {
                                 setState('loading');
-                                await setQuantityCartItem(userId, item.productId, 0);
+                                await setQuantityCartItem(item.productId, 0);
                             } else {
                                 setError(err.Message);
                             }
@@ -82,13 +71,6 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
     };
 
     const onPurchase = (setUnloaded: Function, coupons?: string[]) => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setError(resOfToken.error);
-            return;
-        }
-
         setState('loading');
         setUnloaded();
 
@@ -96,8 +78,6 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
 
         makeRequest<CreateCheckoutType>(() =>
             createCheckout({
-                intervalEnum: intervalEnum.OneTime,
-                userId: resOfToken.userId,
                 couponCodes: coupons,
             })
         ).catch((err: ErrorMsgType) => {
@@ -106,14 +86,6 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
     };
 
     const onSetQuantity = async (productId: string, quantity: number) => {
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setState('error');
-            setError(resOfToken.error);
-            return;
-        }
-
         const item = cartData.find((prod) => prod.productId === productId)!;
 
         if (quantity <= 0) {
@@ -124,7 +96,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
         }
 
         try {
-            await makeRequest<CartRes>(() => setQuantityCartItem(resOfToken.userId, productId, quantity));
+            await makeRequest<CartRes>(() => setQuantityCartItem(productId, quantity));
         } catch (ex) {
             if (quantity === 0) {
                 setCartData([...cartData, item]);

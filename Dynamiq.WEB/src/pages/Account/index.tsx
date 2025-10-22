@@ -56,8 +56,8 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                     Your role - {user.role === roleEnum.Admin ? 'Admin' : 'default user'}. <br />
                     Your email - {user.email}. <br />
                     You
-                    {user.subscription.isConfirmed ? ' have' : " don't have"} subscribtion
-                    {!user.subscription.isConfirmed ? (
+                    {user.hasActiveSubscription ? ' have' : " don't have"} subscribtion
+                    {!user.hasActiveSubscription ? (
                         <button className="user__about-buy" onClick={() => setNeedShowSubscriptionModal(true)}>
                             <strong>Buy subscribtion?</strong>
                         </button>
@@ -71,14 +71,16 @@ const View: React.FC<{ user: UserRes }> = ({ user }) => {
                 <div className="payment-history__header ">Your payment history:</div>
                 <div className="payment-history__container">
                     {user.paymnetHistories.length ? (
-                        user.paymnetHistories.map((item, idx) => (
-                            <PaymentHistory
-                                key={item.id ?? idx}
-                                amount={item.amount}
-                                createdAt={item.createdAt}
-                                productPaymentHistory={item.products}
-                            />
-                        ))
+                        user.paymnetHistories
+                            .filter((item) => item.products.length)
+                            .map((item, idx) => (
+                                <PaymentHistory
+                                    key={item.id ?? idx}
+                                    amount={item.amount}
+                                    createdAt={item.createdAt}
+                                    productPaymentHistory={item.products}
+                                />
+                            ))
                     ) : (
                         <h3 className="payment-history__descr">You don't have yet payment histories</h3>
                     )}

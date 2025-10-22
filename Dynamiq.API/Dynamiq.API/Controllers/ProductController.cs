@@ -74,14 +74,6 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "Product was removed" });
         }
 
-        [HttpGet("subscription")]
-        public async Task<IActionResult> GetSubscriptions()
-        {
-            var products = await _mediator.Send(new GetOnlySubscriptionsQuery());
-
-            return Ok(products);
-        }
-
         [HttpGet("category/{slug}")]
         public async Task<IActionResult> GetAllProductByCategory(string slug, [FromQuery] int limit, [FromQuery] int offset = 0)
         {

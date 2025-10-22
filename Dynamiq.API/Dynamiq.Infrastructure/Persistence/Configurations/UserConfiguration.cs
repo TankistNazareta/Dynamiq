@@ -35,11 +35,6 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
                    .HasForeignKey(ph => ph.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(u => u.Subscriptions)
-                   .WithOne()
-                   .HasForeignKey(s => s.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasOne(u => u.EmailVerification)
                    .WithOne()
                    .HasForeignKey<EmailVerification>(ev => ev.UserId)

@@ -1,6 +1,4 @@
-import IntervalEnum from '../../utils/enums/intervalEnum';
 import SortEnum from '../../utils/enums/sortByEnum';
-import { ApiResult } from '../../utils/types/api';
 import { apiRequest } from '../api';
 
 export interface ProductResBody {
@@ -8,7 +6,6 @@ export interface ProductResBody {
     name: string;
     description: string;
     price: number;
-    interval: IntervalEnum;
     imgUrls: { imgUrl: string }[];
     paragraphs: { order: number; text: string }[];
     cardDescription: string;
@@ -37,11 +34,6 @@ export const getSearchedNames = async (productFilter: ProductFilter) => {
         body: JSON.stringify(productFilter),
         method: 'POST',
     });
-    return res;
-};
-
-export const getSubscriptions = async () => {
-    const res = await apiRequest<ProductRes>('/product/subscription');
     return res;
 };
 

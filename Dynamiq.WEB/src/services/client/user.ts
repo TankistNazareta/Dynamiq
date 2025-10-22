@@ -12,7 +12,7 @@ export type UserRes = {
         isConfirmed: boolean;
     };
     paymnetHistories: PaymentHistoryRes[];
-    subscription: { isConfirmed: boolean };
+    hasActiveSubscription: boolean;
 };
 
 export const getUserById = async (id: string) => {

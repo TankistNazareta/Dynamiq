@@ -1,4 +1,5 @@
-﻿using Dynamiq.Application.Commands.Carts.Commands;
+﻿using Dynamiq.API.Interfaces;
+using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.Queries.Carts.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -12,37 +13,54 @@ namespace Dynamiq.API.Controllers
     public class CartController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IUserContextService _userContext;
 
-        public CartController(IMediator mediator)
+        public CartController(IMediator mediator, IUserContextService userContext)
         {
             _mediator = mediator;
+            _userContext = userContext;
         }
 
         [HttpPut]
-        public async Task<IActionResult> SetItemQuantity([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
+        public async Task<IActionResult> SetItemQuantity([FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(new SetQuantityCartItemCommand(userId, productId, quantity));
+            var command = new SetQuantityCartItemCommand(productId, quantity)
+            {
+                UserId = _userContext.GetUserId()
+            };
+
+            var cart = await _mediator.Send(command);
             return Ok(cart);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddItem([FromQuery] Guid userId, [FromQuery] Guid productId, [FromQuery] int quantity)
+        public async Task<IActionResult> AddItem([FromQuery] Guid productId, [FromQuery] int quantity)
         {
-            var cart = await _mediator.Send(new AddCartItemCommand(userId, productId, quantity));
+            var command = new AddCartItemCommand(productId, quantity)
+            {
+                UserId = _userContext.GetUserId()
+            };
+
+            var cart = await _mediator.Send(command);
             return Ok(cart);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Clear([FromQuery] Guid userId)
+        public async Task<IActionResult> Clear()
         {
-            await _mediator.Send(new ClearCartCommand(userId));
+            var command = new ClearCartCommand()
+            {
+                UserId = _userContext.GetUserId()
+            };
 
+            await _mediator.Send(command);
             return Ok();
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetByUserId([FromQuery] Guid userId)
+        public async Task<IActionResult> GetByUserId()
         {
+            var userId = _userContext.GetUserId();
             var cart = await _mediator.Send(new GetCartByUserIdQuery(userId));
 
             if (cart == null)
@@ -51,4 +69,5 @@ namespace Dynamiq.API.Controllers
             return Ok(cart);
         }
     }
+
 }

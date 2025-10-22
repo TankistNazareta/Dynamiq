@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import '../scss/subscriptionModal.scss';
 import { useHttp } from '../../../hooks/useHttp/HttpContext';
-import { getSubscriptions, ProductRes, ProductResBody } from '../../../services/client/product';
 import IntervalEnum from '../../../utils/enums/intervalEnum';
 import Loading from '../../../components/Loading';
+import { createCheckout, CreateCheckoutType } from '../../../services/client/payment';
+import { getAllSubsctiptions, SubscriptionRes } from '../../../services/client/subscription';
 
 interface SubscriptionModalProps {
     isOpen: boolean;
@@ -12,15 +13,16 @@ interface SubscriptionModalProps {
 
 export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModalProps) {
     const [selectedPlan, setSelectedPlan] = useState<IntervalEnum>();
-    const [purchasing, setPurchasing] = useState(false);
-    const [subscrioptions, setSubscrioptions] = useState<ProductResBody[]>();
+    const [subscriptions, setSubscriptions] = useState<SubscriptionRes[]>();
 
     const { state, makeRequest, setState } = useHttp();
 
+    const purchasing = state === 'loading';
+
     useEffect(() => {
-        makeRequest<ProductRes>(() => getSubscriptions())
+        makeRequest<SubscriptionRes[]>(() => getAllSubsctiptions())
             .then((res) => {
-                setSubscrioptions(res.products);
+                setSubscriptions(res);
                 setState('success');
             })
             .catch(() => {});
@@ -36,16 +38,27 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
 
     const handleBuy = async () => {
         if (purchasing) return;
-        setPurchasing(true);
-        try {
-            // await onPurchase(selectedPlan);
-        } finally {
-            setPurchasing(false);
+
+        let subscriptionId: string;
+
+        switch (selectedPlan) {
+            case IntervalEnum.Monthly:
+                subscriptionId = subscriptions?.find((s) => s.interval === IntervalEnum.Monthly)?.id!;
+                break;
+            case IntervalEnum.Yearly:
+                subscriptionId = subscriptions?.find((s) => s.interval === IntervalEnum.Yearly)?.id!;
+                break;
         }
+
+        makeRequest<CreateCheckoutType>(() =>
+            createCheckout({
+                subscriptionId,
+            })
+        );
     };
 
-    const monthlyPrice = subscrioptions?.find((item) => item.interval === IntervalEnum.Monthly)?.price ?? 0;
-    const yearlyPrice = subscrioptions?.find((item) => item.interval === IntervalEnum.Yearly)?.price ?? 0;
+    const monthlyPrice = subscriptions?.find((item) => item.interval === IntervalEnum.Monthly)?.price ?? 0;
+    const yearlyPrice = subscriptions?.find((item) => item.interval === IntervalEnum.Yearly)?.price ?? 0;
 
     if (!isOpen) return null;
 
@@ -55,9 +68,8 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
 
             <div className="subscription-modal__dialog">
                 <div className="subscription-modal__content">
-                    {state === 'success' ? (
+                    {subscriptions?.length ? (
                         <>
-                            {' '}
                             <div className="subscription-modal__header">
                                 <h5 className="subscription-modal__title">Choose Your Plan</h5>
                                 <button type="button" className="subscription-modal__close" onClick={onClose} />

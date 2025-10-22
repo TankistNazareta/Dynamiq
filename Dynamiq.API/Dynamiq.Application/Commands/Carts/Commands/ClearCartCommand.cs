@@ -2,5 +2,8 @@
 
 namespace Dynamiq.Application.Commands.Carts.Commands
 {
-    public record class ClearCartCommand(Guid UserId) : IRequest;
+    public record class ClearCartCommand() : IRequest
+    {
+        public Guid UserId { get; set; }
+    }
 }

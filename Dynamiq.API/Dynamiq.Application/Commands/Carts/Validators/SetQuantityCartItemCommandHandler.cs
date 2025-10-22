@@ -7,9 +7,6 @@ namespace Dynamiq.Application.Commands.Carts.Validators
     {
         public SetQuantityCartItemCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty();
-
             RuleFor(x => x.ProductId)
                 .NotEmpty();
 

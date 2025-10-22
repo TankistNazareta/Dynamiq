@@ -23,17 +23,10 @@ namespace Dynamiq.Infrastructure.Repositories
         public void Delete(Product product)
                 => _db.Products.Remove(product);
 
-        public Task DeleteAsync(Product product, CancellationToken ct)
-        {
-            _db.Products.Remove(product);
-
-            return Task.CompletedTask;
-        }
         public async Task<ResponseProducts> GetAllAsync(int limit, int offset, CancellationToken ct)
         {
             var query = _db.Products
-                .AsNoTracking()
-                .Where(p => p.Interval == Domain.Enums.IntervalEnum.OneTime);
+                .AsNoTracking();
 
             var totalCount = await query.CountAsync(ct);
 
@@ -54,8 +47,7 @@ namespace Dynamiq.Infrastructure.Repositories
 
             var products = category?.Products.AsQueryable() ?? Enumerable.Empty<Product>().AsQueryable();
 
-            var query = products.AsNoTracking()
-                .Where(p => p.Interval == IntervalEnum.OneTime);
+            var query = products.AsNoTracking();
 
             var items = await query
                 .Skip(offset)
@@ -124,10 +116,5 @@ namespace Dynamiq.Infrastructure.Repositories
             }
             return query;
         }
-
-        public async Task<IReadOnlyList<Product>> GetOnlySubscriptionsAsync(CancellationToken ct)
-                => await _db.Products
-                            .Where(p => p.Interval != Domain.Enums.IntervalEnum.OneTime)
-                            .ToListAsync(ct);
     }
 }

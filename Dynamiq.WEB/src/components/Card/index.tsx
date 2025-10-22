@@ -1,9 +1,7 @@
 import './card.scss';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
-import { addQuantityToCartItem } from '../../services/client/cart';
 import AddCartBtn from '../AddCartBtn';
 
 interface CardProps {

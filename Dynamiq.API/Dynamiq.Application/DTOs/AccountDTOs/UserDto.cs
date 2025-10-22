@@ -9,6 +9,6 @@ namespace Dynamiq.Application.DTOs.AccountDTOs
         public RoleEnum Role { get; init; }
         public EmailVerificationDto EmailVerification { get; init; }
         public PaymentHistoryDto[] PaymentHistories { get; init; }
-        public SubscriptionDto Subscription { get; init; }
+        public bool HasActiveSubscription { get; init; }
     }
 }

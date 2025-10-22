@@ -1,5 +1,8 @@
 using AutoMapper;
+using DotNetEnv;
+using Dynamiq.API.Interfaces;
 using Dynamiq.API.Middlewares;
+using Dynamiq.API.Services;
 using Dynamiq.Application;
 using Dynamiq.Application.Commands.EmailVerifications.Commands;
 using Dynamiq.Application.Commands.EmailVerifications.Validators;
@@ -16,14 +19,14 @@ using Dynamiq.Infrastructure.Persistence.Context;
 using Dynamiq.Infrastructure.Repositories;
 using Dynamiq.Infrastructure.Services;
 using Dynamiq.Infrastructure.Services.Auth;
-using Dynamiq.Infrastructure.Services.Stripe;
-using DotNetEnv;
+using Dynamiq.Infrastructure.Services.Stripes;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -118,8 +121,7 @@ builder.Services.AddRateLimiter(options =>
 //Add Configuration
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false)
-    .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
+    .AddJsonFile("appsettings.json", optional: false);
 
 //AddressOptionsptions
 builder.Services.Configure<GoogleOAuthOptions>(builder.Configuration.GetSection("GoogleOAuth"));
@@ -150,6 +152,7 @@ builder.Services.AddTransient<ICategoryRepo, CategoryRepo>();
 builder.Services.AddTransient<ICartRepo, CartRepo>();
 builder.Services.AddTransient<IProductPaymentHistoryRepo, ProductPaymentHistoryRepo>();
 builder.Services.AddTransient<ICouponRepo, CouponRepo>();
+builder.Services.AddTransient<ISubscriptionRepo, SubscriptionRepo>();
 
 //Services
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -158,6 +161,8 @@ builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddTransient<IDomainEventDispatcher, MediatRDomainEventDispatcher>();
 builder.Services.AddTransient<IGoogleOidcService, GoogleOidcService>();
 builder.Services.AddTransient<ICouponService, CouponService>();
+//API
+builder.Services.AddTransient<IUserContextService, UserContextService>();
 
 //UseCases
 builder.Services.AddTransient<IUserCleanupUseCase, UserCleanupUseCase>();
@@ -184,7 +189,32 @@ builder.Services.AddControllers()
 }); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Enter JWT token in format: Bearer {token}",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        new string[] {}
+    }
+});
+});
 
 var MyAllowSpecificOrigins = "AllowFrontend";
 
@@ -194,7 +224,7 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", 
-                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun")
+                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun", "http://localhost:3000")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();

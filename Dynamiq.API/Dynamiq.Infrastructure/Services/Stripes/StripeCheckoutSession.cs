@@ -9,7 +9,7 @@ using Stripe.Checkout;
 using System.Text.Json;
 using System.Threading;
 
-namespace Dynamiq.Infrastructure.Services.Stripe
+namespace Dynamiq.Infrastructure.Services.Stripes
 {
     public class StripeCheckoutSession : IStripeCheckoutSession
     {
@@ -35,7 +35,7 @@ namespace Dynamiq.Infrastructure.Services.Stripe
         {
             string ModeType = "subscription";
 
-            if (request.Interval == IntervalEnum.OneTime)
+            if (request.Interval == null)
                 ModeType = "payment";
 
             var optionsItems = new List<SessionLineItemOptions>();

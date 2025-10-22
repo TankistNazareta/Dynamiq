@@ -7,9 +7,6 @@ namespace Dynamiq.Application.Commands.Payment.Validators
     {
         public CreateCheckoutSessionCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .NotEmpty().WithMessage("UserId is required");
-
             RuleFor(x => x.SuccessUrl)
                 .NotEmpty().WithMessage("SuccessUrl is required")
                 .Must(url => Uri.TryCreate(url, UriKind.Absolute, out _))

@@ -23,6 +23,7 @@ namespace Dynamiq.Infrastructure.Persistence.Context
         public DbSet<PaymentHistory> PaymentHistories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionHistory> SubscriptionHistories { get; set; }
         public DbSet<EmailVerification> EmailVerifications { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Cart> Carts { get; set; }
@@ -37,10 +38,11 @@ namespace Dynamiq.Infrastructure.Persistence.Context
             modelBuilder.ApplyConfiguration(new PaymentHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
+            modelBuilder.ApplyConfiguration(new SubscriptionHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new EmailVerificationConfiguration());
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new CartConfiguration());
-            modelBuilder.ApplyConfiguration(new ProductPaymentHistoryConfig());
+            modelBuilder.ApplyConfiguration(new ProductPaymentHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new CouponConfiguration());
             modelBuilder.ApplyConfiguration(new CartItemConfiguration());
 

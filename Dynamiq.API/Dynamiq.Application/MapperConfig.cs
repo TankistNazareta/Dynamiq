@@ -23,13 +23,6 @@ namespace Dynamiq.Application
                 config.CreateMap<User, UserDto>()
                     .ForMember(dest => dest.PaymentHistories,
                         opt => opt.MapFrom(src => src.PaymentHistories))
-                    .ForMember(dest => dest.Subscription,
-                        opt => opt.MapFrom(src =>
-                            src.Subscriptions
-                                .Where(s => s.IsActive())
-                                .Select(s => new SubscriptionDto(true))
-                                .FirstOrDefault()
-                                ?? new SubscriptionDto(false)))
                     .ForMember(dest => dest.EmailVerification,
                         opt => opt.MapFrom(src =>
                             new EmailVerificationDto(
@@ -38,6 +31,7 @@ namespace Dynamiq.Application
                 config.CreateMap<PaymentHistory, PaymentHistoryDto>();
                 config.CreateMap<ProductPaymentHistory, ProductPaymentHistoryDto>();
                 config.CreateMap<Coupon, CouponDto>();
+                config.CreateMap<Subscription, SubscriptionDto>();
             });
         }
     }

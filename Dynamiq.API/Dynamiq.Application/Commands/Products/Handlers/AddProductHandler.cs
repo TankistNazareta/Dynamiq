@@ -25,20 +25,19 @@ namespace Dynamiq.Application.Commands.Products.Handlers
             var productDto = new ProductDto(
                 Guid.Empty, request.Name,
                 request.Description, request.Price,
-                request.Interval, null, null, null, Guid.Empty);
+                null, null, null, Guid.Empty);
             var stripeIds = await _stripeService.CreateProductStripeAsync(productDto);
 
             var product = new Product(
-                stripeIds.ProductId,
-                stripeIds.PriceId,
-                productDto.Name,
-                productDto.Description,
-                productDto.Price,
-                productDto.Interval,
-                request.CategoryId,
-                request.ImgUrls,
-                request.Paragraphs,
-                request.CardDescription
+                stripeProductId: stripeIds.ProductId,
+                stripePriceId: stripeIds.PriceId,
+                name: productDto.Name,
+                description: productDto.Description,
+                price: productDto.Price,
+                categoryId: request.CategoryId,
+                imgUrls: request.ImgUrls,
+                paragraphs: request.Paragraphs,
+                cardDescription: request.CardDescription
             );
 
             await _repo.AddAsync(product, cancellationToken);

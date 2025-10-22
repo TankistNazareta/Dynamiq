@@ -114,7 +114,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             {
                 UserId = user.Id,
                 Interval = product.Interval,
-                StripePaymentId = "test_stripe_id",
+                StripeTransactionId = "test_stripe_id",
                 Amount = 4000
             };
 
@@ -172,7 +172,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 UserId = user.Id,
                 ProductId = product.Id,
                 Interval = product.Interval,
-                StripePaymentId = "test_stripe_id",
+                StripeTransactionId = "test_stripe_id",
                 Amount = 2222
             };
 
@@ -229,7 +229,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 UserId = user.Id,
                 ProductId = product.Id,
                 Interval = product.Interval,
-                StripePaymentId = "test_stripe_id",
+                StripeTransactionId = "test_stripe_id",
                 Amount = 2000
             };
 
@@ -256,7 +256,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             userUpdated.Subscriptions.Should().HaveCount(1);
 
             var subscription = userUpdated.Subscriptions.First();
-            subscription.Should().Match<Subscription>(s => s.IsActive());
+            subscription.Should().Match<SubscriptionHistory>(s => s.IsActive());
         }
 
         [Fact]
@@ -298,7 +298,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 UserId = user.Id,
                 ProductId = product.Id,
                 Interval = product.Interval,
-                StripePaymentId = "test_stripe_id",
+                StripeTransactionId = "test_stripe_id",
                 Amount = 1800
             };
 

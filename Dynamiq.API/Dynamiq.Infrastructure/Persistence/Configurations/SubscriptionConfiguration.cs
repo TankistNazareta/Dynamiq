@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,39 +9,27 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Subscription> builder)
         {
             builder.HasKey(s => s.Id);
-            builder.Property(s => s.Id)
-               .ValueGeneratedOnAdd()
-               .HasDefaultValueSql("NEWID()");
 
-            builder.Property(s => s.StartDate)
-                   .IsRequired();
+            builder.Property(s => s.Name)
+                .IsRequired()
+                .HasMaxLength(100);
 
-            builder.Property(s => s.EndDate)
-                   .IsRequired();
+            builder.Property(s => s.Interval)
+                .IsRequired()
+                .HasConversion<int>();
 
-            builder.Property(s => s.UserId)
-                   .IsRequired();
+            builder.Property(s => s.Price)
+                .IsRequired();
 
-            builder.Property(s => s.ProductId)
-                   .IsRequired();
+            builder.Property(s => s.StripePriceId)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            builder.Property(s => s.PaymentHistoryId)
-                    .IsRequired();
+            builder.Property(s => s.StripeProductId)
+                .IsRequired()
+                .HasMaxLength(200);
 
-            builder.HasOne<Product>()
-                   .WithMany()
-                   .HasForeignKey(s => s.ProductId)
-                   .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne<User>()
-                   .WithMany(u => u.Subscriptions)
-                   .HasForeignKey(s => s.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne<PaymentHistory>()
-                   .WithMany()
-                   .HasForeignKey(s => s.PaymentHistoryId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            builder.ToTable("Subscriptions");
         }
     }
 }

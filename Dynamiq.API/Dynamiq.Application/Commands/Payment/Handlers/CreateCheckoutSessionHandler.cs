@@ -3,6 +3,7 @@ using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.Interfaces.Repositories;
 using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Exceptions;
 using MediatR;
@@ -14,27 +15,26 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
         private readonly IStripeCheckoutSession _paymentService;
         private readonly IProductRepo _productRepo;
         private readonly ICartRepo _cartRepo;
-        private readonly ICouponService _couponService;
-        private readonly ICouponRepo _couponRepo;
+        private readonly ISubscriptionRepo _subscriptionRepo;
+        private readonly IUserRepo _userRepo;
 
         public CreateCheckoutSessionHandler(
             IStripeCheckoutSession paymentService,
             IProductRepo productRepo,
             ICartRepo cartRepo,
-            ICouponService couponService,
-            ICouponRepo couponRepo)
+            ISubscriptionRepo subscriptionRepo, IUserRepo userRepo)
         {
             _productRepo = productRepo;
             _paymentService = paymentService;
             _cartRepo = cartRepo;
-            _couponService = couponService;
-            _couponRepo = couponRepo;
+            _subscriptionRepo = subscriptionRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<string> Handle(CreateCheckoutSessionCommand request, CancellationToken cancellationToken)
         {
             var stripeCartItems = new List<StripeCartItemDto>();
-            IntervalEnum interval;
+            IntervalEnum? interval = null;
 
             if (request.ProductId != null)
             {
@@ -43,7 +43,21 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
 
                 var quantity = request.Quantity ?? 1;
                 stripeCartItems.Add(new StripeCartItemDto(product.Id, quantity, product.StripePriceId, product.Price));
-                interval = product.Interval;
+            }
+            else if(request.SubscriptionId != null)
+            {
+                var user = await _userRepo.GetByIdAsync(request.UserId, cancellationToken)
+                    ?? throw new KeyNotFoundException($"User with id {request.UserId} doesn't exist");
+
+                if(user.HasActiveSubscription)
+                    throw new ActiveSubscriptionExistsException("User already has an active subscription");
+
+                var subscription = await _subscriptionRepo.GetByIdAsync(request.SubscriptionId.Value, cancellationToken)
+                    ?? throw new KeyNotFoundException($"Subscription with id {request.SubscriptionId} doesn't exist");
+
+                interval = subscription.Interval;
+                
+                stripeCartItems.Add(new StripeCartItemDto(subscription.Id, 1, subscription.StripePriceId, subscription.Price));
             }
             else
             {
@@ -59,8 +73,6 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
 
                     stripeCartItems.Add(new StripeCartItemDto(product.Id, item.Quantity, product.StripePriceId, product.Price));
                 }
-
-                interval = IntervalEnum.OneTime;
             }
 
             var checkoutSessionRequest = new CheckoutSessionDto
@@ -69,9 +81,8 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
                 SuccessUrl = request.SuccessUrl,
                 CancelUrl = request.CancelUrl,
                 Interval = interval,
-                ProductId = request.ProductId
+                ProductId = request.ProductId ?? request.SubscriptionId,
             };
-
 
             return await _paymentService.CreateCheckoutSessionAsync(checkoutSessionRequest, stripeCartItems, request.CouponCodes, cancellationToken);
         }

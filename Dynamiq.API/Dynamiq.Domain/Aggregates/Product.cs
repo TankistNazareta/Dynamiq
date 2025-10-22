@@ -12,7 +12,6 @@ namespace Dynamiq.Domain.Aggregates
         public string Description { get; private set; }
         public string CardDescription { get; private set; }
         public int Price { get; private set; }
-        public IntervalEnum Interval { get; private set; }
         public int ViewCount { get; private set; }
 
         private List<ProductImgUrl> _imgUrls = new();
@@ -34,13 +33,12 @@ namespace Dynamiq.Domain.Aggregates
             string name,
             string description,
             int price,
-            IntervalEnum interval,
             Guid categoryId,
             List<string> imgUrls,
             List<string> paragraphs,
             string cardDescription)
         {
-            Update(stripeProductId, stripePriceId, name, description, price, interval, categoryId, imgUrls, paragraphs, cardDescription);
+            Update(stripeProductId, stripePriceId, name, description, price, categoryId, imgUrls, paragraphs, cardDescription);
             CardDescription = cardDescription;
             ViewCount = 0;
         }
@@ -51,7 +49,6 @@ namespace Dynamiq.Domain.Aggregates
             string name,
             string description,
             int price,
-            IntervalEnum interval,
             Guid categoryId,
             List<string> imgUrls,
             List<string> paragraphs,
@@ -74,7 +71,6 @@ namespace Dynamiq.Domain.Aggregates
             Name = name;
             Description = description;
             Price = price;
-            Interval = interval;
             CategoryId = categoryId;
             CardDescription = cardDescr;
 

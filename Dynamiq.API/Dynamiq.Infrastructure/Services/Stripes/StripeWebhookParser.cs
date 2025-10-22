@@ -1,11 +1,12 @@
-﻿using Dynamiq.Application.DTOs.PaymentDTOs;
+﻿﻿using Dynamiq.Application.DTOs.PaymentDTOs;
 using Dynamiq.Application.Interfaces.Stripe;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json.Linq;
 using Stripe;
 using Stripe.Checkout;
 using System.Text.Json;
 
-namespace Dynamiq.Infrastructure.Services.Stripe
+namespace Dynamiq.Infrastructure.Services.Stripes
 {
     public class StripeWebhookParser : IStripeWebhookParser
     {
@@ -14,10 +15,10 @@ namespace Dynamiq.Infrastructure.Services.Stripe
         public StripeWebhookParser(IConfiguration config)
         {
             _webhookSecret = Environment.GetEnvironmentVariable("STRIPE_WEBHOOK_SECRET")!
-                ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET is not configured"); ;
+                ?? throw new ArgumentNullException("STRIPE_WEBHOOK_SECRET is not configured");
         }
 
-        public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature, out string eventType)
+        public string GetEventType(string json, string signature)
         {
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
@@ -25,10 +26,16 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 _webhookSecret
             );
 
-            eventType = stripeEvent.Type;
+            return stripeEvent.Type;
+        }
 
-            if (stripeEvent.Type != "checkout.session.completed")
-                return null;
+        public WebhookParserDto ParseCheckoutSessionCompleted(string json, string signature)
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                signature,
+                _webhookSecret
+            );
 
             var session = stripeEvent.Data.Object as Session;
 
@@ -42,9 +49,23 @@ namespace Dynamiq.Infrastructure.Services.Stripe
                 throw new InvalidDataException("Failed to deserialize WebhookParserDtoJson.");
 
             paymentHistoryDto.Amount = session.AmountTotal.HasValue ? session.AmountTotal.Value / 100m : 0m;
-            paymentHistoryDto.StripePaymentId = session.PaymentIntentId;
+
+            var stripeTransactionId = session.PaymentIntentId ?? session.SubscriptionId;
+            paymentHistoryDto.StripeTransactionId = stripeTransactionId;
 
             return paymentHistoryDto;
+        }
+
+        public string ParseDeletedSubscriptionId(string json, string signature)
+        {
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                signature,
+                _webhookSecret
+            );
+
+            var subscription = stripeEvent.Data.Object as Subscription;
+            return subscription.Id;
         }
 
         public CouponsResultDto? TryGetCoupons(string json, string signature)

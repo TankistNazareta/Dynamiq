@@ -1,4 +1,5 @@
 ﻿using Dynamiq.Domain.Aggregates;
+using Dynamiq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,35 +9,34 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<PaymentHistory> builder)
         {
-            builder.HasKey(p => p.Id);
-            builder.Property(rt => rt.Id)
-                   .ValueGeneratedOnAdd()
-                   .HasDefaultValueSql("NEWID()");
+            builder.HasKey(ph => ph.Id);
 
-            builder.Property(p => p.StripePaymentId)
-                   .IsRequired()
-                   .HasMaxLength(100);
+            builder.Property(ph => ph.StripeTransactionId)
+                .IsRequired()
+                .HasMaxLength(200)
+                .HasColumnName("StripeTransactionId");
 
-            builder.Property(p => p.Amount)
-                    .HasColumnName("Amount")
-                    .HasColumnType("decimal(18,2)");
+            builder.Property(ph => ph.Amount)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
 
-            builder.Property(p => p.Interval)
-                   .IsRequired();
+            builder.Property(ph => ph.CreatedAt)
+                .IsRequired();
 
-            builder.Property(p => p.CreatedAt)
-                   .IsRequired();
+            builder.Property(ph => ph.UserId)
+                .IsRequired();
 
-            builder.Property(p => p.UserId)
-                   .IsRequired();
-
-            builder.HasOne<User>()
-                   .WithMany(u => u.PaymentHistories)
-                   .HasForeignKey(p => p.UserId)
+            builder.HasMany(ph => ph.Products)
+                   .WithOne()
+                   .HasForeignKey(pph => pph.PaymentHistoryId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Navigation(p => p.Products).Metadata.SetField("_products");
-            builder.Navigation(p => p.Products).UsePropertyAccessMode(PropertyAccessMode.Field);
+            builder.HasOne(ph => ph.Subscription)
+                   .WithOne()
+                   .HasForeignKey<SubscriptionHistory>(sh => sh.PaymentHistoryId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.ToTable("PaymentHistories");
         }
     }
 }

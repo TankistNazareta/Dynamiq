@@ -35,9 +35,6 @@ namespace Dynamiq.Infrastructure.Persistence.Configurations
             builder.Property(p => p.ViewCount)
                    .IsRequired();
 
-            builder.Property(p => p.Interval)
-                   .IsRequired();
-
             builder.Property(p => p.CategoryId)
                    .IsRequired();
 

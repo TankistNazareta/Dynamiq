@@ -43,7 +43,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
             var after = DateTime.UtcNow;
 
             ph.UserId.Should().Be(_userId);
-            ph.StripePaymentId.Should().Be(ValidStripeId);
+            ph.StripeTransactionId.Should().Be(ValidStripeId);
             ph.Amount.Should().Be(ValidAmount);
             ph.Interval.Should().Be(IntervalEnum.Monthly);
             ph.Id.Should().BeEmpty();

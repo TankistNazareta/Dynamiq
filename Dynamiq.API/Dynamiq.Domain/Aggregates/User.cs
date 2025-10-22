@@ -11,17 +11,14 @@ namespace Dynamiq.Domain.Aggregates
         public string Email { get; private set; }
         public string PasswordHash { get; private set; }
         public RoleEnum Role { get; private set; }
-
         private readonly List<PaymentHistory> _paymentHistories = new();
         public IReadOnlyCollection<PaymentHistory> PaymentHistories => _paymentHistories.AsReadOnly();
-
-        private readonly List<Subscription> _subscriptions = new();
-        public IReadOnlyCollection<Subscription> Subscriptions => _subscriptions.AsReadOnly();
 
         private readonly List<RefreshToken> _refreshTokens = new();
         public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
         public EmailVerification EmailVerification { get; private set; }
+        public bool HasActiveSubscription => _paymentHistories.Any(ph => ph.Subscription.IsActive);
 
         private User() { } // EF Core
 
@@ -50,12 +47,9 @@ namespace Dynamiq.Domain.Aggregates
             AddDomainEvent(new UserChangedPasswordEvent(Email));
         }
 
-        public void AddSubscription(Subscription subscription)
+        public void AddSubscription(SubscriptionHistory subscription)
         {
-            if (_subscriptions.Any(s => s.IsActive()))
-                throw new InvalidOperationException("User can't have 2 or more active subscription, please contact with support");
-
-            _subscriptions.Add(subscription);
+            throw new NotImplementedException();
         }
 
         public void UpdateToken(string oldToken, string newToken)
