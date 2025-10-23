@@ -26,10 +26,12 @@ namespace Dynamiq.API.Tests.Integrations.Payments
         private async Task CreatePaymentHistory(WebhookParserDto parserDto, CouponsResultDto? coupons = null)
         {
             var mockParser = new Mock<IStripeWebhookParser>();
-            mockParser.Setup(p => p.ParseCheckoutSessionCompleted(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string>.IsAny))
+            mockParser.Setup(p => p.ParseCheckoutSessionCompleted(It.IsAny<string>(), It.IsAny<string>()))
                       .Returns(parserDto);
             mockParser.Setup(p => p.TryGetCoupons(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(coupons);
+            mockParser.Setup(parserDto => parserDto.GetEventType(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns("checkout.session.completed");
 
             var mockCouponStripeService = new Mock<IStripeCouponService>();
             mockCouponStripeService.Setup(p => p.DeactivateCoupon(It.IsAny<string>()));
@@ -83,6 +85,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
 
             var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
+            TestAuthHandler.TestUserId = user.Id;
 
             var category = new Category($"Test Category For {Guid.NewGuid():N}");
             db.Categories.Add(category);
@@ -94,7 +97,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 name: "TestProduct",
                 description: "test descr",
                 price: 2000,
-                interval: IntervalEnum.OneTime,
                 categoryId: category.Id,
                 imgUrls: new List<string> { "https://example.com/image.jpg" },
                 paragraphs: new List<string> { "Paragraph 1" },
@@ -113,7 +115,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var parserDto = new WebhookParserDto()
             {
                 UserId = user.Id,
-                Interval = product.Interval,
                 StripeTransactionId = "test_stripe_id",
                 Amount = 4000
             };
@@ -133,6 +134,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
+
+            TestAuthHandler.TestUserId = null;
         }
 
 
@@ -145,6 +148,11 @@ namespace Dynamiq.API.Tests.Integrations.Payments
 
             var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            user = await db.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
+            TestAuthHandler.TestUserId = user.Id;
 
             var category = new Category($"Test Category For {Guid.NewGuid():N}");
             db.Categories.Add(category);
@@ -156,7 +164,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 name: "TestProduct",
                 description: "test descr",
                 price: 2222,
-                interval: IntervalEnum.OneTime,
                 categoryId: category.Id,
                 imgUrls: new List<string> { "https://example.com/image.jpg" },
                 paragraphs: new List<string> { "Paragraph 1" },
@@ -171,7 +178,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             {
                 UserId = user.Id,
                 ProductId = product.Id,
-                Interval = product.Interval,
                 StripeTransactionId = "test_stripe_id",
                 Amount = 2222
             };
@@ -191,6 +197,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
+
+            TestAuthHandler.TestUserId = null;
         }
 
         [Fact]
@@ -202,25 +210,21 @@ namespace Dynamiq.API.Tests.Integrations.Payments
 
             var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
-
-            var category = new Category($"{Guid.NewGuid():N} Category");
-            db.Categories.Add(category);
             await db.SaveChangesAsync();
 
-            var product = new Product(
-                stripeProductId: "product_test_123",
-                stripePriceId: "price_test_123",
-                name: "TestProduct",
-                description: "test descr",
-                price: 2000,
+            user = await db.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
+
+            TestAuthHandler.TestUserId = user.Id;
+
+            var product = new Subscription(
+                name: "nadsubscription",
                 interval: IntervalEnum.Monthly,
-                categoryId: category.Id,
-                imgUrls: new List<string> { "https://example.com/image.jpg" },
-                paragraphs: new List<string> { "Paragraph 1" },
-                cardDescription: "Card description"
+                price: 122,
+                stripePriceId: "stripePriceId",
+                stripeProductId: "stripeProductId"
             );
 
-            db.Products.Add(product);
+            db.Subscriptions.Add(product);
 
             await db.SaveChangesAsync();
 
@@ -238,25 +242,22 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             db.ChangeTracker.Clear();
 
             var paymentHistory = await db.PaymentHistories
-                .Include(ph => ph.Products)
+                .Include(ph => ph.Subscription)
                 .Where(ph => ph.UserId == user.Id)
                 .ToListAsync();
 
             paymentHistory.Should().HaveCount(1);
             paymentHistory[0].Amount.Should().Be(2000);
 
-            var productsPaymentHistory = paymentHistory[0].Products;
-
-            productsPaymentHistory.Should().HaveCount(1);
+            paymentHistory[0].Subscription.Should().NotBeNull();
 
             var userUpdated = await db.Users
-                .Include(u => u.Subscriptions)
+                .Include(u => u.PaymentHistories)
                 .FirstOrDefaultAsync(u => u.Id == user.Id);
 
-            userUpdated.Subscriptions.Should().HaveCount(1);
+            userUpdated.HasActiveSubscription.Should().Be(true);
 
-            var subscription = userUpdated.Subscriptions.First();
-            subscription.Should().Match<SubscriptionHistory>(s => s.IsActive());
+            TestAuthHandler.TestUserId = null;
         }
 
         [Fact]
@@ -269,6 +270,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var user = new User($"user_{Guid.NewGuid():N}@test.com", "hashedpass", RoleEnum.DefaultUser);
             db.Users.Add(user);
 
+            TestAuthHandler.TestUserId = user.Id;
+
             var category = new Category($"Test Category For {Guid.NewGuid():N}");
             db.Categories.Add(category);
             await db.SaveChangesAsync();
@@ -279,7 +282,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 name: "TestProduct",
                 description: "test descr",
                 price: 2000,
-                interval: IntervalEnum.OneTime,
                 categoryId: category.Id,
                 imgUrls: new List<string> { "https://example.com/image.jpg" },
                 paragraphs: new List<string> { "Paragraph 1" },
@@ -297,7 +299,6 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             {
                 UserId = user.Id,
                 ProductId = product.Id,
-                Interval = product.Interval,
                 StripeTransactionId = "test_stripe_id",
                 Amount = 1800
             };
@@ -322,6 +323,8 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var productsPaymentHistory = paymentHistory[0].Products;
 
             productsPaymentHistory.Should().HaveCount(1);
+
+            TestAuthHandler.TestUserId = null;
         }
     }
 }

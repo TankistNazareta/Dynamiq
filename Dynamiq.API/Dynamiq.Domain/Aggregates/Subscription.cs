@@ -12,7 +12,7 @@ namespace Dynamiq.Domain.Aggregates
         public string StripeProductId { get; private set; }
 
         //For EF
-        public Subscription() { }
+        private Subscription() { }
 
         public Subscription(string name, IntervalEnum interval, int price, string stripePriceId, string stripeProductId)
         {

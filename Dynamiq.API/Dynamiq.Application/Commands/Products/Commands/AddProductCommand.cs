@@ -7,7 +7,6 @@ namespace Dynamiq.Application.Commands.Products.Commands
         string Name,
         string Description,
         int Price,
-        IntervalEnum Interval,
         Guid CategoryId,
         List<string> ImgUrls,
         List<string> Paragraphs,

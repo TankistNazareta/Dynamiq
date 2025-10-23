@@ -2,6 +2,7 @@
 using Dynamiq.API.Tests.Integrations.Users;
 using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.Commands.Users.Commands;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Carts
 {
+    [Collection("CartTests")]
     public class ClearCartTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
@@ -40,14 +42,18 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 productId = (await db.Products.FirstAsync(p => p.Name == productName)).Id;
             }
 
-            var addResponse = await _client.PostAsync($"/cart?userId={userId}&productId={productId}&quantity=2", new StringContent(""));
+            TestAuthHandler.TestUserId = userId;
+
+            var addResponse = await _client.PostAsync($"/cart?productId={productId}&quantity=2", new StringContent(""));
             addResponse.EnsureSuccessStatusCode();
 
-            var response = await _client.DeleteAsync($"/cart?userId={userId}");
+            var response = await _client.DeleteAsync($"/cart");
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var responseGet = await _client.GetAsync($"/cart?userId={userId}");
+            var responseGet = await _client.GetAsync($"/cart");
             responseGet.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            TestAuthHandler.TestUserId = null;
         }
 
 
@@ -64,7 +70,9 @@ namespace Dynamiq.API.Tests.Integrations.Carts
 
             var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-            var clearCommand = new ClearCartCommand(user.Id);
+            TestAuthHandler.TestUserId = user.Id;
+
+            var clearCommand = new ClearCartCommand();
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
@@ -75,6 +83,8 @@ namespace Dynamiq.API.Tests.Integrations.Carts
             var response = await _client.SendAsync(request);
 
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+            TestAuthHandler.TestUserId = null;
         }
     }
 }

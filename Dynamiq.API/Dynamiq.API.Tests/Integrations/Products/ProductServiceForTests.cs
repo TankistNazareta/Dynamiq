@@ -20,7 +20,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
         {
             var stripeServiceMock = new Mock<IStripeProductService>();
             stripeServiceMock
-                .Setup(s => s.CreateProductStripeAsync(It.IsAny<ProductDto>()))
+                .Setup(s => s.CreateProductStripeAsync(It.IsAny<ProductDto>(), It.IsAny<IntervalEnum?>()))
                 .ReturnsAsync(new StripeIdsDto("stripe_price_123", "stripe_product_123"));
 
             var client = factory.WithWebHostBuilder(builder =>
@@ -53,7 +53,6 @@ namespace Dynamiq.API.Tests.Integrations.Products
                 Name: productName,
                 Description: "Test Description",
                 Price: 1000,
-                Interval: IntervalEnum.OneTime,
                 CategoryId: categoryId,
                 ImgUrls: new List<string> { "https://example.com/image.jpg" },
                 Paragraphs: new List<string> { "Paragraph 1", "Paragraph 2" },
@@ -64,7 +63,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            stripeServiceMock.Verify(s => s.CreateProductStripeAsync(It.IsAny<ProductDto>()), Times.Once);
+            stripeServiceMock.Verify(s => s.CreateProductStripeAsync(It.IsAny<ProductDto>(), It.IsAny<IntervalEnum?>()));
         }
     }
 }

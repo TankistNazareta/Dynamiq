@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Domain.Aggregates;
-using Dynamiq.Domain.Enums;
 using FluentAssertions;
 
 namespace Dynamiq.Domain.Tests.Aggregates
@@ -34,7 +33,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 ValidParagraphs,
@@ -57,7 +55,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 ValidParagraphs,
@@ -80,7 +77,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 invalidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 ValidParagraphs,
@@ -102,7 +98,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 price,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 ValidParagraphs,
@@ -126,7 +121,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 new List<string> { imgUrl },
                 ValidParagraphs,
@@ -152,7 +146,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 newImgUrls,
                 ValidParagraphs,
@@ -179,7 +172,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 newParagraphs,
@@ -199,7 +191,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
             product.Description.Should().Be(ValidDescription);
             product.CardDescription.Should().Be(ValidCardDescription);
             product.Price.Should().Be(ValidPrice);
-            product.Interval.Should().Be(IntervalEnum.OneTime);
             product.CategoryId.Should().Be(ValidCategoryId);
             product.ImgUrls.Select(i => i.ImgUrl).Should().BeEquivalentTo(ValidImgUrls);
             product.Paragraphs.Select(p => p.Text).Should().BeEquivalentTo(ValidParagraphs);
@@ -234,7 +225,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 ValidName,
                 ValidDescription,
                 ValidPrice,
-                IntervalEnum.OneTime,
                 ValidCategoryId,
                 ValidImgUrls,
                 ValidParagraphs,

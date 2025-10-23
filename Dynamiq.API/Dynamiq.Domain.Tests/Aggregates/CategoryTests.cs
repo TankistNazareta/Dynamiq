@@ -54,7 +54,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
                 name: "name",
                 description: "descr",
                 price: 20,
-                interval: IntervalEnum.OneTime,
                 categoryId: category.Id,
                 imgUrls: new List<string> { "https://test.com/img" },
                 paragraphs: new List<string> { "Paragraph 1" },

@@ -8,6 +8,7 @@ namespace Dynamiq.API.Tests {
     public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         public static string? TestEmail { get; set; } = "test@example.com";
+        public static Guid? TestUserId { get; set; } = null;
 
         public TestAuthHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -23,7 +24,7 @@ namespace Dynamiq.API.Tests {
             {
                 new Claim(ClaimTypes.Email, TestEmail ?? "test@example.com"),
                 new Claim(ClaimTypes.Role, "Admin"),
-                new Claim("UserId", Guid.NewGuid().ToString())
+                new Claim("UserId", TestUserId.ToString() ?? Guid.NewGuid().ToString())
             };
             var identity = new ClaimsIdentity(claims, "Test");
             var principal = new ClaimsPrincipal(identity);

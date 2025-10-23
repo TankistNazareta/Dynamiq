@@ -15,8 +15,8 @@ namespace Dynamiq.Domain.Tests.Aggregates
         [Fact]
         public void Constructor_ShouldThrow_When_StripePaymentIdIsNullOrWhitespace()
         {
-            Action actNull = () => new PaymentHistory(_userId, null!, ValidAmount, IntervalEnum.Monthly);
-            Action actEmpty = () => new PaymentHistory(_userId, "   ", ValidAmount, IntervalEnum.OneTime);
+            Action actNull = () => new PaymentHistory(_userId, null!, ValidAmount);
+            Action actEmpty = () => new PaymentHistory(_userId, "   ", ValidAmount);
 
             actNull.Should().Throw<ArgumentException>()
                 .WithParameterName("stripePaymentId");
@@ -29,7 +29,7 @@ namespace Dynamiq.Domain.Tests.Aggregates
         [InlineData(-50)]
         public void Constructor_ShouldThrow_When_AmountIsNotPositive(decimal amount)
         {
-            Action act = () => new PaymentHistory(_userId, ValidStripeId, amount, IntervalEnum.OneTime);
+            Action act = () => new PaymentHistory(_userId, ValidStripeId, amount);
 
             act.Should().Throw<ArgumentException>()
                 .WithParameterName("amount");
@@ -39,22 +39,22 @@ namespace Dynamiq.Domain.Tests.Aggregates
         public void Constructor_ShouldSetProperties_When_ValidArguments()
         {
             var before = DateTime.UtcNow;
-            var ph = new PaymentHistory(_userId, ValidStripeId, ValidAmount, IntervalEnum.Monthly);
+            var ph = new PaymentHistory(_userId, ValidStripeId, ValidAmount);
             var after = DateTime.UtcNow;
 
             ph.UserId.Should().Be(_userId);
             ph.StripeTransactionId.Should().Be(ValidStripeId);
             ph.Amount.Should().Be(ValidAmount);
-            ph.Interval.Should().Be(IntervalEnum.Monthly);
             ph.Id.Should().BeEmpty();
             ph.CreatedAt.Should().BeOnOrAfter(before).And.BeOnOrBefore(after);
             ph.Products.Should().BeEmpty();
+            ph.Subscription.Should().BeNull();
         }
 
         [Fact]
         public void AddProduct_ShouldAddProductToCollection()
         {
-            var ph = new PaymentHistory(_userId, ValidStripeId, ValidAmount, IntervalEnum.OneTime);
+            var ph = new PaymentHistory(_userId, ValidStripeId, ValidAmount);
             var productId = Guid.NewGuid();
 
             ph.AddProduct(productId);

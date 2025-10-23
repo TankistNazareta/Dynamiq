@@ -22,7 +22,7 @@ export type CreateCheckoutRequest =
           cancelUrl: string;
       };
 
-type CrateCheckoutProps =
+type CreateCheckoutProps =
     | {
           productId: string;
           quantity: number;
@@ -34,7 +34,7 @@ type CrateCheckoutProps =
           subscriptionId: string;
       };
 
-export const createCheckout = async (props: CrateCheckoutProps) => {
+export const createCheckout = async (props: CreateCheckoutProps) => {
     alert('type: 4242 4242 4242 4242 for successfully payment, and 4000 0000 0000 0002 for fail payment');
     const mainUrl = window.location.origin;
 

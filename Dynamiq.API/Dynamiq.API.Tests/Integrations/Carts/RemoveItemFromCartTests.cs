@@ -2,6 +2,7 @@
 using Dynamiq.API.Tests.Integrations.Users;
 using Dynamiq.Application.Commands.Carts.Commands;
 using Dynamiq.Application.DTOs.AccountDTOs;
+using Dynamiq.Domain.Aggregates;
 using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Carts
 {
+    [Collection("CartTests")]
     public class RemoveItemFromCartTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
@@ -43,20 +45,24 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 productId = product!.Id;
             }
 
+            TestAuthHandler.TestUserId = userId;
+
             var addResponse = await _client.PutAsync(
-                $"/cart?userId={userId}&productId={productId}&quantity=3",
+                $"/cart?productId={productId}&quantity=3",
                 new StringContent("")
             );
 
             addResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            var response = await _client.PutAsync($"/cart?userId={userId}&productId={productId}&quantity=1", new StringContent(""));
+            var response = await _client.PutAsync($"/cart?productId={productId}&quantity=1", new StringContent(""));
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var cart = await response.Content.ReadFromJsonAsync<CartDto>();
             cart.Should().NotBeNull();
             cart!.Items.Should().HaveCount(1);
             cart.Items.First().Quantity.Should().Be(1);
+
+            TestAuthHandler.TestUserId = null;
         }
     }
 }

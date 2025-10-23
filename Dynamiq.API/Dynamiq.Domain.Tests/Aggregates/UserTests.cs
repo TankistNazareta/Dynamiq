@@ -41,7 +41,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
             user.PasswordHash.Should().Be(ValidPasswordHash);
             user.Role.Should().Be(RoleEnum.Admin);
             user.PaymentHistories.Should().BeEmpty();
-            user.Subscriptions.Should().BeEmpty();
             user.RefreshTokens.Should().BeEmpty();
             user.EmailVerification.Should().BeNull();
             user.DomainEvents.Should().ContainSingle(e => e is UserRegisteredEvent);
@@ -69,31 +68,6 @@ namespace Dynamiq.Domain.Tests.Aggregates
 
             user.PasswordHash.Should().Be("newHash");
             user.DomainEvents.Should().ContainSingle(e => e is UserChangedPasswordEvent);
-        }
-
-        [Fact]
-        public void AddSubscription_ShouldAdd_When_NoActive()
-        {
-            var user = new User(ValidEmail, ValidPasswordHash, RoleEnum.DefaultUser);
-            var sub = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
-            sub.Cancel();
-
-            user.AddSubscription(sub);
-
-            user.Subscriptions.Should().ContainSingle().Which.Should().Be(sub);
-        }
-
-        [Fact]
-        public void AddSubscription_ShouldThrow_When_AlreadyHasActive()
-        {
-            var user = new User(ValidEmail, ValidPasswordHash, RoleEnum.DefaultUser);
-            var active = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
-            user.AddSubscription(active);
-
-            var another = new SubscriptionHistory(user.Id, Guid.NewGuid(), Guid.NewGuid(), IntervalEnum.Monthly);
-            Action act = () => user.AddSubscription(another);
-
-            act.Should().Throw<InvalidOperationException>();
         }
 
         [Fact]

@@ -140,7 +140,6 @@ namespace Dynamiq.Infrastructure.Tests.Repos
                 name: name,
                 description: description,
                 price: price,
-                interval: IntervalEnum.OneTime,
                 categoryId: categoryId ?? Guid.NewGuid(),
                 imgUrls: new List<string> { "https://example.com/image.jpg" },
                 paragraphs: new List<string> { "Paragraph 1" },

@@ -33,7 +33,7 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             var stripeServiceMock = new Mock<IStripeProductService>();
             stripeServiceMock
-                .Setup(s => s.UpdateProductStripeAsync(It.IsAny<ProductDto>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(s => s.UpdateProductStripeAsync(It.IsAny<ProductDto>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IntervalEnum?>()))
                 .ReturnsAsync(new StripeIdsDto("stripe_price_123", "stripe_product_123"));
 
             var client = _factory.WithWebHostBuilder(builder =>
@@ -67,7 +67,6 @@ namespace Dynamiq.API.Tests.Integrations.Products
                 Name: newName,
                 Description: "NewDescr",
                 Price: 11111,
-                Interval: IntervalEnum.OneTime,
                 CategoryId: categoryId,
                 ImgUrls: new List<string> { "https://example.com/image.jpg" },
                 Paragraphs: new List<string> { "Updated paragraph 1", "Updated paragraph 2" },
@@ -91,7 +90,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
             stripeServiceMock.Verify(s => s.UpdateProductStripeAsync(
                 It.IsAny<ProductDto>(),
                 It.IsAny<string>(),
-                It.IsAny<string>()
+                It.IsAny<string>(),
+                It.IsAny<IntervalEnum?>()
             ), Times.Once);
         }
     }

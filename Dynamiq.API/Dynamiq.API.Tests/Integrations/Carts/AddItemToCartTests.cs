@@ -10,6 +10,7 @@ using System.Net.Http.Json;
 
 namespace Dynamiq.API.Tests.Integrations.Carts
 {
+    [Collection("CartTests")]
     public class AddItemToCartTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly CustomWebApplicationFactory<Program> _factory;
@@ -39,7 +40,9 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 productId = (await db.Products.FirstOrDefaultAsync(p => p.Name == productName))!.Id;
             }
 
-            var response = await _client.PostAsync($"/cart?userId={userId}&productId={productId}&quantity=2", new StringContent(""));
+            TestAuthHandler.TestUserId = userId;
+
+            var response = await _client.PostAsync($"/cart?productId={productId}&quantity=2", new StringContent(""));
 
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<CartDto>();
@@ -48,6 +51,8 @@ namespace Dynamiq.API.Tests.Integrations.Carts
             result!.Items.Should().HaveCount(1);
             result.Items[0].ProductId.Should().Be(productId);
             result.Items[0].Quantity.Should().Be(2);
+
+            TestAuthHandler.TestUserId = null;
         }
 
         [Fact]
@@ -67,10 +72,12 @@ namespace Dynamiq.API.Tests.Integrations.Carts
                 userId = (await db.Users.FirstOrDefaultAsync(u => u.Email == email))!.Id;
                 productId = (await db.Products.FirstOrDefaultAsync(p => p.Name == productName))!.Id;
             }
-            
-            await _client.PostAsJsonAsync($"/cart?userId={userId}&productId={productId}&quantity=1", new StringContent(""));
 
-            var response = await _client.PostAsync($"/cart?userId={userId}&productId={productId}&quantity=3", new StringContent(""));
+            TestAuthHandler.TestUserId = userId;
+
+            await _client.PostAsJsonAsync($"/cart?productId={productId}&quantity=1", new StringContent(""));
+
+            var response = await _client.PostAsync($"/cart?productId={productId}&quantity=3", new StringContent(""));
 
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<CartDto>();
@@ -79,6 +86,8 @@ namespace Dynamiq.API.Tests.Integrations.Carts
             result!.Items.Should().ContainSingle();
             result.Items[0].ProductId.Should().Be(productId);
             result.Items[0].Quantity.Should().Be(4);
+
+            TestAuthHandler.TestUserId = null;
         }
     }
 }
