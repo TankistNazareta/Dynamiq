@@ -20,6 +20,8 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
     const [error, setError] = useState('');
 
     useEffect(() => {
+        syncCart();
+
         const interval = setInterval(() => syncCart(), 30000);
 
         return () => clearInterval(interval);
