@@ -24,10 +24,10 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
     return (
         <div className="filter__section-item">
             <div
-                className={`filter__section-item_parent d-flex align-items-center btn--right-arrow ${
-                    needToShowChild ? 'btn--right-arrow--active' : ''
-                }`}
+                className={`filter__section-item_parent d-flex align-items-center`}
                 onClick={(e) => {
+                    if (!childrenCategories) return;
+
                     const target = e.target;
 
                     if (target instanceof HTMLInputElement && target.type === 'checkbox') return;
@@ -49,9 +49,12 @@ const CategoryItem: React.FC<CategoryItemPorps> = ({
                 />
                 {childrenCategories.length ? (
                     <button
-                        className={`user__payment-history_item_descr user__payment-history_item_btn filter__section-item__btn-dropdown ${
-                            needToShowChild ? 'user__payment-history_item__btn--active' : ''
-                        }`}>
+                        className={`user__payment-history_item_descr user__payment-history_item_btn filter__section-item__btn-dropdown 
+                            btn--right-arrow ${
+                                needToShowChild
+                                    ? 'user__payment-history_item__btn--active btn--right-arrow--active'
+                                    : ''
+                            }`}>
                         <span></span>
                         <span></span>
                     </button>
