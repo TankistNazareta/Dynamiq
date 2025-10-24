@@ -5,9 +5,9 @@ The project demonstrates clean architecture, secure payments, and modern UI for 
 
 ## 📸 Screenshots
 
-![Main Page](docs/screenshots/main.png)  
-![Product Page](docs/screenshots/product.png)  
-👉 [Live Demo](https://your-demo-link.com)
+![Main Page](https://res.cloudinary.com/davgpgmxf/image/upload/v1761324813/image_rnd3hq.png)  
+![Product Page](https://res.cloudinary.com/davgpgmxf/image/upload/v1761324854/image_1_sm3muo.png)  
+👉 [Live Demo](https://dynamiq-nazareta.fun)
 
 ## ✨ Key Features
 
