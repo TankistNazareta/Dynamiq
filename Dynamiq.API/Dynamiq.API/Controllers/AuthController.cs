@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace Dynamiq.API.Controllers
 {
@@ -37,15 +38,25 @@ namespace Dynamiq.API.Controllers
         {
             var res = await _mediator.Send(command);
 
+            Response.Cookies.Append("accessToken", res.AccessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddHours(1)
+            });
+
             Response.Cookies.Append("refreshToken", res.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
             });
 
             _logger.LogInformation($"Log in: {res}");
 
-            return Ok(new { AccessToken = res.AccessToken });
+            return Ok();
         }
 
         [HttpPost("log-out")]
@@ -55,5 +66,16 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "Logged out" });
         }
 
+        [Authorize]
+        [HttpGet("me")]
+        public IActionResult Me()
+        {
+            return Ok(new
+            {
+                Email = User.FindFirst(ClaimTypes.Email)?.Value,
+                Role = User.FindFirst(ClaimTypes.Role)?.Value,
+                UserId = User.FindFirst("userId")?.Value
+            });
+        }
     }
 }

@@ -41,25 +41,42 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add JWT
 
-builder.Services.AddAuthentication(x =>
-{
-    x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(x =>
-{
-    x.TokenValidationParameters = new()
+builder.Services
+    .AddAuthentication(options =>
     {
-        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
-        ValidAudience = builder.Configuration["JwtSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
-});
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+            ValidAudience = builder.Configuration["JwtSettings:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)
+            ),
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                if (ctx.Request.Cookies.TryGetValue("accessToken", out var token))
+                {
+                    ctx.Token = token;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+    });
+
 
 builder.Services.AddHttpClient("google-oauth", c =>
 {
@@ -70,6 +87,29 @@ builder.Services.AddAuthentication();
 
 builder.Services.AddAuthorization(options =>
 {
+    options.AddPolicy("AdminOrWithoutId", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            if (!context.User.Identity?.IsAuthenticated ?? true)
+                return false;
+
+            var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (role == RoleEnum.Admin.ToString())
+                return true;
+
+            if (context.Resource is HttpContext httpContext)
+            {
+                var idFromQuery = httpContext.Request.Query["id"].ToString();
+
+                if (!string.IsNullOrEmpty(idFromQuery))
+                    return false;
+            }
+
+            return true;
+        });
+    });
     options.AddPolicy("UserOrAdmin", policy =>
     {
         policy.RequireAssertion(context =>

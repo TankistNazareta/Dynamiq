@@ -21,17 +21,10 @@ const Account = () => {
     useEffect(() => {
         if (user !== undefined) return;
 
-        const resOfToken = getUserIdFromAccessToken();
-
-        if (resOfToken.error !== undefined) {
-            setError(resOfToken.error);
-            return;
-        }
-
-        makeRequest<UserRes>(() => getUserById(resOfToken.userId))
+        makeRequest<UserRes>(() => getUserById())
             .then(async (userRes: UserRes) => {
                 const paymentHistoryRes = await makeRequest<PaymentHistoryRes[]>(() =>
-                    getPaymentHistoryByUserId(resOfToken.userId)
+                    getPaymentHistoryByUserId(userRes.id)
                 );
                 setUser({ ...userRes, paymnetHistories: paymentHistoryRes });
             })

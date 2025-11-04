@@ -12,13 +12,13 @@ import NotFound from './pages/NotFound';
 import AuthPage from './pages/Auth';
 import ConfirmEmail from './pages/ConfirmEmail';
 import OfflinePage from './pages/OfflinePage';
-import { AccessTokenReturnType, refreshTheAccessToken } from './services/client/auth';
 import { useEffect, useState } from 'react';
 import useHttpHook from './hooks/useHttp';
 import AuthCallBack from './pages/Auth/AuthCallback';
 import InfoMsg from './components/InfoMsg';
 import PaymentStatus from './pages/PaymentStatus';
 import About from './pages/About';
+import { meAuth } from './services/client/auth';
 
 const AppInner = () => {
     const [isAuth, setIsAuth] = useState(true);
@@ -26,37 +26,8 @@ const AppInner = () => {
     const { makeRequest } = useHttpHook();
 
     useEffect(() => {
-        setTimerForRefreshTheAccessToken();
+        makeRequest(() => meAuth()).catch(() => setIsAuth(false));
     }, []);
-
-    useEffect(() => {
-        if (localStorage.getItem('token') === undefined) setIsAuth(false);
-    }, [localStorage.getItem('token')]);
-
-    const setTimerForRefreshTheAccessToken = async () => {
-        if (!isAuth) return;
-
-        let callInMs: number = 0;
-
-        const token = localStorage.getItem('token');
-
-        if (token != null) {
-            const payloadBase64 = token!.split('.')[1];
-            const payloadJson = atob(payloadBase64);
-            const payload = JSON.parse(payloadJson);
-
-            const exp = payload.exp;
-            callInMs = exp ? exp * 1000 - (Date.now() + 5 * 60 * 1000) : 0;
-        }
-
-        setTimeout(async () => {
-            makeRequest<AccessTokenReturnType>(() => refreshTheAccessToken())
-                .then(() => {
-                    setTimerForRefreshTheAccessToken();
-                })
-                .catch(() => setIsAuth(false));
-        }, callInMs);
-    };
 
     const onLogIn = () => {
         setIsAuth(true);

@@ -23,11 +23,17 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
-        [Authorize(Policy = "UserOrAdmin")]
+        [Authorize(Policy = "AdminOrWithoutId")]
         [HttpGet]
-        public async Task<IActionResult> GetById([FromQuery] Guid id)
+        public async Task<IActionResult> GetById([FromQuery] Guid? id)
         {
-            var user = await _mediator.Send(new GetUserByIdQuery(id));
+            var userId = id ??
+                Guid.Parse(User.FindFirst(JwtClaims.UserId)?.Value);
+
+            if (userId == null || id == Guid.Empty)
+                return Unauthorized();
+            
+            var user = await _mediator.Send(new GetUserByIdQuery(userId));
 
             if (user == null)
                 return NotFound();

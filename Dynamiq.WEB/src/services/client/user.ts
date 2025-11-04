@@ -15,8 +15,8 @@ export type UserRes = {
     hasActiveSubscription: boolean;
 };
 
-export const getUserById = async (id: string) => {
-    const res = await apiRequest<UserRes>(`/user?id=${id}`);
+export const getUserById = async (id?: string) => {
+    const res = id ? await apiRequest<UserRes>(`/user?id=${id}`) : await apiRequest<UserRes>(`/user`);
     return res;
 };
 

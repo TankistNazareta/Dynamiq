@@ -27,6 +27,7 @@ namespace Dynamiq.API.Controllers
 
             await _mediator.Send(new RevokeRefreshTokenCommand(token));
 
+            Response.Cookies.Delete("accessToken");
             Response.Cookies.Delete("refreshToken");
 
             _logger.LogInformation("Refresh token revoked: {Token}", token);
@@ -43,15 +44,26 @@ namespace Dynamiq.API.Controllers
 
             var res = await _mediator.Send(new RefreshTheTokenCommand(token));
 
+            Response.Cookies.Append("accessToken", res.AccessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddHours(1)
+            });
+
             Response.Cookies.Append("refreshToken", res.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
             });
+
 
             _logger.LogInformation($"Refreshed token with id: {token}");
 
-            return Ok(new { AccessToken = res.AccessToken });
+            return Ok();
         }
     }
 }

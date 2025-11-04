@@ -3,7 +3,7 @@ import './auth.scss';
 import { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { logIn, AccessTokenReturnType, signUp, logInByGoogle, LogInByGoogleResponse } from '../../services/client/auth';
+import { logIn, signUp } from '../../services/client/auth';
 import { ResponseMsg } from '../../utils/types/api';
 import useHttpHook from '../../hooks/useHttp';
 import Loading from '../../components/Loading';
@@ -61,10 +61,9 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
                     setState('error');
                 });
         } else {
-            makeRequest<AccessTokenReturnType>(() => logIn(email, password))
-                .then((res: AccessTokenReturnType) => {
+            makeRequest(() => logIn(email, password))
+                .then((res) => {
                     console.log(res, 'res MakeRequest AuthPage');
-                    localStorage.setItem('token', res.accessToken);
                     setEmail('');
                     setPassword('');
                 })
