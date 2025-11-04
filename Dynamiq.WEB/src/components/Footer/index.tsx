@@ -30,13 +30,13 @@ const Footer = () => {
                         <div className="col-3 footer__colum-links">
                             <div className="footer__socials">
                                 <h4 className="footer__title">Social</h4>
-                                <a className="footer__item footer__social-link" href="">
-                                    Facebook
+                                <a className="footer__item footer__social-link" href="https://t.me/usertankist">
+                                    Telegram
                                 </a>
-                                <a className="footer__item footer__social-link" href="">
+                                <a className="footer__item footer__social-link" href="https://github.com">
                                     GitHub
                                 </a>
-                                <a className="footer__item footer__social-link" href="">
+                                <a className="footer__item footer__social-link" href="https://x.com/TankistNazareta">
                                     X
                                 </a>
                             </div>

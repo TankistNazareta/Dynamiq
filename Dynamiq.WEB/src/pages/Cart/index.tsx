@@ -7,7 +7,7 @@ import Feature from '../../components/Feature';
 import SubheaderNav from '../../components/SubheaderNav';
 import useCart, { CartItemData } from '../../hooks/useCart';
 import Loading from '../../components/Loading';
-import { CouponRes, getCoupon } from '../../services/client/coupon';
+import { CouponRes } from '../../services/client/coupon';
 import PopupCoupon from './components/PopupCoupon';
 import DiscountTypeEnum from '../../utils/enums/discountTypeEnum';
 
@@ -35,6 +35,7 @@ const Cart = () => {
 
     useEffect(() => {
         setTotalDiscount(countTotalDiscount(cartData));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [couponList]);
 
     useEffect(() => {
@@ -42,6 +43,7 @@ const Cart = () => {
 
         setSubTotal(cartData.reduce((acc, item) => acc + item.price * item.quantity, 0));
         setTotalDiscount(countTotalDiscount());
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartData]);
 
     const onChangeQuantity = (productId: string, quantity: number) => {

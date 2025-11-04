@@ -36,6 +36,7 @@ const Header = () => {
                 })
                 .then(() => setState('success'));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -71,6 +72,7 @@ const Header = () => {
         } else if (suggestionNames.length !== 0) {
             setSuggestionNames([]);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchInput]);
 
     const onSearch = (search: string) => {

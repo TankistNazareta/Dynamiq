@@ -1,7 +1,7 @@
 import './infoMsg.scss';
 
 import { CloseButton } from 'react-bootstrap';
-import { InfoMsgToAddType, InfoMsgType, useInfoMsg } from './InfoMsgContext';
+import { useInfoMsg } from './InfoMsgContext';
 import { useEffect, useState } from 'react';
 
 type timerForClose = {
@@ -24,6 +24,7 @@ const InfoMsg = () => {
                 setAutoCloseTimers((prev) => [...prev, { id: item.id, timer: autoCloser }]);
             }
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [infoMsgs]);
 
     const onClose = (id: string, needToClearTimerFromArray: boolean) => {

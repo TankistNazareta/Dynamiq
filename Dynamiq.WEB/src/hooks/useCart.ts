@@ -4,7 +4,6 @@ import { ErrorMsgType } from '../utils/types/api';
 import useHttpHook from './useHttp';
 import { getByIdProduct, ProductResBody } from '../services/client/product';
 import { createCheckout, CreateCheckoutType } from '../services/client/payment';
-import intervalEnum from '../utils/enums/intervalEnum';
 
 export type CartItemData = {
     productId: string;
@@ -25,6 +24,7 @@ const useCart = (setLoaded: () => void, isLoaded: boolean) => {
         const interval = setInterval(() => syncCart(), 30000);
 
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const syncCart = () => {

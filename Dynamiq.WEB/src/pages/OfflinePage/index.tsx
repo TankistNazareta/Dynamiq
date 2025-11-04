@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
 const OfflinePage = () => {
     const navigate = useNavigate();
-    const [needToGoBack, setNeedToGoBack] = useState(false);
 
     const reloadPage = () => {
         navigate(-1);

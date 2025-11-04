@@ -93,9 +93,9 @@ namespace Dynamiq.API.Tests
             });
         }
 
-        public Task DisposeAsync()
+        async Task IAsyncLifetime.DisposeAsync()
         {
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         }
     }
 }

@@ -7,7 +7,7 @@ import Cart from './pages/Cart';
 
 import Contact from './pages/Contact';
 import Account from './pages/Account';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import NotFound from './pages/NotFound';
 import AuthPage from './pages/Auth';
 import ConfirmEmail from './pages/ConfirmEmail';
@@ -27,6 +27,7 @@ const AppInner = () => {
 
     useEffect(() => {
         makeRequest(() => meAuth()).catch(() => setIsAuth(false));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onLogIn = () => {

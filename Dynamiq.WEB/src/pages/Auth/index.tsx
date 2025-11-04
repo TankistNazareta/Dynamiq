@@ -29,6 +29,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLogIn }) => {
         addItem({ type: 'info', msg: 'For Admin email: admin@example.com; pass: Password123' });
         addItem({ type: 'info', msg: 'For User email: user@example.com; pass: Password123' });
         addItem({ type: 'info', msg: 'Also you can create new account :)' });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

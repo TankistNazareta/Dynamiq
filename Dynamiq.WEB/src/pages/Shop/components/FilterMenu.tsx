@@ -7,7 +7,7 @@ import { CategoryRes, getAllCategories } from '../../../services/client/category
 import { ErrorMsgType } from '../../../utils/types/api';
 import Loading from '../../../components/Loading';
 import { CloseButton } from 'react-bootstrap';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import getFilterFromUrl from '../../../utils/services/getFilterFromUrl';
 
 interface FilterMenuProps {
@@ -26,12 +26,6 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
     const { state, setState, makeRequest } = useHttpHook();
 
     const [searchParams, setSearchParams] = useSearchParams();
-    useEffect(() => {
-        if (categoriesIsLoading) return;
-
-        updateFilterFromUrl();
-        setFilter(getFilterFromUrl(searchParams, categoryItems));
-    }, [searchParams]);
 
     useEffect(() => {
         if (!categoryItems.length) {
@@ -44,15 +38,16 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
                 .then(() => setState('success'))
                 .catch((error: ErrorMsgType) => setError(error.Message));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
         if (categoriesIsLoading) return;
 
         setFilter(getFilterFromUrl(searchParams, categoryItems));
-
         updateFilterFromUrl();
-    }, [categoryItems.length]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [categoryItems, searchParams]);
 
     const updateFilterFromUrl = () => {
         var newFilter = getFilterFromUrl(searchParams, categoryItems);
@@ -163,17 +158,17 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
         setSearchParams(urlSearchParams);
     };
 
-    const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {
-        const idsCategories: string[] = [];
+    // const GetCheckedCategories = (categories: CategoryItemPorps[] = categoryItems): string[] => {
+    //     const idsCategories: string[] = [];
 
-        for (const category of categories) {
-            if (category.subCategories.length) idsCategories.push(...GetCheckedCategories(category.subCategories));
+    //     for (const category of categories) {
+    //         if (category.subCategories.length) idsCategories.push(...GetCheckedCategories(category.subCategories));
 
-            if (category.isChecked) idsCategories.push(category.id);
-        }
+    //         if (category.isChecked) idsCategories.push(category.id);
+    //     }
 
-        return idsCategories;
-    };
+    //     return idsCategories;
+    // };
 
     return (
         <div className={`filter ${isActive ? 'filter--active' : ''}`}>
@@ -251,9 +246,9 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ isActive, onFilterProp, setNeed
             <hr className="hr-separator" />
             <div className="filter__section">
                 <h5 className="filter__section-title">Categories:</h5>
-                {state == 'loading' ? (
+                {state === 'loading' ? (
                     <Loading />
-                ) : state == 'success' ? (
+                ) : state === 'success' ? (
                     <>
                         {categoryItems?.map((item) => (
                             <CategoryItem key={item.id} {...item} />

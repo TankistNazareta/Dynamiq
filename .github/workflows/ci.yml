@@ -1,4 +1,4 @@
-name: .NET CI
+name: .NET & Frontend CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  build-and-test-backend:
     runs-on: ubuntu-latest
 
     services:
@@ -51,3 +51,27 @@ jobs:
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost,1433;Database=Dynamiq;User=sa;Password=YourStrongPassword123!;TrustServerCertificate=True"
         run: dotnet test Dynamiq.API/Dynamiq.Tests.slnf --no-build --configuration Release --logger trx
+
+  build-and-test-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        working-directory: ./Dynamiq.Web
+        run: npm install
+
+      - name: Build
+        working-directory: ./Dynamiq.Web
+        run: npm run build
+
+      - name: Run frontend tests (optional)
+        working-directory: ./Dynamiq.Web
+        run: npm test -- --watch=false

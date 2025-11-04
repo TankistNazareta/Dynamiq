@@ -76,6 +76,3 @@ const Card: React.FC<CardProps> = ({ additionalClasses, name, price, descr, imgU
 };
 
 export default Card;
-function AddCartCheck() {
-    throw new Error('Function not implemented.');
-}

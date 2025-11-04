@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import useHttpHook from '../../hooks/useHttp';
 import Loading from '../Loading';
 import {
@@ -40,6 +40,7 @@ const CardList: React.FC<CardListProps> = ({ className, limit, offset, productFi
                 console.error(err);
                 setError(err?.message || 'Unknown error');
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [offset, limit, productFilter]);
 
     return (

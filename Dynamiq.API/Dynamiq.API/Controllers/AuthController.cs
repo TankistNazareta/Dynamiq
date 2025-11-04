@@ -54,7 +54,9 @@ namespace Dynamiq.API.Controllers
                 Expires = DateTime.UtcNow.AddDays(7)
             });
 
-            _logger.LogInformation($"Log in: {res}");
+            _logger.LogInformation("User logged in: {Email}, IP: {IP}",
+                HttpContext.User.FindFirst(ClaimTypes.Email)?.Value,
+                HttpContext.Connection.RemoteIpAddress?.ToString());
 
             return Ok();
         }

@@ -3,7 +3,7 @@ const parseDateTime = (date: Date) => {
         if (!s) return null;
         if (s instanceof Date) return s;
         const str = String(s);
-        if (/[zZ]|[+\-]\d{2}:\d{2}$/.test(str)) {
+        if (/[zZ]|[+-]\d{2}:\d{2}$/.test(str)) {
             const d = new Date(str);
             return Number.isNaN(d.getTime()) ? null : d;
         }

@@ -1,4 +1,3 @@
-import IntervalEnum from '../../utils/enums/intervalEnum';
 import roleEnum from '../../utils/enums/roleEnum';
 import { apiRequest } from '../api';
 import { PaymentHistoryRes } from './paymentHistory';

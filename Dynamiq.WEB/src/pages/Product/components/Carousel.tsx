@@ -74,6 +74,7 @@ const Carousel: React.FC<CarouselProps> = ({ children, showSlides, imgs }) => {
             changeActiveDot(currentSlide);
             setLastActiveDot(currentSlide / showSlides);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentSlide]);
 
     const timeoutLastFirstSlide = (frstLast: number) => {

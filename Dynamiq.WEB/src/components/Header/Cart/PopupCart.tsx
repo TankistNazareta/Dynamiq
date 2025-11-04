@@ -23,6 +23,7 @@ const PopupCart: React.FC<PopupCartProps> = ({ needToShow, setNeedToShowToFalse 
         if (subTotal !== 0) return;
 
         setSubTotal(cartData.reduce((acc, item) => acc + item.price * item.quantity, 0));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [cartData]);
 
     const onChangeQuantity = (productId: string, quantity: number) => {

@@ -9,7 +9,6 @@ import PaymentHistory from './components/PaymentHistory';
 import { ErrorMsgType } from '../../utils/types/api';
 import Loading from '../../components/Loading';
 import { getPaymentHistoryByUserId, PaymentHistoryRes } from '../../services/client/paymentHistory';
-import getUserIdFromAccessToken from '../../utils/services/getUserIdFromAccessToken';
 import SubscriptionModal from './components/SubscriptionModal';
 
 const Account = () => {
@@ -30,6 +29,7 @@ const Account = () => {
             })
             .then(() => setState('success'))
             .catch((error: ErrorMsgType) => setError(error.Message));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (state === 'success') return <View user={user!} />;

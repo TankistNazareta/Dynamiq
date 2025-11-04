@@ -26,6 +26,7 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
                 setState('success');
             })
             .catch(() => {});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const formatPrice = (value: number) => {

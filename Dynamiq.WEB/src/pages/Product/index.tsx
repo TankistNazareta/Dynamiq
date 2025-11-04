@@ -55,6 +55,7 @@ const Product = () => {
             .catch((err: ErrorMsgType) => {
                 setError(err);
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const onPurchase = () => {
@@ -189,7 +190,7 @@ const View: React.FC<{
                             <div className="info__additional-item">
                                 <p className="info__additional-item-title">Share</p>
                                 <p className="info__additional-item-separator">:</p>
-                                <a
+                                <button
                                     onClick={() =>
                                         navigator.share({
                                             title: product.name,
@@ -198,7 +199,7 @@ const View: React.FC<{
                                     }
                                     className="info__additional-item-descr info__additional-item-link">
                                     Click
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </div>
