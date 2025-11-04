@@ -17,6 +17,7 @@ namespace Dynamiq.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpGet("by-id")]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
@@ -25,6 +26,7 @@ namespace Dynamiq.API.Controllers
             return Ok(paymentHistory);
         }
 
+        [Authorize(Policy = "UserOrAdminByEmail")]
         [HttpGet("by-email")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {

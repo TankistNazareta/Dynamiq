@@ -23,15 +23,10 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpGet]
         public async Task<IActionResult> GetById([FromQuery] Guid id)
         {
-            var usersId = User.FindFirst(JwtClaims.UserId)?.Value;
-            var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (usersId != id.ToString() && usersRole != RoleEnum.Admin.ToString())
-                return Forbid();
-
             var user = await _mediator.Send(new GetUserByIdQuery(id));
 
             if (user == null)
@@ -57,15 +52,10 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "You successfully changed your password" });
         }
 
+        [Authorize(Policy = "UserOrAdmin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var usersId = User.FindFirst(JwtClaims.UserId)?.Value;
-            var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (usersId != id.ToString() && usersRole != RoleEnum.Admin.ToString())
-                return Forbid();
-
             await _mediator.Send(new DeleteUserCommand(id));
 
             _logger.LogInformation("Deleted user with id: {Id}", id);
@@ -73,18 +63,12 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "user was removed" });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("email")]
         public async Task<IActionResult> GetByEmail([FromQuery] string email)
         {
-            var usersRole = User.FindFirst(ClaimTypes.Role)?.Value;
-
-            if (usersRole != RoleEnum.Admin.ToString())
-                return Forbid();
-
             var user = await _mediator.Send(new GetUserByEmailQuery(email));
-
             return Ok(user);
-
         }
     }
 }

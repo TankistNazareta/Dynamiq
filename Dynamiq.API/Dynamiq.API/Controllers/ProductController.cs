@@ -23,6 +23,7 @@ namespace Dynamiq.API.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddProductCommand command)
         {
@@ -33,6 +34,7 @@ namespace Dynamiq.API.Controllers
             return Ok(new { Message = "Product was created" });
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] UpdateProductCommand command)
         {
@@ -64,6 +66,7 @@ namespace Dynamiq.API.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {

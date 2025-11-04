@@ -27,6 +27,7 @@ namespace Dynamiq.API.Controllers
             return Ok(res);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddSubscriptionCommand command)
         {
@@ -35,6 +36,7 @@ namespace Dynamiq.API.Controllers
             return Ok("Subscription was created");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] UpdateSubscriptionCommand command)
         {
@@ -43,6 +45,7 @@ namespace Dynamiq.API.Controllers
             return Ok("Subscription was updated");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<IActionResult> Delete([FromQuery] Guid id)
         {

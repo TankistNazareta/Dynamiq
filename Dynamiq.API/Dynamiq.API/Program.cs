@@ -13,6 +13,7 @@ using Dynamiq.Application.Interfaces.Services;
 using Dynamiq.Application.Interfaces.Stripe;
 using Dynamiq.Application.Interfaces.UseCases;
 using Dynamiq.Application.UseCases;
+using Dynamiq.Domain.Enums;
 using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.BackgroundServices;
 using Dynamiq.Infrastructure.Persistence.Context;
@@ -28,6 +29,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -65,6 +67,49 @@ builder.Services.AddHttpClient("google-oauth", c =>
 });
 
 builder.Services.AddAuthentication();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("UserOrAdmin", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            var userIdClaim = context.User.FindFirst(JwtClaims.UserId)?.Value;
+            var roleClaim = context.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (roleClaim == RoleEnum.Admin.ToString())
+                return true;
+
+            if (context.Resource is HttpContext httpContext)
+            {
+                var idFromQuery = httpContext.Request.Query["id"].ToString();
+                return userIdClaim == idFromQuery;
+            }
+
+            return false;
+        });
+    });
+    options.AddPolicy("UserOrAdminByEmail", policy =>
+    {
+        policy.RequireAssertion(context =>
+        {
+            var userEmailClaim = context.User.FindFirst(ClaimTypes.Email)?.Value;
+            var roleClaim = context.User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (roleClaim == RoleEnum.Admin.ToString())
+                return true;
+
+            if (context.Resource is HttpContext httpContext)
+            {
+                var emailFromQuery = httpContext.Request.Query["email"].ToString();
+                return userEmailClaim == emailFromQuery;
+            }
+
+            return false;
+        });
+    });
+});
+
 
 //Add logger
 builder.Logging.ClearProviders();
@@ -218,17 +263,18 @@ builder.Services.AddSwaggerGen(c =>
 
 var MyAllowSpecificOrigins = "AllowFrontend";
 
+var allowedOriginsEnv = Environment.GetEnvironmentVariable("ALLOWED_CORS_ORIGINS");
+var allowedOrigins = allowedOriginsEnv?.Split(';', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-        policy =>
-        {
-            policy.WithOrigins("http://dynamiq-nazareta.fun", "https://dynamiq-nazareta.fun", 
-                "https://dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.netlify.app", "https://www.dynamiq-nazareta.fun", "http://localhost:3000")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+    options.AddPolicy(MyAllowSpecificOrigins, policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
 });
 
 var app = builder.Build();
