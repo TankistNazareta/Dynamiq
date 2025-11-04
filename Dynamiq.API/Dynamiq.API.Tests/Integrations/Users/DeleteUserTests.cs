@@ -33,9 +33,6 @@ namespace Dynamiq.API.Tests.Integrations.Users
             var logInCommand = new LogInUserCommand(email, "OldPassword123!");
             var authResponse = await _client.PostAsJsonAsync("/auth/log-in", logInCommand);
 
-            var LogInResponseDto = await authResponse.Content.ReadFromJsonAsync<LogInResponse>();
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", LogInResponseDto.AccessToken);
-
             using var scope = _factory.Services.CreateScope();
             var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
