@@ -206,7 +206,8 @@ builder.Services.AddRateLimiter(options =>
 //Add Configuration
 builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false);
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
 
 //AddressOptionsptions
 builder.Services.Configure<GoogleOAuthOptions>(builder.Configuration.GetSection("GoogleOAuth"));
@@ -225,7 +226,8 @@ builder.Services.AddSingleton(mapper);
 //Add dbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionToLocalDb"));
+    var conn = Environment.GetEnvironmentVariable("ConnectionToLocalDb");
+    options.UseSqlServer(conn);
 });
 
 //Repo
