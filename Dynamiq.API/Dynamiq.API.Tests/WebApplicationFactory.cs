@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using System.Security.Cryptography;
 
 namespace Dynamiq.API.Tests
 {
@@ -61,6 +63,18 @@ namespace Dynamiq.API.Tests
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.UseEnvironment("Testing");
+
+            builder.ConfigureAppConfiguration((context, config) =>
+            {
+                var dict = new Dictionary<string, string>
+                {
+                    { "AllowedHosts", "*" },
+                    { "JwtSettings:Issuer", "https://api.dynamiq-test.fun" },
+                    { "JwtSettings:Audience", "https://dynamiq-test.fun" },
+                    { "JwtSettings:Key", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)) }
+                };
+                config.AddInMemoryCollection(dict);
+            });
 
             builder.ConfigureServices(services =>
             {

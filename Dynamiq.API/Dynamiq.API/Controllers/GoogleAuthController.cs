@@ -37,13 +37,25 @@ namespace Dynamiq.API.Controllers
             var authResponse = await _mediator.Send(new GoogleCallbackCommand(code, state));
 
 
+            Response.Cookies.Append("accessToken", authResponse.AccessToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddHours(1)
+            });
+
+
             Response.Cookies.Append("refreshToken", authResponse.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = DateTime.UtcNow.AddDays(7)
             });
+
             var frontendUrl = "https://dynamiq-nazareta.fun/auth/callback";
-            return Redirect($"{frontendUrl}?accessToken={authResponse.AccessToken}");
+            return Redirect($"{frontendUrl}");
         }
     }
 }

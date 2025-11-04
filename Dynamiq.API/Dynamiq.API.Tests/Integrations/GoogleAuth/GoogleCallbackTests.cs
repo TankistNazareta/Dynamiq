@@ -76,7 +76,6 @@ namespace Dynamiq.API.Tests.Integrations.GoogleAuth
             var redirectUri = response.Headers.Location?.ToString();
             redirectUri.Should().NotBeNull();
             redirectUri.Should().Contain("https://dynamiq-nazareta.fun/auth/callback");
-            redirectUri.Should().Contain("accessToken=");
 
             using var scope = _factory.Services.CreateScope();
             var db = scope.ServiceProvider.GetService<AppDbContext>();

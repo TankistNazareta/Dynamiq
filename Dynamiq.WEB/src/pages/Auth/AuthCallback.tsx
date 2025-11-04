@@ -10,17 +10,11 @@ const AuthCallBack: React.FC<AuthCallBackProps> = ({ onLogIn }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const accessToken = params.get('accessToken');
+        onLogIn();
 
-        if (accessToken) {
-            localStorage.setItem('token', accessToken);
-            onLogIn();
-
-            setTimeout(() => {
-                navigate('/');
-            }, 1000);
-        }
+        setTimeout(() => {
+            navigate('/');
+        }, 1000);
     }, [navigate, onLogIn]);
 
     return (

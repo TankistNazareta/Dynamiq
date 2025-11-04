@@ -1,5 +1,7 @@
 ﻿using Dynamiq.Application.Interfaces.Repositories;
+using Dynamiq.Infrastructure.Persistence.Context;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading;
@@ -28,10 +30,9 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
-
-                var created = response.Products.Should().ContainSingle(p => p.Name == productName).Subject;
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var created = await db.Products.FirstOrDefaultAsync(p => p.Name == productName);
+                created.Should().NotBeNull();
 
                 created.StripeProductId.Should().Be("stripe_product_123");
                 created.StripePriceId.Should().Be("stripe_price_123");
