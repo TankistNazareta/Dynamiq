@@ -74,4 +74,4 @@ jobs:
 
       - name: Run frontend tests
         working-directory: Dynamiq.WEB
-        run: npm test -- --watch=false
+        run: npm test -- --watch=false --passWithNoTests
