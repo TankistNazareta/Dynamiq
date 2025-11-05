@@ -65,13 +65,13 @@ jobs:
           node-version: "18"
 
       - name: Install dependencies
-        working-directory: ./Dynamiq.Web
-        run: npm install
+        working-directory: Dynamiq.WEB
+        run: npm ci
 
-      - name: Build
-        working-directory: ./Dynamiq.Web
+      - name: Build frontend
+        working-directory: Dynamiq.WEB
         run: npm run build
 
-      - name: Run frontend tests (optional)
-        working-directory: ./Dynamiq.Web
+      - name: Run frontend tests
+        working-directory: Dynamiq.WEB
         run: npm test -- --watch=false
