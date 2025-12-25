@@ -86,10 +86,16 @@ namespace Dynamiq.Application.Commands.Payment.Handlers
             var paymentHistory = new PaymentHistory(parserDto.UserId, parserDto.StripeTransactionId,
                 parserDto.Amount);
 
+            var isExists = await _repo.CheckTransactionExistsAsync(parserDto.StripeTransactionId, cancellationToken);
+            
+            if (isExists)
+            {
+                return;
+            }
+
             if (parserDto.ProductId != null)
             {
                 if (parserDto.Interval == null)
-
                     paymentHistory.AddProduct(parserDto.ProductId.Value);
                 else
                     paymentHistory.SetSubscription(parserDto.ProductId.Value);

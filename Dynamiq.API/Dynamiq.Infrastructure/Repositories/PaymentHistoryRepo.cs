@@ -17,6 +17,11 @@ namespace Dynamiq.Infrastructure.Repositories
         public async Task AddAsync(PaymentHistory paymentHistory, CancellationToken ct)
                 => await _db.PaymentHistories.AddAsync(paymentHistory, ct);
 
+        public Task<bool> CheckTransactionExistsAsync(string transactionId, CancellationToken ct)
+                => _db.PaymentHistories
+                        .AsNoTracking()
+                        .AnyAsync(ph => ph.StripeTransactionId == transactionId, ct);
+
         public async Task<PaymentHistory?> GetBySubscriptionIdAsync(string subscriptionId, CancellationToken ct)
                 => await _db.PaymentHistories
                         .Include(ph => ph.Subscription)
