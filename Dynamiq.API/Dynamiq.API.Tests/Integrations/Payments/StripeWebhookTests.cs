@@ -57,7 +57,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
               ""type"": ""checkout.session.completed"",
               ""data"": {
                 ""object"": {
-                  ""id"": ""cs_test_123"",
+                  ""id"": """ + Guid.NewGuid() + @""",
                   ""client_reference_id"": ""user-id"",
                   ""amount_total"": 200000,
                   ""metadata"": {
@@ -67,7 +67,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
               }
             }";
 
-            var fakeSignature = "t=123456789,v1=fakesignature";
+            var fakeSignature = $"t=123456789,v1=fakesignature";
 
             client.DefaultRequestHeaders.Add("Stripe-Signature", fakeSignature);
 
@@ -115,7 +115,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             var parserDto = new WebhookParserDto()
             {
                 UserId = user.Id,
-                StripeTransactionId = "test_stripe_id",
+                StripeTransactionId = Guid.NewGuid().ToString(),
                 Amount = 4000
             };
 
@@ -178,7 +178,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             {
                 UserId = user.Id,
                 ProductId = product.Id,
-                StripeTransactionId = "test_stripe_id",
+                StripeTransactionId = Guid.NewGuid().ToString(),
                 Amount = 2222
             };
 
@@ -233,7 +233,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
                 UserId = user.Id,
                 ProductId = product.Id,
                 Interval = product.Interval,
-                StripeTransactionId = "test_stripe_id",
+                StripeTransactionId = Guid.NewGuid().ToString(),
                 Amount = 2000
             };
 
@@ -299,7 +299,7 @@ namespace Dynamiq.API.Tests.Integrations.Payments
             {
                 UserId = user.Id,
                 ProductId = product.Id,
-                StripeTransactionId = "test_stripe_id",
+                StripeTransactionId = Guid.NewGuid().ToString(),
                 Amount = 1800
             };
 
