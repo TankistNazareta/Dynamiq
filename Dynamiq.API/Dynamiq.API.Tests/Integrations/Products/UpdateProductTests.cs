@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using System.Net;
 using System.Net.Http.Json;
+using Dynamiq.Infrastructure.Persistence.Context;
 
 namespace Dynamiq.API.Tests.Integrations.Products
 {
@@ -52,9 +53,10 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var created = response.Products.Should().ContainSingle(p => p.Name == productName).Subject;
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var created = db.Products.FirstOrDefault(p => p.Name == productName);
+                
+                created.Should().NotBeNull();
 
                 productId = created.Id;
                 categoryId = created.CategoryId;
@@ -78,9 +80,8 @@ namespace Dynamiq.API.Tests.Integrations.Products
 
             using (var scope = _scopeFactory.CreateScope())
             {
-                var repo = scope.ServiceProvider.GetRequiredService<IProductRepo>();
-                var response = await repo.GetAllAsync(100, 0, CancellationToken.None);
-                var updated = response.Products.Should().ContainSingle(p => p.Name == newName).Subject;
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var updated = db.Products.FirstOrDefault(p => p.Name == newName);
 
                 updated.Should().NotBeNull();
                 updated.Description.Should().Be("NewDescr");

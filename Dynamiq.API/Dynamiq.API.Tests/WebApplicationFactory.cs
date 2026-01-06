@@ -1,5 +1,4 @@
 ﻿using Dynamiq.Application.Interfaces.Services;
-using Dynamiq.Domain.Interfaces;
 using Dynamiq.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -12,104 +11,152 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 using System.Security.Cryptography;
 
-namespace Dynamiq.API.Tests
+namespace Dynamiq.API.Tests;
+
+public sealed class CustomWebApplicationFactory<TProgram>
+    : WebApplicationFactory<TProgram>, IAsyncLifetime
+    where TProgram : class
 {
-    public class CustomWebApplicationFactory<TProgram>
-        : WebApplicationFactory<TProgram>, IAsyncLifetime
-        where TProgram : class
+    private readonly string _dbName = $"DynamiqTests_{Guid.NewGuid():N}";
+    private string _connectionString = null!;
+
+    public async Task InitializeAsync()
     {
-        private string? _connectionString;
-        private const string TestDbName = "DynamiqIntegrationTests";
+        var masterConnectionString = IsGitHub()
+            ? "Server=localhost,1433;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
+            : "Server=DESKTOP-HPNA4RC;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
 
-        public string ConnectionString => _connectionString ??
-            throw new InvalidOperationException("Connection string is not initialized.");
+        await using var connection = new SqlConnection(masterConnectionString);
+        await connection.OpenAsync();
 
-        public async Task InitializeAsync()
+        await using (var cmd = connection.CreateCommand())
         {
-            var masterConnectionString = Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true"
-                ? "Server=localhost,1433;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
-                : "Server=DESKTOP-HPNA4RC;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
+            cmd.CommandText = $"CREATE DATABASE [{_dbName}]";
+            await cmd.ExecuteNonQueryAsync();
+        }
 
-            await using var connection = new SqlConnection(masterConnectionString);
-            await connection.OpenAsync();
+        var csBuilder = new SqlConnectionStringBuilder(masterConnectionString)
+        {
+            InitialCatalog = _dbName,
+            MultipleActiveResultSets = true
+        };
 
-            await using (var command = connection.CreateCommand())
+        _connectionString = csBuilder.ToString();
+
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await db.Database.MigrateAsync();
+    }
+
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+
+        builder.ConfigureAppConfiguration(config =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string>
             {
-                command.CommandText = $@"
-                    IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'{TestDbName}')
-                    BEGIN
-                        CREATE DATABASE [{TestDbName}];
-                    END";
-                await command.ExecuteNonQueryAsync();
+                ["JwtSettings:Issuer"] = "https://api.dynamiq-test.fun",
+                ["JwtSettings:Audience"] = "https://dynamiq-test.fun",
+                ["JwtSettings:Key"] = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
+                ["AllowedHosts"] = "*"
+            });
+        });
+
+        builder.ConfigureServices(services =>
+        {
+            RemoveService<DbContextOptions<AppDbContext>>(services);
+
+            services.AddDbContext<AppDbContext>(opts =>
+                opts.UseSqlServer(_connectionString));
+
+            ReplaceWithMock<IEmailService>(services);
+
+            services.AddAuthentication("Test")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
+
+            services.PostConfigure<AuthenticationOptions>(o =>
+            {
+                o.DefaultAuthenticateScheme = "Test";
+                o.DefaultChallengeScheme = "Test";
+            });
+
+            RemoveHostedServices(services);
+        });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        base.Dispose(disposing);
+
+        if (!disposing)
+            return;
+
+        DropDatabase();
+    }
+
+    public async Task DisposeAsync()
+    {
+        await Task.CompletedTask;
+    }
+
+    private void DropDatabase()
+    {
+        var masterConnectionString = IsGitHub()
+            ? "Server=localhost,1433;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
+            : "Server=DESKTOP-HPNA4RC;Database=master;Trusted_Connection=True;TrustServerCertificate=True;";
+
+        for (var i = 0; i < 5; i++)
+        {
+            try
+            {
+                using var connection = new SqlConnection(masterConnectionString);
+                connection.Open();
+
+                using var cmd = connection.CreateCommand();
+                cmd.CommandText = $@"
+                IF DB_ID('{_dbName}') IS NOT NULL
+                BEGIN
+                    ALTER DATABASE [{_dbName}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+                    DROP DATABASE [{_dbName}];
+                END";
+                cmd.ExecuteNonQuery();
+
+                return;
             }
-
-            var builder = new SqlConnectionStringBuilder(masterConnectionString)
+            catch
             {
-                InitialCatalog = TestDbName,
-                MultipleActiveResultSets = true
-            };
-            _connectionString = builder.ToString();
-
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseSqlServer(_connectionString)
-                .Options;
-
-            using var scope = Services.CreateScope();
-            var dispatcher = scope.ServiceProvider.GetRequiredService<IDomainEventDispatcher>();
-            using var db = new AppDbContext(options, dispatcher);
-            await db.Database.MigrateAsync();
+                Thread.Sleep(500);
+            }
         }
+    }
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.UseEnvironment("Testing");
+    private static bool IsGitHub() =>
+        Environment.GetEnvironmentVariable("GITHUB_ACTIONS") == "true";
 
-            builder.ConfigureAppConfiguration((context, config) =>
-            {
-                var dict = new Dictionary<string, string>
-                {
-                    { "AllowedHosts", "*" },
-                    { "JwtSettings:Issuer", "https://api.dynamiq-test.fun" },
-                    { "JwtSettings:Audience", "https://dynamiq-test.fun" },
-                    { "JwtSettings:Key", Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)) }
-                };
-                config.AddInMemoryCollection(dict);
-            });
+    private static void RemoveService<T>(IServiceCollection services)
+    {
+        var d = services.SingleOrDefault(s => s.ServiceType == typeof(T));
+        if (d != null) services.Remove(d);
+    }
 
-            builder.ConfigureServices(services =>
-            {
-                var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-                if (descriptor != null) services.Remove(descriptor);
+    private static void ReplaceWithMock<T>(IServiceCollection services)
+        where T : class
+    {
+        var d = services.SingleOrDefault(s => s.ServiceType == typeof(T));
+        if (d != null) services.Remove(d);
 
-                services.AddDbContext<AppDbContext>(options =>
-                    options.UseSqlServer(_connectionString!));
+        var mock = new Mock<T>();
+        services.AddSingleton(mock.Object);
+    }
 
-                var emailDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(IEmailService));
-                if (emailDescriptor != null) services.Remove(emailDescriptor);
+    private static void RemoveHostedServices(IServiceCollection services)
+    {
+        var hosted = services
+            .Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType))
+            .ToList();
 
-                var mockEmail = new Mock<IEmailService>();
-                mockEmail.Setup(m => m.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
-                services.AddSingleton(mockEmail.Object);
-
-                services.AddAuthentication("Test")
-                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", _ => { });
-
-                services.PostConfigure<Microsoft.AspNetCore.Authentication.AuthenticationOptions>(opts =>
-                {
-                    opts.DefaultAuthenticateScheme = "Test";
-                    opts.DefaultChallengeScheme = "Test";
-                });
-
-
-                var hostedServices = services.Where(s => typeof(IHostedService).IsAssignableFrom(s.ServiceType)).ToList();
-                foreach (var hs in hostedServices)
-                    services.Remove(hs);
-            });
-        }
-
-        async Task IAsyncLifetime.DisposeAsync()
-        {
-            await Task.CompletedTask;
-        }
+        foreach (var h in hosted)
+            services.Remove(h);
     }
 }
